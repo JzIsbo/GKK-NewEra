@@ -81,8 +81,8 @@
 <div class="card">
     <div class="card-header"><div class="card-title">Log Kehadiran Ibadah</div></div>
     <div class="card-body">
-        <div class="table-wrapper">
-            <table>
+        <div class="table-wrapper table-responsive-stack">
+            <table class="table-responsive-stack">
                 <thead>
                     <tr>
                         <th>Ibadah</th>
@@ -100,9 +100,9 @@
                 <tbody>
                     @forelse($kehadirans as $k)
                         <tr>
-                            <td>
-                                <div class="fw-semibold">{{ $k->jadwalIbadah->nama }}</div>
-                                <div style="margin-top: 2px;">
+                            <td data-label="Ibadah" class="cell-title">
+                                <div class="fw-semibold" style="font-size: 14.5px; color: var(--primary);">{{ $k->jadwalIbadah->nama }}</div>
+                                <div style="margin-top: 3px;">
                                     @if($k->jadwalIbadah->kategori)
                                         <span class="badge badge-gold" style="font-size: 10px;">{{ $k->jadwalIbadah->kategori->nama }}</span>
                                     @else
@@ -110,22 +110,22 @@
                                     @endif
                                 </div>
                             </td>
-                            <td>{{ $k->tanggal->translatedFormat('d F Y') }}</td>
-                            <td style="text-align: center;">{{ $k->jumlah_pria }}</td>
-                            <td style="text-align: center;">{{ $k->jumlah_wanita }}</td>
-                            <td style="text-align: center;">{{ $k->jumlah_anak }}</td>
-                            <td style="text-align: center;" class="fw-bold text-success">{{ $k->total_kehadiran }}</td>
-                            <td class="text-muted small" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            <td data-label="Tanggal">{{ $k->tanggal->translatedFormat('d F Y') }}</td>
+                            <td data-label="Pria" style="text-align: center;">{{ $k->jumlah_pria }}</td>
+                            <td data-label="Wanita" style="text-align: center;">{{ $k->jumlah_wanita }}</td>
+                            <td data-label="Anak" style="text-align: center;">{{ $k->jumlah_anak }}</td>
+                            <td data-label="Total" style="text-align: center;" class="fw-bold text-success">{{ $k->total_kehadiran }}</td>
+                            <td data-label="Keterangan" class="text-muted small">
                                 {{ $k->keterangan ?: '-' }}
                             </td>
                             @can('manage-kehadiran')
-                                <td>
+                                <td data-label="Aksi">
                                     <div class="d-flex gap-2">
-                                        <a href="{{ route('majelis.kehadiran.edit', $k->id) }}" class="btn btn-outline btn-sm">Edit</a>
+                                        <a href="{{ route('majelis.kehadiran.edit', $k->id) }}" class="btn btn-outline btn-sm">✏️ Edit</a>
                                         <form method="POST" action="{{ route('majelis.kehadiran.destroy', $k->id) }}" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data kehadiran ini?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                            <button type="submit" class="btn btn-danger btn-sm">🗑️ Hapus</button>
                                         </form>
                                     </div>
                                 </td>
@@ -133,7 +133,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="{{ auth()->user()->can('manage-kehadiran') ? 8 : 7 }}" class="text-center text-muted">Belum ada catatan kehadiran ibadah yang sesuai pencarian.</td>
+                            <td colspan="{{ auth()->user()->can('manage-kehadiran') ? 8 : 7 }}" class="text-center text-muted" style="padding: 24px;">Belum ada catatan kehadiran ibadah yang sesuai pencarian.</td>
                         </tr>
                     @endforelse
                 </tbody>

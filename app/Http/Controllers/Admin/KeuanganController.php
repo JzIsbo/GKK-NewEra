@@ -12,38 +12,22 @@ class KeuanganController extends Controller
 {
     public function index(Request $request)
     {
-        $bulan = $request->bulan ?: now()->month;
-        $tahun = $request->tahun ?: now()->year;
+        $bulan = (int) ($request->bulan ?: now()->month);
+        $tahun = (int) ($request->tahun ?: now()->year);
 
         $persembahans = Persembahan::with('jenisPersembahan', 'user')
-            ->where('status', 'success')
-            ->whereMonth('paid_at', $bulan)
-            ->whereYear('paid_at', $tahun)
+            ->sukses()
+            ->bulanTahun($bulan, $tahun)
             ->latest('paid_at')
             ->paginate(20)
             ->withQueryString();
 
-        $totalSemua = Persembahan::where('status', 'success')->sum('nominal');
-        $totalBulanIni = Persembahan::where('status', 'success')
-            ->whereMonth('paid_at', $bulan)
-            ->whereYear('paid_at', $tahun)
-            ->sum('nominal');
-        $jumlahTransaksi = Persembahan::where('status', 'success')
-            ->whereMonth('paid_at', $bulan)
-            ->whereYear('paid_at', $tahun)
-            ->count();
+        $totalSemua      = Persembahan::sukses()->sum('nominal');
+        $totalBulanIni   = Persembahan::sukses()->bulanTahun($bulan, $tahun)->sum('nominal');
+        $jumlahTransaksi = Persembahan::sukses()->bulanTahun($bulan, $tahun)->count();
 
-        $perJenis = Persembahan::with('jenisPersembahan')
-            ->where('status', 'success')
-            ->whereMonth('paid_at', $bulan)
-            ->whereYear('paid_at', $tahun)
-            ->get()
-            ->groupBy('jenis_persembahan_id')
-            ->map(fn($g) => [
-                'nama'  => $g->first()->jenisPersembahan->nama ?? '-',
-                'total' => $g->sum('nominal'),
-                'count' => $g->count(),
-            ]);
+        // DB-level aggregation — tidak load semua row ke PHP memory
+        $perJenis = Persembahan::rekapPerJenis($bulan, $tahun);
 
         return view('admin.keuangan', compact(
             'persembahans', 'totalSemua', 'totalBulanIni',
@@ -53,13 +37,12 @@ class KeuanganController extends Controller
 
     public function export(Request $request)
     {
-        $bulan = $request->bulan ?: now()->month;
-        $tahun = $request->tahun ?: now()->year;
+        $bulan = (int) ($request->bulan ?: now()->month);
+        $tahun = (int) ($request->tahun ?: now()->year);
 
         $persembahans = Persembahan::with('jenisPersembahan', 'user')
-            ->where('status', 'success')
-            ->whereMonth('paid_at', $bulan)
-            ->whereYear('paid_at', $tahun)
+            ->sukses()
+            ->bulanTahun($bulan, $tahun)
             ->latest('paid_at')
             ->get();
 

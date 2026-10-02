@@ -49,8 +49,8 @@
             <a href="{{ route('admin.keuangan') }}" class="btn btn-outline btn-sm">Lihat Semua</a>
         </div>
         <div class="card-body">
-            <div class="table-wrapper">
-                <table>
+            <div class="table-wrapper table-responsive-stack">
+                <table class="table-responsive-stack">
                     <thead>
                         <tr>
                             <th>Tanggal</th>
@@ -63,18 +63,18 @@
                     <tbody>
                         @forelse($recentPersembahan as $p)
                             <tr>
-                                <td>{{ $p->paid_at ? $p->paid_at->format('d/m/Y H:i') : '-' }}</td>
-                                <td>
+                                <td data-label="Tanggal">{{ $p->paid_at ? $p->paid_at->format('d/m/Y H:i') : '-' }}</td>
+                                <td data-label="Donatur" class="cell-title">
                                     <div class="fw-semibold">{{ $p->nama_lengkap_donatur }}</div>
-                                    <div class="text-muted small">{{ $p->email_donatur ?: ($p->user->email ?? '-') }}</div>
+                                    <div class="text-muted small user-email-text">{{ $p->email_donatur ?: ($p->user->email ?? '-') }}</div>
                                 </td>
-                                <td><span class="badge badge-gold">{{ $p->jenisPersembahan->nama ?? '-' }}</span></td>
-                                <td class="fw-bold">Rp {{ number_format($p->nominal, 0, ',', '.') }}</td>
-                                <td><span class="badge badge-success">Selesai</span></td>
+                                <td data-label="Jenis"><span class="badge badge-gold">{{ $p->jenisPersembahan->nama ?? '-' }}</span></td>
+                                <td data-label="Nominal" class="fw-bold text-success">Rp {{ number_format($p->nominal, 0, ',', '.') }}</td>
+                                <td data-label="Status"><span class="badge badge-success">Selesai</span></td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center text-muted">Belum ada transaksi persembahan.</td>
+                                <td colspan="5" class="text-center text-muted" style="padding: 20px;">Belum ada transaksi persembahan.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -90,8 +90,8 @@
             <a href="{{ route('admin.pendaftaran.index') }}" class="btn btn-outline btn-sm">Lihat Semua</a>
         </div>
         <div class="card-body">
-            <div class="table-wrapper">
-                <table>
+            <div class="table-wrapper table-responsive-stack">
+                <table class="table-responsive-stack">
                     <thead>
                         <tr>
                             <th>Nama</th>
@@ -103,15 +103,19 @@
                     <tbody>
                         @forelse($recentPendaftaran as $p)
                             <tr>
-                                <td>
+                                <td data-label="Nama" class="cell-title">
                                     <div class="fw-semibold">{{ $p->nama_lengkap }}</div>
                                     <div class="text-muted small">Asal: {{ $p->asal_gereja ?: '-' }}</div>
                                 </td>
-                                <td>
-                                    <div>{{ $p->email }}</div>
-                                    <div class="text-muted small">{{ $p->no_telepon }}</div>
+                                <td data-label="Kontak">
+                                    <div class="user-contact-info">
+                                        <div class="user-email-text">{{ $p->email }}</div>
+                                        @if($p->no_telepon)
+                                            <div class="text-muted small">{{ $p->no_telepon }}</div>
+                                        @endif
+                                    </div>
                                 </td>
-                                <td>
+                                <td data-label="Status">
                                     @if($p->status === 'pending')
                                         <span class="badge badge-warning">Menunggu</span>
                                     @elseif($p->status === 'disetujui')
@@ -120,11 +124,11 @@
                                         <span class="badge badge-danger">Ditolak</span>
                                     @endif
                                 </td>
-                                <td>{{ $p->created_at->format('d/m/Y') }}</td>
+                                <td data-label="Tgl Daftar">{{ $p->created_at->format('d/m/Y') }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center text-muted">Belum ada pendaftaran jemaat baru.</td>
+                                <td colspan="4" class="text-center text-muted" style="padding: 20px;">Belum ada pendaftaran jemaat baru.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -137,11 +141,11 @@
 <div class="card">
     <div class="card-header"><div class="card-title">Menu Administrasi Cepat</div></div>
     <div class="card-body">
-        <div class="d-flex gap-3" style="flex-wrap: wrap;">
-            <a href="{{ route('admin.users.index') }}" class="btn btn-primary">👥 Manajemen User</a>
-            <a href="{{ route('admin.pendaftaran.index') }}" class="btn btn-warning">⌛ Approval Pendaftaran</a>
-            <a href="{{ route('admin.keuangan') }}" class="btn btn-success">📊 Laporan Keuangan</a>
-            <a href="{{ route('admin.pengaturan') }}" class="btn btn-accent">⚙ Pengaturan Aplikasi</a>
+        <div class="d-flex gap-2" style="flex-wrap: wrap;">
+            <a href="{{ route('admin.users.index') }}" class="btn btn-primary" style="flex: 1 1 140px; justify-content: center;">👥 Manajemen User</a>
+            <a href="{{ route('admin.pendaftaran.index') }}" class="btn btn-warning" style="flex: 1 1 140px; justify-content: center;">⌛ Approval Pendaftaran</a>
+            <a href="{{ route('admin.keuangan') }}" class="btn btn-success" style="flex: 1 1 140px; justify-content: center;">📊 Laporan Keuangan</a>
+            <a href="{{ route('admin.pengaturan') }}" class="btn btn-accent" style="flex: 1 1 140px; justify-content: center;">⚙ Pengaturan Aplikasi</a>
         </div>
     </div>
 </div>

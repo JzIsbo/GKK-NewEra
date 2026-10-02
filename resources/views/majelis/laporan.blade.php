@@ -58,7 +58,7 @@
         <div class="card-header"><div class="card-title">Breakdown Per Jenis Persembahan</div></div>
         <div class="card-body" style="padding: 16px 24px;">
             <div class="table-wrapper">
-                <table>
+                <table class="table-responsive-stack">
                     <thead>
                         <tr>
                             <th>Jenis Persembahan</th>
@@ -68,12 +68,12 @@
                     <tbody>
                         @forelse($totalPerJenis as $item)
                             <tr>
-                                <td class="fw-semibold">{{ $item['nama'] }}</td>
-                                <td class="text-end fw-bold text-success">Rp {{ number_format($item['total'], 0, ',', '.') }}</td>
+                                <td data-label="Jenis Persembahan" class="fw-semibold cell-title">{{ $item['nama'] }}</td>
+                                <td data-label="Total Nominal" class="text-end fw-bold" style="color: var(--burgundy);">Rp {{ number_format($item['total'], 0, ',', '.') }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="2" class="text-center text-muted">Tidak ada data breakdown.</td>
+                                <td colspan="2" class="text-center text-muted" style="padding: 20px;">Tidak ada data breakdown.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -89,8 +89,8 @@
         <div class="card-title">Detail Transaksi Persembahan Masuk</div>
     </div>
     <div class="card-body">
-        <div class="table-wrapper">
-            <table>
+        <div class="table-wrapper table-responsive-stack">
+            <table class="table-responsive-stack">
                 <thead>
                     <tr>
                         <th>Tanggal Bayar</th>
@@ -104,19 +104,19 @@
                 <tbody>
                     @forelse($persembahans as $p)
                         <tr>
-                            <td>{{ $p->paid_at ? $p->paid_at->format('d/m/Y H:i') : '-' }}</td>
-                            <td class="fw-semibold">{{ $p->order_id }}</td>
-                            <td>
-                                <div>{{ $p->nama_lengkap_donatur }}</div>
-                                <div class="text-muted small">{{ $p->email_donatur ?: ($p->user->email ?? '-') }}</div>
+                            <td data-label="Tanggal Bayar">{{ $p->paid_at ? $p->paid_at->format('d/m/Y H:i') : '-' }}</td>
+                            <td data-label="Order ID"><span class="badge badge-gold" style="font-size: 11px;">{{ $p->order_id }}</span></td>
+                            <td data-label="Nama Donatur" class="cell-title">
+                                <div class="fw-semibold" style="font-size: 14.5px; color: var(--primary);">{{ $p->nama_lengkap_donatur }}</div>
+                                <div class="text-muted small user-email-text">{{ $p->email_donatur ?: ($p->user->email ?? '-') }}</div>
                             </td>
-                            <td><span class="badge badge-gold">{{ $p->jenisPersembahan->nama ?? '-' }}</span></td>
-                            <td class="fw-bold text-success">Rp {{ number_format($p->nominal, 0, ',', '.') }}</td>
-                            <td style="text-transform: uppercase;">{{ str_replace('_', ' ', $p->metode_bayar ?: '-') }}</td>
+                            <td data-label="Jenis Persembahan"><span class="badge badge-gold">{{ $p->jenisPersembahan->nama ?? '-' }}</span></td>
+                            <td data-label="Nominal" class="fw-bold text-success" style="font-size: 14px;">Rp {{ number_format($p->nominal, 0, ',', '.') }}</td>
+                            <td data-label="Metode Bayar" style="text-transform: uppercase;">{{ str_replace('_', ' ', $p->metode_bayar ?: '-') }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center text-muted">Belum ada transaksi persembahan masuk untuk periode ini.</td>
+                            <td colspan="6" class="text-center text-muted" style="padding: 24px;">Belum ada transaksi persembahan masuk untuk periode ini.</td>
                         </tr>
                     @endforelse
                 </tbody>

@@ -16,7 +16,8 @@ class Pengumuman extends Model
 
     public function penulis()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        // user_id nullable (onDelete SET NULL) — relasi bisa return null
+        return $this->belongsTo(User::class, 'user_id')->withDefault(['nama_lengkap' => 'Admin (dihapus)']);
     }
 
     public function scopeAktif($query)

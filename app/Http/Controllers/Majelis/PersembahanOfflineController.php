@@ -13,10 +13,7 @@ class PersembahanOfflineController extends Controller
     public function index(Request $request)
     {
         $query = Persembahan::with('jenisPersembahan', 'user')
-            ->where(function($q) {
-                $q->whereNull('snap_token')
-                  ->orWhereIn('metode_bayar', ['Tunai', 'Transfer Manual', 'Offline']);
-            });
+            ->offline();
 
         if ($request->search) {
             $query->where(function($q) use ($request) {
@@ -64,6 +61,7 @@ class PersembahanOfflineController extends Controller
 
         Persembahan::create([
             'order_id'             => 'GKK-OFFLINE-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -6)),
+            'source'               => 'offline',
             'user_id'              => $userId,
             'nama_donatur'         => $namaDonatur,
             'jenis_persembahan_id' => $request->jenis_persembahan_id,

@@ -74,7 +74,7 @@
         <div class="card-header"><div class="card-title">Penerimaan Per Jenis</div></div>
         <div class="card-body" style="padding: 16px 24px;">
             <div class="table-wrapper">
-                <table>
+                <table class="table-responsive-stack">
                     <thead>
                         <tr>
                             <th>Jenis</th>
@@ -84,12 +84,12 @@
                     <tbody>
                         @forelse($perJenis as $item)
                             <tr>
-                                <td class="fw-semibold">{{ $item['nama'] }}</td>
-                                <td class="text-end fw-bold text-success">Rp {{ number_format($item['total'], 0, ',', '.') }}</td>
+                                <td data-label="Jenis" class="fw-semibold cell-title">{{ $item['nama'] }}</td>
+                                <td data-label="Nominal" class="text-end fw-bold" style="color: var(--burgundy);">Rp {{ number_format($item['total'], 0, ',', '.') }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="2" class="text-center text-muted">Tidak ada data penerimaan.</td>
+                                <td colspan="2" class="text-center text-muted" style="padding: 20px;">Tidak ada data penerimaan.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -102,8 +102,8 @@
     <div class="card" style="grid-column: span 2;">
         <div class="card-header"><div class="card-title">Detail Log Penerimaan Persembahan</div></div>
         <div class="card-body" style="padding: 16px 24px;">
-            <div class="table-wrapper">
-                <table>
+            <div class="table-wrapper table-responsive-stack">
+                <table class="table-responsive-stack">
                     <thead>
                         <tr>
                             <th>Tanggal</th>
@@ -116,18 +116,18 @@
                     <tbody>
                         @forelse($persembahans as $p)
                             <tr>
-                                <td>{{ $p->paid_at ? $p->paid_at->format('d/m/Y') : '-' }}</td>
-                                <td class="fw-semibold">{{ $p->order_id }}</td>
-                                <td>
-                                    <div>{{ $p->nama_lengkap_donatur }}</div>
-                                    <div class="text-muted small" style="font-size: 11px;">{{ $p->email_donatur ?: ($p->user->email ?? '') }}</div>
+                                <td data-label="Tanggal">{{ $p->paid_at ? $p->paid_at->format('d/m/Y') : '-' }}</td>
+                                <td data-label="Order ID"><span class="badge badge-gold" style="font-size: 11px;">{{ $p->order_id }}</span></td>
+                                <td data-label="Donatur" class="cell-title">
+                                    <div class="fw-semibold" style="font-size: 14.5px; color: var(--primary);">{{ $p->nama_lengkap_donatur }}</div>
+                                    <div class="text-muted small user-email-text" style="font-size: 11px;">{{ $p->email_donatur ?: ($p->user->email ?? '') }}</div>
                                 </td>
-                                <td class="fw-bold text-success">Rp {{ number_format($p->nominal, 0, ',', '.') }}</td>
-                                <td><span class="badge badge-success">Selesai</span></td>
+                                <td data-label="Nominal" class="fw-bold text-success" style="font-size: 14px;">Rp {{ number_format($p->nominal, 0, ',', '.') }}</td>
+                                <td data-label="Status"><span class="badge badge-success">Selesai</span></td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center text-muted">Belum ada persembahan masuk periode ini.</td>
+                                <td colspan="5" class="text-center text-muted" style="padding: 24px;">Belum ada persembahan masuk periode ini.</td>
                             </tr>
                         @endforelse
                     </tbody>

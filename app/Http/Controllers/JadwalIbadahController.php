@@ -9,7 +9,18 @@ class JadwalIbadahController extends Controller
 {
     public function index()
     {
-        $jadwals = JadwalIbadah::orderByRaw("FIELD(hari, 'Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu')")->get();
+        $jadwals = JadwalIbadah::orderByRaw("
+            CASE hari
+                WHEN 'Minggu' THEN 1
+                WHEN 'Senin' THEN 2
+                WHEN 'Selasa' THEN 3
+                WHEN 'Rabu' THEN 4
+                WHEN 'Kamis' THEN 5
+                WHEN 'Jumat' THEN 6
+                WHEN 'Sabtu' THEN 7
+                ELSE 8
+            END
+        ")->get();
         return view('majelis.jadwal.index', compact('jadwals'));
     }
 

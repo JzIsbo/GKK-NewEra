@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\AppRole;
 use App\Models\Kategori;
 use App\Models\JadwalIbadah;
 use App\Models\KehadiranIbadah;
@@ -17,13 +18,9 @@ class RolesAndPermissionsSeeder extends Seeder
     {
         // 1. Buat Roles Baru
         $roles = [
-            'sekretaris_majelis',
-            'bendahara_majelis',
-            'pengurus_kategorial_kpb',
-            'pengurus_kategorial_kpw',
-            'pengurus_kategorial_kpp',
-            'pengurus_kategorial_kpr',
-            'pengurus_kategorial_kpa'
+            AppRole::SEKRETARIS_MAJELIS,
+            AppRole::BENDAHARA_MAJELIS,
+            ...AppRole::KATEGORIAL,
         ];
         foreach ($roles as $role) {
             Role::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
@@ -34,7 +31,7 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'view-kehadiran', 'guard_name' => 'web']);
 
         // 3. Assign Permissions ke Roles Baru
-        $sekretaris = Role::findByName('sekretaris_majelis');
+        $sekretaris = Role::findByName(AppRole::SEKRETARIS_MAJELIS);
         $sekretaris->syncPermissions([
             'approve-pendaftaran',
             'manage-jadwal',
@@ -45,21 +42,14 @@ class RolesAndPermissionsSeeder extends Seeder
             'view-all-persembahan'
         ]);
 
-        $bendahara = Role::findByName('bendahara_majelis');
+        $bendahara = Role::findByName(AppRole::BENDAHARA_MAJELIS);
         $bendahara->syncPermissions([
             'view-laporan-keuangan',
             'export-laporan',
             'view-all-persembahan'
         ]);
 
-        $kategorialRoles = [
-            'pengurus_kategorial_kpb',
-            'pengurus_kategorial_kpw',
-            'pengurus_kategorial_kpp',
-            'pengurus_kategorial_kpr',
-            'pengurus_kategorial_kpa'
-        ];
-        foreach ($kategorialRoles as $kr) {
+        foreach (AppRole::KATEGORIAL as $kr) {
             $r = Role::findByName($kr);
             $r->syncPermissions([
                 'manage-pengumuman',
@@ -70,10 +60,10 @@ class RolesAndPermissionsSeeder extends Seeder
         }
 
         // Tambah permissions kehadiran ke super_admin dan majelis
-        $superAdmin = Role::findByName('super_admin');
+        $superAdmin = Role::findByName(AppRole::SUPER_ADMIN);
         $superAdmin->givePermissionTo(['manage-kehadiran', 'view-kehadiran']);
 
-        $majelis = Role::findByName('majelis');
+        $majelis = Role::findByName(AppRole::MAJELIS);
         $majelis->givePermissionTo(['manage-kehadiran', 'view-kehadiran']);
 
         // 4. Hubungkan Jadwal Ibadah dengan Kategori KPK
@@ -139,47 +129,47 @@ class RolesAndPermissionsSeeder extends Seeder
                 'name' => 'Sekretaris Majelis',
                 'nama_lengkap' => 'Pnt. Sekretaris Majelis',
                 'email' => 'sekretaris@gemindokawankasih.or.id',
-                'role' => 'sekretaris_majelis',
+                'role' => AppRole::SEKRETARIS_MAJELIS,
             ],
             [
                 'name' => 'Bendahara Majelis',
                 'nama_lengkap' => 'Pnt. Bendahara Majelis',
                 'email' => 'bendahara@gemindokawankasih.or.id',
-                'role' => 'bendahara_majelis',
+                'role' => AppRole::BENDAHARA_MAJELIS,
             ],
             [
                 'name' => 'Pengurus KPB',
                 'nama_lengkap' => 'Bpk. Pengurus KPB (Bapak)',
                 'email' => 'pengurus.kpb@gemindokawankasih.or.id',
-                'role' => 'pengurus_kategorial_kpb',
+                'role' => AppRole::PENGURUS_KPB,
                 'kategori_id' => $kategoriBapak?->id
             ],
             [
                 'name' => 'Pengurus KPW',
                 'nama_lengkap' => 'Ibu Pengurus KPW (Perempuan)',
                 'email' => 'pengurus.kpw@gemindokawankasih.or.id',
-                'role' => 'pengurus_kategorial_kpw',
+                'role' => AppRole::PENGURUS_KPW,
                 'kategori_id' => $kategoriPerempuan?->id
             ],
             [
                 'name' => 'Pengurus KPP',
                 'nama_lengkap' => 'Sdr. Pengurus KPP (Pemuda)',
                 'email' => 'pengurus.kpp@gemindokawankasih.or.id',
-                'role' => 'pengurus_kategorial_kpp',
+                'role' => AppRole::PENGURUS_KPP,
                 'kategori_id' => $kategoriPemuda?->id
             ],
             [
                 'name' => 'Pengurus KPR',
                 'nama_lengkap' => 'Sdr. Pengurus KPR (Remaja)',
                 'email' => 'pengurus.kpr@gemindokawankasih.or.id',
-                'role' => 'pengurus_kategorial_kpr',
+                'role' => AppRole::PENGURUS_KPR,
                 'kategori_id' => $kategoriRemaja?->id
             ],
             [
                 'name' => 'Pengurus KPA',
                 'nama_lengkap' => 'Kak Pengurus KPA (Sekolah Minggu)',
                 'email' => 'pengurus.kpa@gemindokawankasih.or.id',
-                'role' => 'pengurus_kategorial_kpa',
+                'role' => AppRole::PENGURUS_KPA,
                 'kategori_id' => $kategoriAnak?->id
             ],
         ];

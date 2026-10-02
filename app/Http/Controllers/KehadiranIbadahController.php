@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kategori;
+use App\Enums\AppRole;
 use App\Models\JadwalIbadah;
 use App\Models\KehadiranIbadah;
 use Illuminate\Http\Request;
@@ -40,18 +40,18 @@ class KehadiranIbadahController extends Controller
             $query->whereBetween('tanggal', [$request->tanggal_mulai, $request->tanggal_selesai]);
         }
 
-        // Fetch stats before pagination
-        $statsQuery = clone $query;
-        $allKehadirans = $statsQuery->get();
-        
-        $totalEvents = $allKehadirans->count();
-        $totalPresence = $allKehadirans->sum(function($item) {
-            return $item->total_kehadiran;
-        });
-        $avgPresence = $totalEvents > 0 ? round($totalPresence / $totalEvents) : 0;
+        // Fetch stats using database aggregation (avoids hydrating all records into memory)
+        $stats = (clone $query)->selectRaw('
+            COUNT(*) as total_events,
+            SUM(COALESCE(jumlah_pria, 0) + COALESCE(jumlah_wanita, 0) + COALESCE(jumlah_anak, 0)) as total_presence
+        ')->first();
+
+        $totalEvents = (int) ($stats->total_events ?? 0);
+        $totalPresence = (int) ($stats->total_presence ?? 0);
+        $avgPresence = $totalEvents > 0 ? (int) round($totalPresence / $totalEvents) : 0;
 
         $kehadirans = $query->latest('tanggal')->paginate(15)->withQueryString();
-        $kategoriNama = $kategoriId ? Kategori::find($kategoriId)?->nama : null;
+        $kategoriNama = $kategoriId ? auth()->user()->kategori?->nama : null;
 
         return view('kehadiran.index', compact(
             'kehadirans', 'totalEvents', 'totalPresence', 'avgPresence', 'kategoriNama'
@@ -76,11 +76,18 @@ class KehadiranIbadahController extends Controller
     {
         $request->validate([
             'jadwal_ibadah_id' => ['required', 'exists:jadwal_ibadahs,id'],
-            'tanggal'          => ['required', 'date'],
+            'tanggal'          => [
+                'required', 'date',
+                // Cegah double-entry: satu jadwal hanya boleh satu catatan per tanggal
+                \Illuminate\Validation\Rule::unique('kehadiran_ibadahs')
+                    ->where('jadwal_ibadah_id', $request->jadwal_ibadah_id),
+            ],
             'jumlah_pria'      => ['required', 'integer', 'min:0'],
             'jumlah_wanita'    => ['required', 'integer', 'min:0'],
             'jumlah_anak'      => ['required', 'integer', 'min:0'],
             'keterangan'       => ['nullable', 'string', 'max:500'],
+        ], [
+            'tanggal.unique' => 'Kehadiran untuk jadwal dan tanggal ini sudah pernah dicatat.',
         ]);
 
         $user = auth()->user();
@@ -139,11 +146,19 @@ class KehadiranIbadahController extends Controller
 
         $request->validate([
             'jadwal_ibadah_id' => ['required', 'exists:jadwal_ibadahs,id'],
-            'tanggal'          => ['required', 'date'],
+            'tanggal'          => [
+                'required', 'date',
+                // Ignore record saat ini saat update
+                \Illuminate\Validation\Rule::unique('kehadiran_ibadahs')
+                    ->where('jadwal_ibadah_id', $request->jadwal_ibadah_id)
+                    ->ignore($kehadiran->id),
+            ],
             'jumlah_pria'      => ['required', 'integer', 'min:0'],
             'jumlah_wanita'    => ['required', 'integer', 'min:0'],
             'jumlah_anak'      => ['required', 'integer', 'min:0'],
             'keterangan'       => ['nullable', 'string', 'max:500'],
+        ], [
+            'tanggal.unique' => 'Kehadiran untuk jadwal dan tanggal ini sudah pernah dicatat.',
         ]);
 
         $jadwal = JadwalIbadah::findOrFail($request->jadwal_ibadah_id);
@@ -183,23 +198,16 @@ class KehadiranIbadahController extends Controller
             ->with('success', 'Data kehadiran ibadah berhasil dihapus.');
     }
 
-    private function getKategoriIdForUser($user)
+    /**
+     * Kembalikan kategori_id user jika ia adalah pengurus kategorial,
+     * null jika majelis / super_admin (akses semua kategori).
+     *
+     * Menggunakan kolom kategori_id di tabel users — tidak ada DB query tambahan.
+     */
+    private function getKategoriIdForUser($user): ?int
     {
-        if ($user->hasRole('pengurus_kategorial_kpb')) {
-            return Kategori::where('nama', 'Pria/Bapak')->value('id');
-        }
-        if ($user->hasRole('pengurus_kategorial_kpw')) {
-            return Kategori::where('nama', 'Perempuan')->value('id');
-        }
-        if ($user->hasRole('pengurus_kategorial_kpp')) {
-            return Kategori::where('nama', 'Pemuda')->value('id');
-        }
-        if ($user->hasRole('pengurus_kategorial_kpr')) {
-            return Kategori::where('nama', 'Remaja')->value('id');
-        }
-        if ($user->hasRole('pengurus_kategorial_kpa')) {
-            return Kategori::where('nama', 'Anak')->value('id');
-        }
-        return null;
+        $isPengurus = $user->hasAnyRole(AppRole::KATEGORIAL);
+
+        return $isPengurus ? $user->kategori_id : null;
     }
 }

@@ -15,7 +15,7 @@
     <div class="card-header"><div class="card-title">Berkas Pendaftaran</div></div>
     <div class="card-body">
         <div class="table-wrapper">
-            <table>
+            <table class="table-responsive-stack">
                 <thead>
                     <tr>
                         <th>Nama Lengkap</th>
@@ -30,17 +30,21 @@
                 <tbody>
                     @forelse($pendaftarans as $p)
                         <tr>
-                            <td>
-                                <div class="fw-semibold">{{ $p->nama_lengkap }}</div>
+                            <td data-label="Nama Lengkap" class="cell-title">
+                                <div class="fw-semibold" style="font-size: 15px;">{{ $p->nama_lengkap }}</div>
                                 <div class="text-muted small">Pekerjaan: {{ $p->pekerjaan ?: '-' }}</div>
                             </td>
-                            <td>
-                                <div>{{ $p->email }}</div>
-                                <div class="text-muted small">{{ $p->no_telepon }}</div>
+                            <td data-label="Kontak">
+                                <div class="user-contact-info">
+                                    <div class="user-email-text">{{ $p->email }}</div>
+                                    @if($p->no_telepon)
+                                        <div class="text-muted small">{{ $p->no_telepon }}</div>
+                                    @endif
+                                </div>
                             </td>
-                            <td>{{ $p->asal_regex ?: ($p->asal_gereja ?: '-') }}</td>
-                            <td>{{ $p->created_at->format('d/m/Y') }}</td>
-                            <td>
+                            <td data-label="Asal Gereja">{{ $p->asal_regex ?: ($p->asal_gereja ?: '-') }}</td>
+                            <td data-label="Tgl Daftar">{{ $p->created_at->format('d/m/Y') }}</td>
+                            <td data-label="Status">
                                 @if($p->status === 'pending')
                                     <span class="badge badge-warning">Menunggu</span>
                                 @elseif($p->status === 'disetujui')
@@ -49,21 +53,21 @@
                                     <span class="badge badge-danger">Ditolak</span>
                                 @endif
                             </td>
-                            <td>
+                            <td data-label="Catatan Penolakan">
                                 <span class="text-danger small">{{ $p->catatan_admin ?: '-' }}</span>
                             </td>
-                            <td>
+                            <td data-label="Aksi">
                                 @if($p->status === 'pending')
-                                    <div class="d-flex gap-2">
+                                    <div class="table-actions">
                                         <!-- Approve Form -->
-                                        <form method="POST" action="{{ route('admin.pendaftaran.approve', $p->id) }}" onsubmit="return confirm('Apakah Anda yakin ingin menyetujui pendaftaran ini? User baru akan otomatis dibuat.');">
+                                        <form method="POST" action="{{ route('admin.pendaftaran.approve', $p->id) }}" onsubmit="return confirm('Apakah Anda yakin ingin menyetujui pendaftaran ini? User baru akan otomatis dibuat.');" style="flex: 1;">
                                             @csrf
                                             @method('PATCH')
-                                            <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                            <button type="submit" class="btn btn-success btn-sm w-100">Approve</button>
                                         </form>
 
                                         <!-- Reject Inline Toggle -->
-                                        <button type="button" class="btn btn-danger btn-sm" onclick="showRejectBox({{ $p->id }})">Reject</button>
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="showRejectBox({{ $p->id }})" style="flex: 1;">Reject</button>
                                     </div>
 
                                     <!-- Reject Form -->
@@ -75,9 +79,9 @@
                                                 <label class="form-label small">Alasan Penolakan:</label>
                                                 <input type="text" name="catatan" class="form-control btn-sm" required>
                                             </div>
-                                            <div class="text-end">
-                                                <button type="button" class="btn btn-outline btn-sm" onclick="hideRejectBox({{ $p->id }})" style="padding: 3px 8px;">Batal</button>
-                                                <button type="submit" class="btn btn-danger btn-sm" style="padding: 3px 8px;">Kirim</button>
+                                            <div class="d-flex gap-2 justify-content-end mt-2">
+                                                <button type="button" class="btn btn-outline btn-sm" onclick="hideRejectBox({{ $p->id }})">Batal</button>
+                                                <button type="submit" class="btn btn-danger btn-sm">Kirim Penolakan</button>
                                             </div>
                                         </form>
                                     </div>
@@ -88,7 +92,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center text-muted">Belum ada berkas pendaftaran jemaat baru.</td>
+                            <td colspan="7" class="text-center text-muted" style="padding: 30px;">Belum ada berkas pendaftaran jemaat baru.</td>
                         </tr>
                     @endforelse
                 </tbody>

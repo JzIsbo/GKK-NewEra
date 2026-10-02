@@ -464,7 +464,7 @@ class KeluargaSeeder extends Seeder
                         'name' => $member['name'],
                         'nama_lengkap' => $member['nama_lengkap'],
                         'email' => $member['email'],
-                        'password' => Hash::make('Jemaat@12345'),
+                        'password' => Hash::make('Secret@12345'),
                         'jenis_kelamin' => $member['jenis_kelamin'],
                         'tanggal_lahir' => $member['tanggal_lahir'],
                         'tempat_lahir' => $member['tempat_lahir'],

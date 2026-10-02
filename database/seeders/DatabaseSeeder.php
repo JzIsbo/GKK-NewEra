@@ -4,11 +4,12 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Kategori;
-use App\Models\JenisPersonbahan;
+use App\Models\JenisPersembahan;
 use App\Models\JadwalIbadah;
 use App\Models\PengaturanApp;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use App\Enums\AppRole;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
@@ -16,13 +17,13 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Buat Roles
-        $roles = ['super_admin', 'majelis', 'pengurus_kategorial', 'jemaat'];
+        // Roles — Role granular ada di RolesAndPermissionsSeeder.
+        $roles = [AppRole::SUPER_ADMIN, AppRole::MAJELIS, AppRole::JEMAAT];
         foreach ($roles as $role) {
             Role::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
         }
 
-        // Buat Permissions
+        // Permissions — termasuk yang dibutuhkan RolesAndPermissionsSeeder
         $permissions = [
             'manage-users',
             'manage-roles',
@@ -37,16 +38,19 @@ class DatabaseSeeder extends Seeder
             'manage-kegiatan',
             'bayar-persembahan',
             'view-all-persembahan',
+            // Permissions untuk role granular (RolesAndPermissionsSeeder)
+            'manage-kehadiran',
+            'view-kehadiran',
         ];
         foreach ($permissions as $perm) {
             Permission::firstOrCreate(['name' => $perm, 'guard_name' => 'web']);
         }
 
         // Assign permissions ke roles
-        $superAdmin = Role::findByName('super_admin');
+        $superAdmin = Role::findByName(AppRole::SUPER_ADMIN);
         $superAdmin->givePermissionTo(Permission::all());
 
-        $majelis = Role::findByName('majelis');
+        $majelis = Role::findByName(AppRole::MAJELIS);
         $majelis->givePermissionTo([
             'approve-pendaftaran',
             'view-laporan-keuangan',
@@ -59,12 +63,9 @@ class DatabaseSeeder extends Seeder
             'view-all-persembahan',
         ]);
 
-        $pengurusKategorial = Role::findByName('pengurus_kategorial');
-        $pengurusKategorial->givePermissionTo([
-            'manage-kegiatan',
-            'manage-pengumuman',
-            'bayar-persembahan',
-        ]);
+        // Role legacy 'pengurus_kategorial' TIDAK diberi permission di sini.
+        // Permission untuk pengurus kategorial dikelola di RolesAndPermissionsSeeder
+        // melalui role granular: kpb, kpw, kpp, kpr, kpa.
 
         $jemaatRole = Role::findByName('jemaat');
         $jemaatRole->givePermissionTo(['bayar-persembahan']);
@@ -75,7 +76,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name'              => 'Super Admin',
                 'nama_lengkap'      => 'Super Administrator',
-                'password'          => Hash::make('Secret@12345'),
+                'password'          => Hash::make('Admin@12345'),
                 'status_keanggotaan'=> 'aktif',
                 'email_verified_at' => now(),
             ]
@@ -88,7 +89,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name'              => 'Majelis Gereja',
                 'nama_lengkap'      => 'Bpk. Majelis Gereja',
-                'password'          => Hash::make('Secret@12345'),
+                'password'          => Hash::make('Majelis@12345'),
                 'status_keanggotaan'=> 'aktif',
                 'email_verified_at' => now(),
             ]

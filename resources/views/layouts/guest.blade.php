@@ -5,9 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Masuk') – GEMINDO Kawan Kasih</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-gemindo.png') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" sizes="192x192" href="{{ asset('icons/icon-192x192.png') }}">
+    <link rel="apple-touch-icon" sizes="512x512" href="{{ asset('icons/icon-512x512.png') }}">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GEMINDO KK">
+    <meta name="application-name" content="GEMINDO KK">
+    <meta name="theme-color" content="#2c1810">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -26,10 +37,17 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh; display: flex;
-            align-items: center; justify-content: center;
-            padding: 20px; position: relative; overflow: hidden;
+            font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 30px 16px 50px;
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
             /* Rich dark spiritual background */
             background: linear-gradient(145deg, #1a0e09 0%, #2c1810 35%, #3d1a10 65%, #1a1020 100%);
         }
@@ -67,47 +85,40 @@
 
         .guest-container {
             position: relative; z-index: 1;
-            width: 100%; max-width: 460px;
+            width: 100%; max-width: 480px;
+            margin: auto 0;
         }
 
         /* Logo & church name */
         .guest-logo {
-            text-align: center; margin-bottom: 28px;
+            text-align: center; margin-bottom: 24px;
         }
-        .cross-emblem {
+        .guest-logo-wrap {
             display: inline-flex; align-items: center; justify-content: center;
-            width: 70px; height: 70px; margin-bottom: 16px;
-            position: relative;
+            margin-bottom: 14px; position: relative;
         }
-        .cross-emblem::before {
-            content: ''; position: absolute;
-            left: 50%; top: 0; transform: translateX(-50%);
-            width: 10px; height: 100%;
-            background: linear-gradient(180deg, var(--accent-light), var(--accent-dark));
-            border-radius: 5px;
-            box-shadow: 0 0 20px rgba(200,148,26,.5);
+        .guest-logo-wrap::before {
+            content: ''; position: absolute; inset: -10px;
+            background: radial-gradient(circle, rgba(200,148,26,.25) 0%, transparent 70%);
+            border-radius: 50%; pointer-events: none;
         }
-        .cross-emblem::after {
-            content: ''; position: absolute;
-            left: 0; top: 28%;
-            width: 100%; height: 10px;
-            background: linear-gradient(90deg, var(--accent-light), var(--accent-dark));
-            border-radius: 5px;
-            box-shadow: 0 0 20px rgba(200,148,26,.5);
+        .guest-logo-img {
+            width: 78px; height: 92px; object-fit: contain; position: relative; z-index: 1;
+            filter: drop-shadow(0 6px 18px rgba(0,0,0,.5)) drop-shadow(0 0 12px rgba(200,148,26,.35));
         }
         .logo-church-name {
-            font-family: 'Cinzel', serif;
-            font-size: 20px; font-weight: 700; color: #fff;
-            letter-spacing: .06em; margin-bottom: 4px;
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            font-size: 21px; font-weight: 800; color: #fff;
+            letter-spacing: -0.01em; margin-bottom: 3px;
         }
         .logo-sub {
-            font-family: 'EB Garamond', serif;
-            font-size: 14px; color: rgba(200,148,26,.7);
-            letter-spacing: .1em; font-style: italic;
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            font-size: 11.5px; font-weight: 700; color: var(--accent-light);
+            letter-spacing: .1em; text-transform: uppercase;
         }
         .logo-verse {
-            font-family: 'EB Garamond', serif;
-            font-size: 13px; color: rgba(255,255,255,.35);
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 13.5px; color: rgba(255,255,255,.55);
             font-style: italic; margin-top: 8px; line-height: 1.5;
         }
 
@@ -119,31 +130,32 @@
                 0 25px 60px rgba(0,0,0,.4),
                 0 0 0 1px rgba(200,148,26,.15),
                 inset 0 1px 0 rgba(255,255,255,.9);
-            padding: 36px 38px;
-            position: relative; overflow: hidden;
+            padding: 32px 28px;
+            position: relative;
         }
         /* Gold top border accent */
         .guest-card::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
             background: linear-gradient(90deg, var(--accent-dark), var(--accent-light), var(--accent-dark));
+            border-radius: 18px 18px 0 0;
         }
         /* Subtle corner ornament */
         .guest-card::after {
             content: '✦'; position: absolute;
             bottom: 16px; right: 20px;
             font-size: 40px; color: rgba(200,148,26,.06);
-            font-family: 'Cinzel', serif;
+            font-family: sans-serif;
         }
 
         .card-title {
-            font-family: 'Cinzel', serif;
-            font-size: 21px; font-weight: 700;
-            color: var(--primary); margin-bottom: 5px; letter-spacing: .02em;
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            font-size: 22px; font-weight: 800;
+            color: var(--primary); margin-bottom: 6px; letter-spacing: -0.015em;
         }
         .card-sub {
-            font-family: 'EB Garamond', serif;
-            font-size: 15px; color: var(--text-muted);
-            margin-bottom: 26px; line-height: 1.5;
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            font-size: 13.5px; color: var(--text-muted);
+            margin-bottom: 24px; line-height: 1.5;
         }
 
         .form-group { margin-bottom: 18px; }
@@ -231,9 +243,10 @@
 
         /* ======= MOBILE ======= */
         @media (max-width: 520px) {
+            html, body { overflow-x: hidden !important; max-width: 100vw !important; }
             body { padding: 16px; align-items: flex-start; }
-            .guest-container { padding-top: 16px; }
-            .guest-card { padding: 26px 22px 28px; border-radius: 14px; }
+            .guest-container { padding-top: 16px; width: 100%; max-width: 100%; }
+            .guest-card { padding: 26px 20px 28px; border-radius: 14px; width: 100%; max-width: 100%; box-sizing: border-box; overflow: hidden; }
             .logo-church-name { font-size: 17px; }
             .card-title { font-size: 18px; }
             .btn-submit, .btn-gold { font-size: 14px; padding: 12px; }
@@ -255,7 +268,9 @@
 
     <div class="guest-container">
         <div class="guest-logo">
-            <div class="cross-emblem"></div>
+            <div class="guest-logo-wrap">
+                <img src="{{ asset('images/logo-gemindo.png') }}" alt="Logo GEMINDO" class="guest-logo-img">
+            </div>
             <div class="logo-church-name">GEMINDO Kawan Kasih</div>
             <div class="logo-sub">Portal Jemaat</div>
             <div class="logo-verse">"Sebab di mana dua atau tiga orang berkumpul dalam nama-Ku, Aku hadir di tengah-tengah mereka." — Mat. 18:20</div>
@@ -270,5 +285,14 @@
         </div>
     </div>
     @yield('scripts')
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('[SW] Registered:', reg.scope))
+                .catch(err => console.warn('[SW] Registration failed:', err));
+        });
+    }
+    </script>
 </body>
 </html>

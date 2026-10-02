@@ -58,12 +58,24 @@ class MidtransService
      */
     public function handleNotification(): array
     {
-        $notification     = new Notification();
-        $orderId          = $notification->order_id;
+        $notification      = new Notification();
+        $orderId           = $notification->order_id;
         $transactionStatus = $notification->transaction_status;
-        $fraudStatus      = $notification->fraud_status;
-        $paymentType      = $notification->payment_type;
-        $transactionId    = $notification->transaction_id;
+        $fraudStatus       = $notification->fraud_status;
+        $paymentType       = $notification->payment_type;
+        $transactionId     = $notification->transaction_id;
+        $statusCode        = $notification->status_code;
+        $grossAmount       = $notification->gross_amount;
+        $signatureKey      = $notification->signature_key;
+
+        // Validasi SHA512 Signature Key dari Midtrans
+        $serverKey = config('midtrans.server_key');
+        if (!empty($serverKey) && !empty($signatureKey)) {
+            $computedSignature = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
+            if (!hash_equals($computedSignature, (string) $signatureKey)) {
+                throw new \Exception('Invalid Midtrans signature key: verification failed.');
+            }
+        }
 
         $status = match (true) {
             $transactionStatus === 'capture' && $fraudStatus === 'accept' => 'success',

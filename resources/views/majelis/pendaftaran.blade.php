@@ -27,8 +27,8 @@
 <div class="card">
     <div class="card-header"><div class="card-title">Daftar Pendaftar</div></div>
     <div class="card-body">
-        <div class="table-wrapper">
-            <table>
+        <div class="table-wrapper table-responsive-stack">
+            <table class="table-responsive-stack">
                 <thead>
                     <tr>
                         <th>Nama</th>
@@ -43,17 +43,21 @@
                 <tbody>
                     @forelse($pendaftarans as $p)
                         <tr>
-                            <td>
-                                <div class="fw-semibold">{{ $p->nama_lengkap }}</div>
+                            <td data-label="Nama" class="cell-title">
+                                <div class="fw-semibold" style="font-size: 14.5px; color: var(--primary);">{{ $p->nama_lengkap }}</div>
                                 <div class="text-muted small">Pekerjaan: {{ $p->pekerjaan ?: '-' }}</div>
                             </td>
-                            <td>
-                                <div>{{ $p->email }}</div>
-                                <div class="text-muted small">{{ $p->no_telepon }}</div>
+                            <td data-label="Kontak">
+                                <div class="user-contact-info">
+                                    <div class="user-email-text">{{ $p->email }}</div>
+                                    @if($p->no_telepon)
+                                        <div class="text-muted small">{{ $p->no_telepon }}</div>
+                                    @endif
+                                </div>
                             </td>
-                            <td>{{ $p->asal_gereja ?: '-' }}</td>
-                            <td>{{ $p->created_at->format('d/m/Y') }}</td>
-                            <td>
+                            <td data-label="Asal Gereja">{{ $p->asal_gereja ?: '-' }}</td>
+                            <td data-label="Tgl Daftar">{{ $p->created_at->format('d/m/Y') }}</td>
+                            <td data-label="Status">
                                 @if($p->status === 'pending')
                                     <span class="badge badge-warning">Menunggu</span>
                                 @elseif($p->status === 'disetujui')
@@ -62,27 +66,27 @@
                                     <span class="badge badge-danger">Ditolak</span>
                                 @endif
                             </td>
-                            <td>
+                            <td data-label="Catatan">
                                 @if($p->status === 'ditolak')
                                     <span class="text-danger small">{{ $p->catatan_admin ?: '(Tidak ada catatan)' }}</span>
                                 @elseif($p->status === 'disetujui')
-                                    <span class="text-muted small">Disetujui pada: {{ $p->approved_at ? $p->approved_at->format('d/m/Y') : '-' }}</span>
+                                    <span class="text-muted small">Disetujui: {{ $p->approved_at ? $p->approved_at->format('d/m/Y') : '-' }}</span>
                                 @else
                                     <span class="text-muted small">Alasan: {{ Str::limit($p->alasan_bergabung, 60) ?: '-' }}</span>
                                 @endif
                             </td>
-                            <td>
+                            <td data-label="Aksi">
                                 @if($p->status === 'pending')
                                     <div class="d-flex gap-2">
                                         <!-- Approve Button Form -->
                                         <form method="POST" action="{{ route('majelis.pendaftaran.approve', $p->id) }}" onsubmit="return confirm('Apakah Anda yakin ingin menyetujui pendaftaran ini?');">
                                             @csrf
                                             @method('PATCH')
-                                            <button type="submit" class="btn btn-success btn-sm">Setujui</button>
+                                            <button type="submit" class="btn btn-success btn-sm">✅ Setujui</button>
                                         </form>
 
                                         <!-- Reject Action (triggers Javascript inline form) -->
-                                        <button type="button" class="btn btn-danger btn-sm" onclick="showRejectForm({{ $p->id }})">Tolak</button>
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="showRejectForm({{ $p->id }})">❌ Tolak</button>
                                     </div>
 
                                     <!-- Hidden Reject Input Box -->

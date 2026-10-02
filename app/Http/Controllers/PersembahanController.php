@@ -52,6 +52,7 @@ class PersembahanController extends Controller
 
         $persembahan = Persembahan::create([
             'order_id'             => Persembahan::generateOrderId(),
+            'source'               => 'online',
             'user_id'              => Auth::id(),
             'nama_donatur'         => $request->nama_donatur ?: (Auth::check() ? (Auth::user()->nama_lengkap ?: Auth::user()->name) : null),
             'email_donatur'        => $request->email_donatur ?: (Auth::check() ? Auth::user()->email : null),
@@ -109,6 +110,9 @@ class PersembahanController extends Controller
             ->with('jenisPersembahan', 'user')
             ->firstOrFail();
 
+        // Simpan hak akses download bukti ke session saat berhasil bayar
+        session(['persembahan_order_' . $orderId => true, 'last_order_id' => $orderId]);
+
         return view('persembahan.success', compact('persembahan'));
     }
 
@@ -118,18 +122,40 @@ class PersembahanController extends Controller
             ->with('jenisPersembahan', 'user')
             ->firstOrFail();
 
-        // Generate QR Code via public API (no local library needed)
+        // Proteksi Otorisasi (Cegah IDOR):
+        // Diizinkan jika:
+        // 1. User login adalah donatur transaksi
+        // 2. User login memiliki role super_admin / majelis / bendahara
+        // 3. User memiliki session token transaksi saat ini (baru saja bayar sebagai guest)
+        $isAuthorized = false;
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($persembahan->user_id && $persembahan->user_id === $user->id) {
+                $isAuthorized = true;
+            } elseif ($user->hasAnyRole(['super_admin', 'majelis', 'bendahara'])) {
+                $isAuthorized = true;
+            }
+        }
+        if (session('last_order_id') === $orderId || session('persembahan_order_' . $orderId)) {
+            $isAuthorized = true;
+        }
+
+        if (!$isAuthorized && $persembahan->user_id !== null) {
+            abort(403, 'Anda tidak memiliki hak untuk mengunduh bukti persembahan ini.');
+        }
+
+        // Generate QR Code via public API dengan timeout pendek (2 detik) agar tidak membekukan PDF
         $qrUrl    = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' . urlencode(route('persembahan.success', $orderId));
         $qrBase64 = null;
 
         try {
-            $ctx = stream_context_create(['http' => ['timeout' => 5]]);
+            $ctx = stream_context_create(['http' => ['timeout' => 2]]);
             $qrImageData = @file_get_contents($qrUrl, false, $ctx);
             if ($qrImageData !== false) {
                 $qrBase64 = base64_encode($qrImageData);
             }
-        } catch (\Exception $e) {
-            // fallback: QR will not appear in PDF
+        } catch (\Throwable $e) {
+            // fallback: QR tidak merusak download PDF
         }
 
         $settings = [

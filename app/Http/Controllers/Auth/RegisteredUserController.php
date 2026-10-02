@@ -39,6 +39,8 @@ class RegisteredUserController extends Controller
             'alamat'             => $request->alamat,
             'password'           => Hash::make($request->password),
             'status_keanggotaan' => 'aktif', // langsung aktif saat register mandiri
+            'nomor_jemaat'       => User::generateNomorJemaat(),
+            'approved_at'        => now(),
         ]);
 
         $user->assignRole('jemaat');

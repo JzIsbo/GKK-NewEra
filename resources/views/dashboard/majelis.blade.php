@@ -42,8 +42,8 @@
             <a href="{{ route('majelis.laporan') }}" class="btn btn-outline btn-sm">Lihat Semua</a>
         </div>
         <div class="card-body">
-            <div class="table-wrapper">
-                <table>
+            <div class="table-wrapper table-responsive-stack">
+                <table class="table-responsive-stack">
                     <thead>
                         <tr>
                             <th>Tanggal</th>
@@ -55,16 +55,16 @@
                     <tbody>
                         @forelse($recentPersembahan as $p)
                             <tr>
-                                <td>{{ $p->paid_at ? $p->paid_at->format('d/m/Y H:i') : '-' }}</td>
-                                <td>
+                                <td data-label="Tanggal">{{ $p->paid_at ? $p->paid_at->format('d/m/Y H:i') : '-' }}</td>
+                                <td data-label="Donatur" class="cell-title">
                                     <div class="fw-semibold">{{ $p->nama_lengkap_donatur }}</div>
                                 </td>
-                                <td><span class="badge badge-gold">{{ $p->jenisPersembahan->nama ?? '-' }}</span></td>
-                                <td class="fw-bold">Rp {{ number_format($p->nominal, 0, ',', '.') }}</td>
+                                <td data-label="Jenis"><span class="badge badge-gold">{{ $p->jenisPersembahan->nama ?? '-' }}</span></td>
+                                <td data-label="Nominal" class="fw-bold text-success">Rp {{ number_format($p->nominal, 0, ',', '.') }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center text-muted">Belum ada transaksi persembahan masuk.</td>
+                                <td colspan="4" class="text-center text-muted" style="padding: 20px;">Belum ada transaksi persembahan masuk.</td>
                             </tr>
                         @endforelse
                     </tbody>

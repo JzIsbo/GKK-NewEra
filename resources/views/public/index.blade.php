@@ -5,9 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $settings['nama_gereja'] }} – Beranda</title>
     <meta name="description" content="{{ $settings['tentang_gereja'] ?? 'Portal Jemaat GEMINDO Kawan Kasih' }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-gemindo.png') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" sizes="192x192" href="{{ asset('icons/icon-192x192.png') }}">
+    <link rel="apple-touch-icon" sizes="512x512" href="{{ asset('icons/icon-512x512.png') }}">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GEMINDO KK">
+    <meta name="application-name" content="GEMINDO KK">
+    <meta name="theme-color" content="#2c1810">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -31,7 +42,7 @@
 
         html { scroll-behavior: smooth; }
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             color: var(--text-dark);
             background: var(--parchment);
             overflow-x: hidden;
@@ -58,6 +69,10 @@
             justify-content: space-between; height: 76px;
         }
         .logo-area { display: flex; align-items: center; gap: 14px; text-decoration: none; }
+        .site-nav-logo {
+            width: 44px; height: 52px; object-fit: contain; flex-shrink: 0;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,.4));
+        }
         .logo-cross-wrap {
             position: relative; width: 46px; height: 54px; flex-shrink: 0;
         }
@@ -79,23 +94,23 @@
         }
         .logo-texts { display: flex; flex-direction: column; }
         .logo-name {
-            font-family: 'Cinzel', serif;
-            font-size: 17px; font-weight: 700; color: #fff;
-            letter-spacing: .04em; line-height: 1.2;
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            font-size: 16px; font-weight: 800; color: #fff;
+            letter-spacing: -0.01em; line-height: 1.25;
         }
         .logo-sub {
-            font-family: 'EB Garamond', serif;
-            font-size: 12px; color: var(--gold-light); opacity: .85;
-            letter-spacing: .1em; font-style: italic;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 11px; font-weight: 600; color: var(--gold-light); opacity: .9;
+            letter-spacing: .08em; text-transform: uppercase;
         }
         .nav-menu { display: flex; align-items: center; gap: 6px; list-style: none; }
         .nav-item a {
-            color: rgba(255,255,255,.75); text-decoration: none;
-            font-size: 13.5px; font-weight: 500;
+            color: rgba(255,255,255,.8); text-decoration: none;
+            font-size: 13.5px; font-weight: 600;
             padding: 8px 14px; border-radius: 6px;
             transition: all .25s ease;
-            font-family: 'Inter', sans-serif;
-            letter-spacing: .02em;
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            letter-spacing: -0.01em;
         }
         .nav-item a:hover { color: var(--gold-light); background: rgba(200,148,26,.1); }
         .nav-cta {
@@ -112,6 +127,163 @@
             display: block; width: 22px; height: 2px;
             background: rgba(255,255,255,.8); border-radius: 2px; transition: .3s;
         }
+
+        /* ── PWA & Download Buttons ── */
+        .nav-install-link {
+            display: inline-flex !important; align-items: center; gap: 6px;
+            background: rgba(200,148,26,.15) !important;
+            border: 1px solid rgba(200,148,26,.45) !important;
+            color: var(--gold-light) !important; font-weight: 700 !important;
+        }
+        .nav-install-link:hover {
+            background: rgba(200,148,26,.28) !important;
+            border-color: var(--gold-light) !important;
+            color: #fff !important;
+            box-shadow: 0 0 12px rgba(200,148,26,.4);
+        }
+        .nav-actions-mobile {
+            display: none; align-items: center; gap: 8px;
+        }
+        .btn-mobile-install {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold-dark));
+            color: var(--mahogany-dark);
+            border: none; border-radius: 6px;
+            padding: 6px 12px; font-size: 12px; font-weight: 800;
+            cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
+            box-shadow: 0 2px 8px rgba(0,0,0,.3);
+            transition: all .2s ease;
+        }
+        .btn-mobile-install:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(200,148,26,.5);
+        }
+        @media (max-width: 768px) {
+            .nav-actions-mobile { display: flex; }
+        }
+
+        .btn-download-app {
+            background: rgba(200,148,26,.14);
+            border: 1.5px solid var(--gold);
+            color: var(--gold-light);
+            box-shadow: 0 4px 16px rgba(0,0,0,.3);
+        }
+        .btn-download-app:hover {
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            color: var(--mahogany-dark);
+            box-shadow: 0 6px 20px rgba(200,148,26,.6);
+            transform: translateY(-2px);
+        }
+
+        /* ── Modal Panduan Install / Unduh ── */
+        .install-modal-overlay {
+            position: fixed; inset: 0; z-index: 10000;
+            background: rgba(10, 6, 4, 0.82);
+            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+            display: none; align-items: center; justify-content: center;
+            padding: 16px;
+        }
+        .install-modal-overlay.open { display: flex; }
+        .install-modal-card {
+            background: linear-gradient(175deg, #24130d 0%, #170c08 100%);
+            border: 1.5px solid rgba(200, 148, 26, 0.45);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 35px rgba(200,148,26,0.18);
+            border-radius: 18px; width: 100%; max-width: 520px;
+            max-height: 90vh; overflow-y: auto;
+            position: relative; padding: 26px 22px;
+            color: #fff; font-family: 'Plus Jakarta Sans', sans-serif;
+            animation: modalPop .25s ease-out;
+        }
+        @keyframes modalPop {
+            0% { transform: scale(0.94); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .modal-close-btn {
+            position: absolute; top: 16px; right: 16px;
+            background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+            color: rgba(255,255,255,.7); width: 32px; height: 32px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 16px; cursor: pointer; transition: all .2s ease;
+        }
+        .modal-close-btn:hover { background: rgba(200,148,26,.3); color: #fff; border-color: var(--gold); }
+        .modal-header-content { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+        .modal-app-icon {
+            width: 52px; height: 52px; border-radius: 12px;
+            border: 2px solid var(--gold); background: #1a0e09;
+            object-fit: contain; padding: 3px; flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,.4);
+        }
+        .modal-title { font-size: 18px; font-weight: 800; color: #fff; line-height: 1.25; }
+        .modal-subtitle { font-size: 12.5px; color: var(--gold-light); margin-top: 3px; opacity: .9; }
+
+        /* Direct Install Banner in Modal (for Chrome/Edge) */
+        .modal-direct-install-box {
+            background: linear-gradient(135deg, rgba(200,148,26,.15), rgba(200,148,26,.05));
+            border: 1px solid rgba(200,148,26,.35);
+            border-radius: 12px; padding: 14px 16px; margin-bottom: 20px;
+            display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+        }
+        .btn-prompt-install {
+            background: linear-gradient(135deg, var(--gold-light), var(--gold-dark));
+            color: var(--mahogany-dark); font-weight: 800; font-size: 13px;
+            border: none; border-radius: 8px; padding: 10px 18px;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+            box-shadow: 0 2px 10px rgba(200,148,26,.4);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: all .2s;
+        }
+        .btn-prompt-install:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(200,148,26,.6);
+        }
+
+        /* Tabs OS */
+        .modal-tabs {
+            display: flex; gap: 8px; border-bottom: 1px solid rgba(255,255,255,.1);
+            padding-bottom: 12px; margin-bottom: 18px;
+        }
+        .modal-tab-btn {
+            background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+            color: rgba(255,255,255,.75); padding: 8px 16px; border-radius: 8px;
+            font-size: 13px; font-weight: 700; cursor: pointer;
+            transition: all .2s ease; display: inline-flex; align-items: center; gap: 6px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .modal-tab-btn.active {
+            background: rgba(200,148,26,.2); border-color: var(--gold);
+            color: var(--gold-light); box-shadow: 0 0 10px rgba(200,148,26,.3);
+        }
+
+        /* Step List */
+        .guide-step-list { display: flex; flex-direction: column; gap: 12px; }
+        .guide-step-item {
+            display: flex; align-items: flex-start; gap: 12px;
+            background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+            border-radius: 10px; padding: 12px 14px;
+        }
+        .step-num {
+            width: 26px; height: 26px; border-radius: 50%;
+            background: var(--gold); color: var(--mahogany-dark);
+            font-weight: 800; font-size: 12.5px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; margin-top: 1px;
+        }
+        .step-body { font-size: 13px; line-height: 1.55; color: rgba(255,255,255,.85); }
+        .step-body strong { color: var(--gold-light); font-weight: 700; }
+        .step-highlight {
+            display: inline-block; background: rgba(200,148,26,.18);
+            border: 1px solid rgba(200,148,26,.3);
+            border-radius: 4px; padding: 1px 6px; font-weight: 700;
+            color: #fff; font-size: 12px; margin: 2px 0;
+        }
+
+        .pwa-benefit-box {
+            margin-top: 20px; background: rgba(0,0,0,.25);
+            border: 1px dashed rgba(200,148,26,.3); border-radius: 10px;
+            padding: 12px 14px; font-size: 12px; color: rgba(255,255,255,.7);
+            line-height: 1.6;
+        }
+        .pwa-benefit-box strong { color: var(--gold-light); }
 
         /* ═══════════════════════════════════════
            HERO — Full-screen church atmosphere
@@ -157,9 +329,30 @@
             background: linear-gradient(270deg, rgba(200,148,26,.06), transparent);
         }
 
-        .hero-content { position: relative; z-index: 2; max-width: 800px; margin: 0 auto; padding: 0 20px; }
+        .hero-content { position: relative; z-index: 2; max-width: 840px; margin: 0 auto; padding: 0 20px; }
 
-        /* Large decorative cross above title */
+        /* Official Church Logo in Hero with Sacred Gold Glow */
+        .hero-logo-wrap {
+            position: relative; width: 110px; height: 130px;
+            margin: 0 auto 24px; display: flex; align-items: center; justify-content: center;
+        }
+        .hero-logo-glow {
+            position: absolute; inset: -20px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(200,148,26,.32) 0%, rgba(200,148,26,0) 70%);
+            filter: blur(14px); pointer-events: none;
+            animation: hero-glow-pulse 4s ease-in-out infinite alternate;
+        }
+        @keyframes hero-glow-pulse {
+            0% { transform: scale(0.92); opacity: 0.6; }
+            100% { transform: scale(1.15); opacity: 1; }
+        }
+        .hero-logo-img {
+            width: 100%; height: 100%; object-fit: contain;
+            position: relative; z-index: 1;
+            filter: drop-shadow(0 6px 20px rgba(0,0,0,.6)) drop-shadow(0 0 16px rgba(200,148,26,.45));
+        }
+
+        /* Large decorative cross above title (fallback) */
         .hero-cross-large {
             position: relative; width: 60px; height: 80px;
             margin: 0 auto 32px;
@@ -192,51 +385,53 @@
         }
         .hero-ornament::after { background: linear-gradient(270deg, transparent, rgba(200,148,26,.6)); }
         .hero-ornament span {
-            font-size: 16px; color: var(--gold-light); opacity: .8;
-            font-family: 'Cinzel', serif; letter-spacing: .2em;
+            font-size: 15px; color: var(--gold-light); opacity: .85;
+            font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: .2em; font-weight: 700;
         }
 
         .hero-eyebrow {
-            font-family: 'EB Garamond', serif;
-            font-size: 15px; color: var(--gold-light); opacity: .8;
-            letter-spacing: .2em; text-transform: uppercase;
-            margin-bottom: 18px; font-style: italic;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 13.5px; font-weight: 700; color: var(--gold-light); opacity: .9;
+            letter-spacing: .15em; text-transform: uppercase;
+            margin-bottom: 16px;
         }
         .hero-title {
-            font-family: 'Cinzel Decorative', serif;
-            font-size: clamp(28px, 5vw, 52px);
-            font-weight: 700; color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: clamp(28px, 5.2vw, 50px);
+            font-weight: 800; color: #fff;
             line-height: 1.2; margin-bottom: 20px;
+            letter-spacing: -0.025em;
             text-shadow: 0 2px 20px rgba(0,0,0,.5);
         }
         .hero-title span { color: var(--gold-light); }
 
         .hero-verse {
             font-family: 'EB Garamond', serif;
-            font-size: 19px; color: rgba(255,255,255,.75);
+            font-size: 19px; color: rgba(255,255,255,.8);
             font-style: italic; line-height: 1.7;
             margin: 0 auto 10px; max-width: 640px;
         }
         .hero-verse-ref {
-            font-family: 'EB Garamond', serif;
-            font-size: 14px; color: var(--gold-light); opacity: .7;
-            letter-spacing: .05em; margin-bottom: 36px; display: block;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 13px; font-weight: 600; color: var(--gold-light); opacity: .85;
+            letter-spacing: .06em; margin-bottom: 36px; display: block;
         }
 
         .hero-tagline {
-            font-size: 15px; color: rgba(255,255,255,.6);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 15.5px; color: rgba(255,255,255,.7);
             max-width: 580px; margin: 0 auto 40px;
-            line-height: 1.8;
+            line-height: 1.8; font-weight: 400;
         }
 
         .hero-buttons { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
         .btn {
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            padding: 14px 30px; border-radius: 8px;
-            font-size: 14.5px; font-weight: 600;
+            padding: 13px 28px; border-radius: 8px;
+            font-size: 14px; font-weight: 700;
             text-decoration: none; transition: all .3s ease;
-            cursor: pointer; border: none; font-family: 'Inter', sans-serif;
-            letter-spacing: .03em;
+            cursor: pointer; border: none; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            letter-spacing: -0.01em;
         }
         .btn-gold {
             background: linear-gradient(135deg, var(--gold-light), var(--gold-dark));
@@ -253,8 +448,8 @@
         /* Scroll indicator */
         .hero-scroll {
             position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
-            color: rgba(200,148,26,.5); font-size: 11px; letter-spacing: .15em;
-            text-transform: uppercase; font-family: 'Cinzel', serif;
+            color: rgba(200,148,26,.65); font-size: 11px; letter-spacing: .12em;
+            text-transform: uppercase; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700;
             display: flex; flex-direction: column; align-items: center; gap: 8px;
             animation: scrollbob 2.5s ease-in-out infinite;
         }
@@ -293,10 +488,10 @@
             color: var(--gold); font-size: 16px; font-family: 'Cinzel', serif;
         }
         .section-title {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(22px, 4vw, 32px);
-            font-weight: 700; color: var(--mahogany);
-            margin-bottom: 12px; letter-spacing: .04em;
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            font-size: clamp(24px, 4vw, 34px);
+            font-weight: 800; color: var(--mahogany);
+            margin-bottom: 12px; letter-spacing: -0.02em;
         }
         .section-dark .section-title { color: var(--gold-light); }
         .section-subtitle {
@@ -325,7 +520,7 @@
             content: '✝';
             position: absolute; top: -10px; right: 16px;
             font-size: 80px; color: rgba(200,148,26,.05);
-            font-family: 'Cinzel', serif; line-height: 1;
+            font-family: 'EB Garamond', serif; line-height: 1;
             pointer-events: none;
         }
         .jadwal-card:hover { transform: translateY(-5px); box-shadow: 0 12px 36px rgba(44,24,16,.14); border-left-color: var(--gold-dark); }
@@ -333,21 +528,23 @@
             display: inline-block;
             background: linear-gradient(135deg, var(--gold-light), var(--gold-dark));
             color: var(--mahogany-dark);
-            font-family: 'Cinzel', serif;
-            font-size: 10px; font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 11px; font-weight: 800;
             padding: 4px 12px; border-radius: 20px;
-            letter-spacing: .1em; text-transform: uppercase;
+            letter-spacing: .06em; text-transform: uppercase;
             margin-bottom: 14px;
         }
         .jadwal-name {
-            font-family: 'Cinzel', serif;
-            font-size: 19px; font-weight: 700;
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            font-size: 18px; font-weight: 700;
             color: var(--mahogany); margin-bottom: 14px;
+            letter-spacing: -0.01em;
         }
         .jadwal-time {
-            font-size: 13px; font-weight: 600;
+            font-size: 13.5px; font-weight: 700;
             color: var(--gold-dark);
-            margin-bottom: 10px; letter-spacing: .03em;
+            margin-bottom: 10px; letter-spacing: .01em;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
         .jadwal-meta { display: flex; flex-direction: column; gap: 6px; }
         .jadwal-meta-item { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--text-muted); }
@@ -381,8 +578,8 @@
             position: relative;
         }
         .verse-strip-ref {
-            font-family: 'Cinzel', serif;
-            font-size: 13px; color: var(--gold-light); letter-spacing: .12em;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 13.5px; font-weight: 700; color: var(--gold-light); letter-spacing: .08em;
         }
 
         /* ═══════════════════════════════════════
@@ -414,15 +611,16 @@
             font-size: 18px; margin-bottom: 16px;
         }
         .pengumuman-date {
-            font-size: 11.5px; font-weight: 600;
+            font-size: 12px; font-weight: 700;
             color: var(--gold-dark); text-transform: uppercase;
-            letter-spacing: .08em; margin-bottom: 10px;
-            font-family: 'Cinzel', serif;
+            letter-spacing: .05em; margin-bottom: 10px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
         .pengumuman-title {
-            font-family: 'Cinzel', serif;
-            font-size: 16px; font-weight: 700;
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            font-size: 16.5px; font-weight: 700;
             color: var(--mahogany); margin-bottom: 12px; line-height: 1.4;
+            letter-spacing: -0.01em;
         }
         .pengumuman-body {
             font-family: 'EB Garamond', serif;
@@ -449,11 +647,11 @@
             align-items: center; justify-content: center;
             flex-shrink: 0; font-weight: 700; line-height: 1.1;
         }
-        .kegiatan-date-day { font-family: 'Cinzel', serif; font-size: 22px; }
-        .kegiatan-date-month { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; opacity: .8; }
-        .kegiatan-title { font-family: 'Cinzel', serif; font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+        .kegiatan-date-day { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; }
+        .kegiatan-date-month { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; opacity: .85; font-weight: 700; }
+        .kegiatan-title { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 16.5px; font-weight: 700; color: #fff; margin-bottom: 6px; letter-spacing: -0.01em; }
         .kegiatan-desc { font-family: 'EB Garamond', serif; font-size: 15px; color: rgba(255,255,255,.6); margin-bottom: 8px; font-style: italic; }
-        .kegiatan-loc { font-size: 12.5px; color: var(--gold-light); font-weight: 500; display: flex; align-items: center; gap: 5px; }
+        .kegiatan-loc { font-size: 12.5px; color: var(--gold-light); font-weight: 600; display: flex; align-items: center; gap: 5px; font-family: 'Plus Jakarta Sans', sans-serif; }
 
         /* ═══════════════════════════════════════
            PERSEMBAHAN CTA
@@ -490,18 +688,18 @@
         .cta-ornament::after { background: linear-gradient(270deg, transparent, rgba(200,148,26,.5)); }
         .cta-ornament span { font-size: 20px; color: var(--gold-light); font-family: 'Cinzel', serif; }
         .cta-title {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(22px, 4vw, 32px);
-            font-weight: 700; color: var(--gold-light);
-            margin-bottom: 14px; position: relative; letter-spacing: .04em;
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            font-size: clamp(24px, 4vw, 34px);
+            font-weight: 800; color: var(--gold-light);
+            margin-bottom: 14px; position: relative; letter-spacing: -0.02em;
         }
         .cta-verse {
             font-family: 'EB Garamond', serif;
             font-size: 18px; color: rgba(255,255,255,.7);
             font-style: italic; margin-bottom: 8px; max-width: 600px; margin-left: auto; margin-right: auto;
         }
-        .cta-verse-ref { font-size: 13px; color: rgba(200,148,26,.7); letter-spacing: .06em; margin-bottom: 32px; display: block; font-family: 'Cinzel', serif; }
-        .cta-desc { font-size: 15px; color: rgba(255,255,255,.55); max-width: 540px; margin: 0 auto 36px; line-height: 1.8; }
+        .cta-verse-ref { font-size: 13px; color: rgba(200,148,26,.7); letter-spacing: .06em; margin-bottom: 32px; display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; }
+        .cta-desc { font-size: 15px; color: rgba(255,255,255,.6); max-width: 540px; margin: 0 auto 36px; line-height: 1.8; font-family: 'Plus Jakarta Sans', sans-serif; }
 
         /* ═══════════════════════════════════════
            FOOTER
@@ -519,6 +717,10 @@
         }
         .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
         .footer-brand { display: flex; align-items: center; gap: 13px; margin-bottom: 18px; }
+        .footer-logo-img {
+            width: 36px; height: 44px; object-fit: contain; flex-shrink: 0;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,.4));
+        }
         .footer-cross {
             position: relative; width: 32px; height: 40px; flex-shrink: 0;
         }
@@ -531,7 +733,7 @@
             width: 100%; height: 6px; background: linear-gradient(90deg, var(--gold-light), var(--gold-dark)); border-radius: 3px;
         }
         .footer-brand-name {
-            font-family: 'Cinzel', serif; font-size: 16px; font-weight: 700; color: #fff; letter-spacing: .04em;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16.5px; font-weight: 800; color: #fff; letter-spacing: -0.01em;
         }
         .footer-tagline {
             font-family: 'EB Garamond', serif; font-size: 15px;
@@ -546,8 +748,8 @@
             max-width: 340px;
         }
         .footer-section-title {
-            font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700;
-            color: var(--gold-light); margin-bottom: 20px; letter-spacing: .1em;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 800;
+            color: var(--gold-light); margin-bottom: 20px; letter-spacing: .06em;
             text-transform: uppercase; padding-bottom: 10px;
             border-bottom: 1px solid rgba(200,148,26,.2);
         }
@@ -666,21 +868,34 @@
     <div class="container">
         <div class="nav-wrapper">
             <a href="{{ route('home') }}" class="logo-area">
-                <div class="logo-cross-wrap"></div>
+                <img src="{{ asset('images/logo-gemindo.png') }}" alt="Logo GEMINDO" class="site-nav-logo">
                 <div class="logo-texts">
                     <div class="logo-name">{{ $settings['nama_gereja'] }}</div>
                     <div class="logo-sub">Portal Jemaat</div>
                 </div>
             </a>
-            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
-                <span></span><span></span><span></span>
-            </button>
+            <div class="nav-actions-mobile">
+                <button type="button" class="btn-mobile-install" onclick="openInstallModal()" aria-label="Unduh Aplikasi">
+                    <span>📲 App</span>
+                </button>
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
             <ul class="nav-menu" id="navMenu">
                 <li class="nav-item"><a href="#beranda">Beranda</a></li>
                 <li class="nav-item"><a href="#jadwal">Jadwal Ibadah</a></li>
                 <li class="nav-item"><a href="#pengumuman">Warta Jemaat</a></li>
                 <li class="nav-item"><a href="#kegiatan">Kegiatan</a></li>
                 <li class="nav-item"><a href="{{ route('persembahan.index') }}">Persembahan</a></li>
+                <li class="nav-item">
+                    <a href="javascript:void(0)" onclick="openInstallModal()" class="nav-install-link">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        <span>Unduh App</span>
+                    </a>
+                </li>
                 @guest
                     <li class="nav-item"><a href="{{ route('daftar-jemaat') }}">Daftar Jemaat</a></li>
                 @endguest
@@ -699,9 +914,12 @@
     <div class="hero-arch-l"></div>
     <div class="hero-arch-r"></div>
     <div class="hero-content">
-        <div class="hero-cross-large"></div>
+        <div class="hero-logo-wrap">
+            <div class="hero-logo-glow"></div>
+            <img src="{{ asset('images/logo-gemindo.png') }}" alt="Logo GEMINDO" class="hero-logo-img">
+        </div>
 
-        <p class="hero-eyebrow">Gereja Kristen Protestan</p>
+        <p class="hero-eyebrow">GEREJA MASEHI INJILI INDONESIA</p>
 
         <div class="hero-ornament">
             <span>✦ ✝ ✦</span>
@@ -726,6 +944,10 @@
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                 Persembahan Online
             </a>
+            <button type="button" onclick="openInstallModal()" class="btn btn-download-app">
+                <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Unduh Aplikasi HP
+            </button>
             @guest
             <a href="{{ route('daftar-jemaat') }}" class="btn btn-ghost">
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
@@ -903,7 +1125,7 @@
             <!-- About -->
             <div>
                 <div class="footer-brand">
-                    <div class="footer-cross"></div>
+                    <img src="{{ asset('images/logo-gemindo.png') }}" alt="Logo GEMINDO" class="footer-logo-img">
                     <div class="footer-brand-name">{{ $settings['nama_gereja'] }}</div>
                 </div>
                 <p class="footer-tagline">Melayani Tuhan dan jemaat-Nya dengan integritas, kebenaran, dan kasih kristiani demi kemuliaan nama-Nya semata.</p>
@@ -919,6 +1141,7 @@
                     <li><a href="#jadwal">Jadwal Ibadah</a></li>
                     <li><a href="#pengumuman">Warta Jemaat</a></li>
                     <li><a href="{{ route('persembahan.index') }}">Persembahan Online</a></li>
+                    <li><a href="javascript:void(0)" onclick="openInstallModal()">📲 Pasang Aplikasi HP</a></li>
                     @guest<li><a href="{{ route('daftar-jemaat') }}">Daftar Jemaat Baru</a></li>@endguest
                     <li><a href="{{ route('login') }}">Portal Masuk</a></li>
                 </ul>
@@ -974,11 +1197,126 @@
     </div>
 </footer>
 
+<!-- ══ MODAL PANDUAN UNDUH / INSTALL APLIKASI (PWA) ══ -->
+<div class="install-modal-overlay" id="installModal" onclick="handleModalBackdropClick(event)">
+    <div class="install-modal-card" role="dialog" aria-modal="true" aria-labelledby="modalInstallTitle">
+        <button type="button" class="modal-close-btn" onclick="closeInstallModal()" aria-label="Tutup Modal">✕</button>
+
+        <div class="modal-header-content">
+            <img src="{{ asset('icons/icon-96x96.png') }}" alt="Logo GEMINDO KK" class="modal-app-icon">
+            <div>
+                <h3 class="modal-title" id="modalInstallTitle">Pasang Aplikasi GEMINDO KK</h3>
+                <p class="modal-subtitle">Akses cepat di layar HP Anda tanpa Play Store</p>
+            </div>
+        </div>
+
+        <!-- 1-Click Install Notification if supported -->
+        <div id="directInstallBox" class="modal-direct-install-box" style="display:none;">
+            <div>
+                <div style="font-weight:700;font-size:13.5px;color:#fff;">Perangkat Mendukung 1-Klik</div>
+                <div style="font-size:12px;color:rgba(255,255,255,.75);margin-top:2px;">Klik tombol untuk langsung memasang ke layar utama HP Anda.</div>
+            </div>
+            <button type="button" class="btn-prompt-install" onclick="triggerPwaPrompt()">
+                <span>📲 Pasang Sekarang</span>
+            </button>
+        </div>
+
+        <!-- Tabs OS -->
+        <div class="modal-tabs">
+            <button type="button" class="modal-tab-btn active" id="tabBtnAndroid" onclick="switchInstallTab('android')">
+                <span>🤖 Android (Chrome)</span>
+            </button>
+            <button type="button" class="modal-tab-btn" id="tabBtnIos" onclick="switchInstallTab('ios')">
+                <span>🍎 iPhone (Safari)</span>
+            </button>
+        </div>
+
+        <!-- Android Guide -->
+        <div id="guideAndroid" class="guide-content">
+            <div class="guide-step-list">
+                <div class="guide-step-item">
+                    <div class="step-num">1</div>
+                    <div class="step-body">
+                        Buka link web ini di browser <strong>Google Chrome</strong> pada HP Android Anda.
+                    </div>
+                </div>
+                <div class="guide-step-item">
+                    <div class="step-num">2</div>
+                    <div class="step-body">
+                        Ketuk ikon titik tiga <span class="step-highlight">⋮</span> di pojok kanan atas browser Chrome.
+                    </div>
+                </div>
+                <div class="guide-step-item">
+                    <div class="step-num">3</div>
+                    <div class="step-body">
+                        Pilih menu <span class="step-highlight">Tambahkan ke Layar Utama</span> atau <span class="step-highlight">Pasang Aplikasi</span> (*Install app*).
+                    </div>
+                </div>
+                <div class="guide-step-item">
+                    <div class="step-num">4</div>
+                    <div class="step-body">
+                        Ketuk <strong>"Install"</strong> / <strong>"Tambah"</strong>. Ikon aplikasi GEMINDO KK siap digunakan langsung di layar HP!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- iOS Guide -->
+        <div id="guideIos" class="guide-content" style="display:none;">
+            <div class="guide-step-list">
+                <div class="guide-step-item">
+                    <div class="step-num">1</div>
+                    <div class="step-body">
+                        Buka link web ini di browser bawaan <strong>Safari</strong> pada iPhone atau iPad Anda.
+                    </div>
+                </div>
+                <div class="guide-step-item">
+                    <div class="step-num">2</div>
+                    <div class="step-body">
+                        Ketuk tombol <strong>Share / Bagikan</strong> di bilah bawah Safari <span class="step-highlight">ikon kotak panah ke atas [⎋]</span>.
+                    </div>
+                </div>
+                <div class="guide-step-item">
+                    <div class="step-num">3</div>
+                    <div class="step-body">
+                        Gulir menu ke bawah lalu ketuk <span class="step-highlight">Tambah ke Layar Utama</span> (*Add to Home Screen ➕*).
+                    </div>
+                </div>
+                <div class="guide-step-item">
+                    <div class="step-num">4</div>
+                    <div class="step-body">
+                        Ketuk <strong>"Tambah"</strong> (*Add*) di pojok kanan atas layar. Selesai!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pwa-benefit-box">
+            💡 <strong>Keunggulan Aplikasi Web (PWA):</strong><br>
+            • Hemat memori (ukuran sangat kecil & ringan)<br>
+            • Tampilan layar penuh persis aplikasi native Play Store<br>
+            • Selalu update otomatis dengan warta & persembahan terbaru gereja
+        </div>
+    </div>
+</div>
+
 <script>
 // Mobile menu toggle
-document.getElementById('mobileMenuBtn').addEventListener('click', function() {
-    document.getElementById('navMenu').classList.toggle('open');
-});
+const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+const navMenu = document.getElementById('navMenu');
+
+if (mobileMenuBtn && navMenu) {
+    mobileMenuBtn.addEventListener('click', function() {
+        navMenu.classList.toggle('open');
+    });
+
+    // Close menu when clicking any nav item
+    navMenu.querySelectorAll('a').forEach(function(link) {
+        link.addEventListener('click', function() {
+            navMenu.classList.remove('open');
+        });
+    });
+}
 
 // Scroll fade-in animation
 const fadeEls = document.querySelectorAll('.fade-up');
@@ -991,6 +1329,86 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, { threshold: 0.12 });
 fadeEls.forEach(el => observer.observe(el));
+
+// ── PWA & Install Modal Logic ──
+let deferredInstallPrompt = null;
+
+// Service Worker Registration
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('[SW Public] Registered:', reg.scope))
+            .catch(err => console.warn('[SW Public] Reg failed:', err));
+    });
+}
+
+window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    const directBox = document.getElementById('directInstallBox');
+    if (directBox) directBox.style.display = 'flex';
+});
+
+function openInstallModal() {
+    const modal = document.getElementById('installModal');
+    if (modal) {
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeInstallModal() {
+    const modal = document.getElementById('installModal');
+    if (modal) {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+}
+
+function handleModalBackdropClick(event) {
+    if (event.target.id === 'installModal') {
+        closeInstallModal();
+    }
+}
+
+// Close on Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeInstallModal();
+});
+
+function switchInstallTab(os) {
+    const tabAndroid = document.getElementById('tabBtnAndroid');
+    const tabIos = document.getElementById('tabBtnIos');
+    const guideAndroid = document.getElementById('guideAndroid');
+    const guideIos = document.getElementById('guideIos');
+
+    if (os === 'android') {
+        tabAndroid.classList.add('active');
+        tabIos.classList.remove('active');
+        guideAndroid.style.display = 'block';
+        guideIos.style.display = 'none';
+    } else {
+        tabIos.classList.add('active');
+        tabAndroid.classList.remove('active');
+        guideIos.style.display = 'block';
+        guideAndroid.style.display = 'none';
+    }
+}
+
+function triggerPwaPrompt() {
+    if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then(function(choice) {
+            if (choice.outcome === 'accepted') {
+                console.log('[PWA Public] User accepted install');
+                closeInstallModal();
+            }
+            deferredInstallPrompt = null;
+        });
+    } else {
+        alert('Silakan ikuti panduan langkah manual di bawah untuk memasang aplikasi di HP Anda.');
+    }
+}
 </script>
 </body>
 </html>

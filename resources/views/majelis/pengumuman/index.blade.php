@@ -20,7 +20,7 @@
     <div class="card-header"><div class="card-title">Daftar Pengumuman Aktif & Arsip</div></div>
     <div class="card-body">
         <div class="table-wrapper">
-            <table>
+            <table class="table-responsive-stack">
                 <thead>
                     <tr>
                         <th>Judul Pengumuman</th>
@@ -34,22 +34,22 @@
                 <tbody>
                     @forelse($pengumumans as $p)
                         <tr>
-                            <td class="fw-semibold">
-                                <div>{{ $p->judul }}</div>
+                            <td data-label="Judul Pengumuman" class="fw-semibold cell-title">
+                                <div style="font-size: 15px;">{{ $p->judul }}</div>
                                 <div class="text-muted small fw-normal">{{ Str::limit($p->isi, 80) }}</div>
                             </td>
-                            <td>{{ $p->tanggal_mulai ? $p->tanggal_mulai->format('d/m/Y') : '-' }}</td>
-                            <td>{{ $p->tanggal_selesai ? $p->tanggal_selesai->format('d/m/Y') : 'Selamanya' }}</td>
-                            <td>
+                            <td data-label="Tanggal Mulai">{{ $p->tanggal_mulai ? $p->tanggal_mulai->format('d/m/Y') : '-' }}</td>
+                            <td data-label="Tanggal Selesai">{{ $p->tanggal_selesai ? $p->tanggal_selesai->format('d/m/Y') : 'Selamanya' }}</td>
+                            <td data-label="Status Layar">
                                 @if($p->aktif)
                                     <span class="badge badge-success">Aktif</span>
                                 @else
                                     <span class="badge badge-danger">Draft / Nonaktif</span>
                                 @endif
                             </td>
-                            <td>{{ $p->penulis->name ?? 'Staf / Majelis' }}</td>
-                            <td>
-                                <div class="d-flex gap-2">
+                            <td data-label="Penulis">{{ $p->penulis->name ?? 'Staf / Majelis' }}</td>
+                            <td data-label="Aksi">
+                                <div class="table-actions">
                                     <a href="{{ route('majelis.pengumuman.edit', $p->id) }}" class="btn btn-outline btn-sm">Edit</a>
                                     
                                     <form method="POST" action="{{ route('majelis.pengumuman.destroy', $p->id) }}" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengumuman ini?');">
@@ -62,7 +62,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center text-muted">Belum ada warta atau pengumuman yang diterbitkan.</td>
+                            <td colspan="6" class="text-center text-muted" style="padding: 30px;">Belum ada warta atau pengumuman yang diterbitkan.</td>
                         </tr>
                     @endforelse
                 </tbody>

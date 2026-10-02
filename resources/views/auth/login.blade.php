@@ -16,8 +16,8 @@
         background: linear-gradient(135deg, rgba(44,24,16,.97), rgba(61,35,23,.97));
         border: none; cursor: pointer;
         display: flex; align-items: center; justify-content: space-between; gap: 10px;
-        font-family: 'Cinzel', serif; font-size: 13px; font-weight: 600;
-        color: var(--accent-light); letter-spacing: .05em;
+        font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 700;
+        color: var(--accent-light); letter-spacing: -0.01em;
         transition: background .2s;
     }
     .cred-toggle:hover { background: linear-gradient(135deg, rgba(61,35,23,1), rgba(80,45,28,1)); }
@@ -28,60 +28,117 @@
         background: rgba(18,10,6,.95);
         border-top: 1px solid rgba(200,148,26,.15);
         max-height: 0; overflow: hidden;
-        transition: max-height .4s ease;
+        transition: max-height .35s ease;
     }
-    .cred-body.open { max-height: 700px; }
-    .cred-inner { padding: 16px 18px; }
+    .cred-body.open {
+        max-height: 380px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .cred-body::-webkit-scrollbar { width: 5px; }
+    .cred-body::-webkit-scrollbar-track { background: rgba(0,0,0,.2); }
+    .cred-body::-webkit-scrollbar-thumb { background: rgba(200,148,26,.35); border-radius: 4px; }
+
+    .cred-inner {
+        padding: 14px 12px;
+        overflow-x: hidden;
+    }
 
     .cred-note {
-        font-size: 11.5px; color: rgba(200,148,26,.6);
-        text-align: center; margin-bottom: 14px;
+        font-size: 12px; color: rgba(200,148,26,.75);
+        text-align: center; margin-bottom: 12px;
         font-style: italic; font-family: 'EB Garamond', serif;
     }
-    .cred-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    .cred-table th {
-        font-family: 'Cinzel', serif; font-size: 10px; font-weight: 600;
-        color: rgba(200,148,26,.7); text-transform: uppercase; letter-spacing: .08em;
-        padding: 6px 8px; text-align: left;
-        border-bottom: 1px solid rgba(200,148,26,.12);
+
+    .cred-head-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 8px 8px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 10.5px;
+        font-weight: 700;
+        color: rgba(200,148,26,.8);
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        border-bottom: 1px solid rgba(200,148,26,.18);
+        margin-bottom: 6px;
     }
-    .cred-table td {
-        padding: 7px 8px; vertical-align: middle;
+
+    .cred-list {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .cred-item {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 8px;
         border-bottom: 1px solid rgba(255,255,255,.04);
-        color: rgba(255,255,255,.75); font-family: 'Inter', sans-serif;
+        gap: 8px;
+        border-radius: 6px;
+        transition: background .15s;
     }
-    .cred-table tr:last-child td { border-bottom: none; }
-    .cred-table tr:hover td { background: rgba(200,148,26,.05); }
+    .cred-item:last-child { border-bottom: none; }
+    .cred-item:hover { background: rgba(200,148,26,.08); }
+
+    .cred-item-info {
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+        flex: 1;
+        overflow: hidden;
+    }
 
     .role-badge {
         display: inline-block; padding: 2px 8px; border-radius: 20px;
-        font-size: 10px; font-weight: 600; letter-spacing: .02em;
+        font-size: 10.5px; font-weight: 700; letter-spacing: .02em;
         background: rgba(200,148,26,.15); color: var(--accent-light);
         border: 1px solid rgba(200,148,26,.25); white-space: nowrap;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        flex-shrink: 0;
     }
     .role-badge.admin-b { background: rgba(139,26,26,.25); color: #f9a8a8; border-color: rgba(139,26,26,.35); }
     .role-badge.majelis-b { background: rgba(45,106,79,.2); color: #86efac; border-color: rgba(45,106,79,.3); }
     .role-badge.jemaat-b { background: rgba(59,130,246,.15); color: #93c5fd; border-color: rgba(59,130,246,.25); }
 
+    .email-cell {
+        font-size: 10.5px;
+        color: rgba(255,255,255,.7);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 400;
+        word-break: break-all;
+        overflow-wrap: anywhere;
+        max-width: 100%;
+        line-height: 1.4;
+    }
+
     .fill-btn {
-        padding: 3px 9px; border-radius: 6px; font-size: 10.5px; font-weight: 600;
+        padding: 4px 11px; border-radius: 6px; font-size: 11px; font-weight: 700;
         background: rgba(200,148,26,.2); color: var(--accent-light);
         border: 1px solid rgba(200,148,26,.3); cursor: pointer;
-        font-family: 'Inter', sans-serif; transition: background .15s; white-space: nowrap;
+        font-family: 'Plus Jakarta Sans', sans-serif; transition: all .15s;
+        white-space: nowrap; flex-shrink: 0;
     }
-    .fill-btn:hover { background: rgba(200,148,26,.38); }
+    .fill-btn:hover {
+        background: rgba(200,148,26,.45);
+        color: #fff;
+        border-color: var(--accent-light);
+    }
 
     .pw-hint {
         text-align: center; margin-top: 12px; padding-top: 10px;
         border-top: 1px solid rgba(200,148,26,.1);
-        font-size: 11.5px; color: rgba(255,255,255,.4);
+        font-size: 11.5px; color: rgba(255,255,255,.45);
         font-family: 'EB Garamond', serif; font-style: italic;
     }
     .pw-hint code {
-        font-style: normal; color: rgba(200,148,26,.75);
+        font-style: normal; color: rgba(200,148,26,.8);
         background: rgba(200,148,26,.1); padding: 1px 7px; border-radius: 4px; font-size: 12px;
     }
-    .email-cell { font-size: 11px; color: rgba(255,255,255,.55); }
 </style>
 @endsection
 
@@ -138,38 +195,35 @@
     <div class="cred-body" id="credBody">
         <div class="cred-inner">
             <p class="cred-note">Klik "Isi ↗" untuk mengisi formulir login secara otomatis</p>
-            <table class="cred-table">
-                <thead>
-                    <tr>
-                        <th>Role</th>
-                        <th>Email</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @php
-                        $demoAccounts = [
-                            ['label' => 'Super Admin',    'class' => 'admin-b',   'email' => 'admin@gemindokawankasih.or.id',           'pw' => 'Admin@12345'],
-                            ['label' => 'Majelis',        'class' => 'majelis-b', 'email' => 'majelis@gemindokawankasih.or.id',         'pw' => 'Majelis@12345'],
-                            ['label' => 'Sekretaris',     'class' => '',          'email' => 'sekretaris@gemindokawankasih.or.id',      'pw' => 'Secret@12345'],
-                            ['label' => 'Bendahara',      'class' => '',          'email' => 'bendahara@gemindokawankasih.or.id',       'pw' => 'Secret@12345'],
-                            ['label' => 'Pengurus KPB',   'class' => '',          'email' => 'pengurus.kpb@gemindokawankasih.or.id',   'pw' => 'Secret@12345'],
-                            ['label' => 'Pengurus KPW',   'class' => '',          'email' => 'pengurus.kpw@gemindokawankasih.or.id',   'pw' => 'Secret@12345'],
-                            ['label' => 'Pengurus KPP',   'class' => '',          'email' => 'pengurus.kpp@gemindokawankasih.or.id',   'pw' => 'Secret@12345'],
-                            ['label' => 'Pengurus KPR',   'class' => '',          'email' => 'pengurus.kpr@gemindokawankasih.or.id',   'pw' => 'Secret@12345'],
-                            ['label' => 'Pengurus KPA',   'class' => '',          'email' => 'pengurus.kpa@gemindokawankasih.or.id',   'pw' => 'Secret@12345'],
-                            ['label' => 'Jemaat',         'class' => 'jemaat-b',  'email' => 'anita.malonda@gemindokawankasih.or.id',  'pw' => 'Secret@12345'],
-                        ];
-                    @endphp
-                    @foreach($demoAccounts as $acc)
-                    <tr>
-                        <td><span class="role-badge {{ $acc['class'] }}">{{ $acc['label'] }}</span></td>
-                        <td class="email-cell">{{ $acc['email'] }}</td>
-                        <td><button class="fill-btn" data-email="{{ $acc['email'] }}" data-pw="{{ $acc['pw'] }}" type="button">Isi ↗</button></td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="cred-head-row">
+                <span>Role & Email</span>
+                <span>Aksi</span>
+            </div>
+            <div class="cred-list">
+                @php
+                    $demoAccounts = [
+                        ['label' => 'Super Admin',    'class' => 'admin-b',   'email' => 'admin@gemindokawankasih.or.id',           'pw' => 'Admin@12345'],
+                        ['label' => 'Majelis',        'class' => 'majelis-b', 'email' => 'majelis@gemindokawankasih.or.id',         'pw' => 'Majelis@12345'],
+                        ['label' => 'Sekretaris',     'class' => '',          'email' => 'sekretaris@gemindokawankasih.or.id',      'pw' => 'Secret@12345'],
+                        ['label' => 'Bendahara',      'class' => '',          'email' => 'bendahara@gemindokawankasih.or.id',       'pw' => 'Secret@12345'],
+                        ['label' => 'Pengurus KPB',   'class' => '',          'email' => 'pengurus.kpb@gemindokawankasih.or.id',   'pw' => 'Secret@12345'],
+                        ['label' => 'Pengurus KPW',   'class' => '',          'email' => 'pengurus.kpw@gemindokawankasih.or.id',   'pw' => 'Secret@12345'],
+                        ['label' => 'Pengurus KPP',   'class' => '',          'email' => 'pengurus.kpp@gemindokawankasih.or.id',   'pw' => 'Secret@12345'],
+                        ['label' => 'Pengurus KPR',   'class' => '',          'email' => 'pengurus.kpr@gemindokawankasih.or.id',   'pw' => 'Secret@12345'],
+                        ['label' => 'Pengurus KPA',   'class' => '',          'email' => 'pengurus.kpa@gemindokawankasih.or.id',   'pw' => 'Secret@12345'],
+                        ['label' => 'Jemaat',         'class' => 'jemaat-b',  'email' => 'anita.malonda@gemindokawankasih.or.id',  'pw' => 'Secret@12345'],
+                    ];
+                @endphp
+                @foreach($demoAccounts as $acc)
+                <div class="cred-item">
+                    <div class="cred-item-info">
+                        <span class="role-badge {{ $acc['class'] }}">{{ $acc['label'] }}</span>
+                        <span class="email-cell">{{ $acc['email'] }}</span>
+                    </div>
+                    <button class="fill-btn" data-email="{{ $acc['email'] }}" data-pw="{{ $acc['pw'] }}" type="button">Isi ↗</button>
+                </div>
+                @endforeach
+            </div>
             <p class="pw-hint">
                 Super Admin: <code>Admin@12345</code> &nbsp;|&nbsp; Majelis: <code>Majelis@12345</code><br>
                 Semua role lainnya: <code>Secret@12345</code>

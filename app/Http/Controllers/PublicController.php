@@ -39,7 +39,13 @@ class PublicController extends Controller
     {
         $request->validate([
             'nama_lengkap'  => ['required', 'string', 'max:255'],
-            'email'         => ['required', 'email', 'unique:pendaftaran_jemaats,email'],
+            'email'         => [
+                'required', 'email',
+                // Tidak boleh sudah ada di pendaftaran_jemaats
+                \Illuminate\Validation\Rule::unique('pendaftaran_jemaats', 'email'),
+                // Tidak boleh sudah ada di users (sudah jadi anggota)
+                \Illuminate\Validation\Rule::unique('users', 'email'),
+            ],
             'no_telepon'    => ['required', 'string', 'max:20'],
             'alamat'        => ['required', 'string'],
             'jenis_kelamin' => ['nullable', 'in:laki-laki,perempuan'],
@@ -51,12 +57,18 @@ class PublicController extends Controller
         ], [
             'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
             'email.required'        => 'Email wajib diisi.',
-            'email.unique'          => 'Email ini sudah pernah mendaftar.',
+            'email.unique'          => 'Email ini sudah terdaftar. Jika Anda sudah menjadi anggota, silakan login.',
             'no_telepon.required'   => 'Nomor telepon wajib diisi.',
             'alamat.required'       => 'Alamat wajib diisi.',
         ]);
 
-        PendaftaranJemaat::create($request->all());
+        // Gunakan only() bukan all() untuk mencegah mass assignment injection
+        // (misal: penyerang bisa inject status=disetujui via crafted POST)
+        PendaftaranJemaat::create($request->only([
+            'nama_lengkap', 'email', 'no_telepon', 'tanggal_lahir',
+            'tempat_lahir', 'jenis_kelamin', 'alamat', 'asal_gereja',
+            'pekerjaan', 'alasan_bergabung',
+        ]));
 
         return redirect()->route('daftar-jemaat.success');
     }

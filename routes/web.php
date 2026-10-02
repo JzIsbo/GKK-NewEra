@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\AppRole;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\DashboardController;
@@ -37,7 +38,7 @@ Route::post('/webhook/midtrans', [PersembahanController::class, 'webhook'])
 */
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
-    Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+    Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middleware('throttle:6,1');
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('/register', [RegisteredUserController::class, 'store']);
 });
@@ -55,7 +56,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Kegiatan Routes
     Route::middleware(['role_or_permission:super_admin|majelis|manage-kegiatan'])->group(function () {
-        Route::resource('kegiatan', \App\Http\Controllers\KegiatanController::class);
+        Route::resource('kegiatan', \App\Http\Controllers\KegiatanController::class)->except(['show']);
     });
 
     // Jemaat Routes
@@ -68,39 +69,40 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Majelis & Kategorial Group
-    Route::middleware(['role:super_admin|majelis|sekretaris_majelis|bendahara_majelis|pengurus_kategorial_kpb|pengurus_kategorial_kpw|pengurus_kategorial_kpp|pengurus_kategorial_kpr|pengurus_kategorial_kpa'])
+    Route::middleware([AppRole::role(AppRole::MAJELIS_MODULE)])
         ->prefix('majelis')
         ->name('majelis.')
         ->group(function () {
             
             // Kehadiran Ibadah
-            Route::middleware(['role:super_admin|majelis|sekretaris_majelis|pengurus_kategorial_kpb|pengurus_kategorial_kpw|pengurus_kategorial_kpp|pengurus_kategorial_kpr|pengurus_kategorial_kpa'])
-                ->resource('kehadiran', \App\Http\Controllers\KehadiranIbadahController::class);
+            Route::middleware([AppRole::role(AppRole::KEHADIRAN_AND_PENGUMUMAN)])
+                ->resource('kehadiran', \App\Http\Controllers\KehadiranIbadahController::class)->except(['show']);
 
             // Pendaftaran & Jadwal Ibadah
-            Route::middleware(['role:super_admin|majelis|sekretaris_majelis'])->group(function () {
+            Route::middleware([AppRole::role(AppRole::PENDAFTARAN_AND_JADWAL)])->group(function () {
                 Route::get('/pendaftaran', [MajelisController::class, 'pendaftaranIndex'])->name('pendaftaran.index');
                 Route::patch('/pendaftaran/{pendaftaran}/approve', [MajelisController::class, 'pendaftaranApprove'])->name('pendaftaran.approve');
                 Route::patch('/pendaftaran/{pendaftaran}/reject', [MajelisController::class, 'pendaftaranReject'])->name('pendaftaran.reject');
-                Route::resource('jadwal', \App\Http\Controllers\JadwalIbadahController::class);
+                Route::resource('jadwal', \App\Http\Controllers\JadwalIbadahController::class)->except(['show']);
             });
 
             // Keuangan (Laporan & Persembahan Offline)
-            Route::middleware(['role:super_admin|majelis|bendahara_majelis'])->group(function () {
+            Route::middleware([AppRole::role(AppRole::KEUANGAN)])->group(function () {
                 Route::get('/laporan', [MajelisController::class, 'laporan'])->name('laporan');
                 Route::get('/laporan/export', [MajelisController::class, 'exportLaporan'])->name('laporan.export');
-                Route::resource('persembahan-offline', \App\Http\Controllers\Majelis\PersembahanOfflineController::class);
-                Route::resource('jenis-persembahan', \App\Http\Controllers\Majelis\JenisPersembahanController::class);
+                Route::resource('persembahan-offline', \App\Http\Controllers\Majelis\PersembahanOfflineController::class)->except(['show']);
+                Route::resource('jenis-persembahan', \App\Http\Controllers\Majelis\JenisPersembahanController::class)->except(['show']);
             });
 
             // Pengumuman
-            Route::middleware(['role:super_admin|majelis|sekretaris_majelis|pengurus_kategorial_kpb|pengurus_kategorial_kpw|pengurus_kategorial_kpp|pengurus_kategorial_kpr|pengurus_kategorial_kpa'])
-                ->resource('pengumuman', \App\Http\Controllers\PengumumanController::class);
+            Route::middleware([AppRole::role(AppRole::KEHADIRAN_AND_PENGUMUMAN)])
+                ->resource('pengumuman', \App\Http\Controllers\PengumumanController::class)->except(['show']);
         });
 
     // Admin Routes
-    Route::middleware(['role:super_admin'])->prefix('admin')->name('admin.')->group(function () {
-        Route::resource('users', UserController::class);
+    Route::middleware([AppRole::role([AppRole::SUPER_ADMIN])])->prefix('admin')->name('admin.')->group(function () {
+        Route::resource('users', UserController::class)->except(['show']);
+        Route::patch('/users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
         Route::get('/pendaftaran', [UserController::class, 'pendaftaranIndex'])->name('pendaftaran.index');
         Route::patch('/pendaftaran/{pendaftaran}/approve', [UserController::class, 'pendaftaranApprove'])->name('pendaftaran.approve');
         Route::patch('/pendaftaran/{pendaftaran}/reject', [UserController::class, 'pendaftaranReject'])->name('pendaftaran.reject');

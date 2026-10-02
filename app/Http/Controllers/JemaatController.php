@@ -56,13 +56,13 @@ class JemaatController extends Controller
         $qrBase64 = null;
 
         try {
-            $ctx = stream_context_create(['http' => ['timeout' => 5]]);
+            $ctx = stream_context_create(['http' => ['timeout' => 2]]);
             $qrImageData = @file_get_contents($qrUrl, false, $ctx);
             if ($qrImageData !== false) {
                 $qrBase64 = base64_encode($qrImageData);
             }
-        } catch (\Exception $e) {
-            // fallback: QR will not appear in PDF
+        } catch (\Throwable $e) {
+            // fallback: QR tidak merusak download PDF
         }
 
         $settings = [

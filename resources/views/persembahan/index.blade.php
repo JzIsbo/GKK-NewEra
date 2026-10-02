@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Persembahan Online – GEMINDO Kawan Kasih</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-gemindo.png') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo-gemindo.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         
@@ -33,7 +36,7 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             color: var(--text-dark);
             background: var(--parchment);
             /* Radial candlelight glow background */
@@ -70,27 +73,12 @@
             text-decoration: none;
         }
         
-        .logo-cross-wrap {
-            position: relative; 
-            width: 34px; 
-            height: 44px; 
+        .header-logo-img {
+            width: 44px;
+            height: 52px;
+            object-fit: contain;
             flex-shrink: 0;
-        }
-        .logo-cross-wrap::before {
-            content: ''; position: absolute;
-            left: 50%; top: 0; transform: translateX(-50%);
-            width: 7px; height: 100%;
-            background: linear-gradient(180deg, var(--gold-light), var(--gold-dark));
-            border-radius: 3px;
-            box-shadow: 0 0 10px rgba(200,148,26,.5);
-        }
-        .logo-cross-wrap::after {
-            content: ''; position: absolute;
-            left: 0; top: 35%;
-            width: 100%; height: 7px;
-            background: linear-gradient(90deg, var(--gold-light), var(--gold-dark));
-            border-radius: 3px;
-            box-shadow: 0 0 10px rgba(200,148,26,.5);
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,.25));
         }
 
         .logo-texts {
@@ -98,20 +86,21 @@
             flex-direction: column;
         }
         .logo-title {
-            font-family: 'Cinzel', serif;
-            font-size: 19px;
-            font-weight: 700;
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
             color: var(--mahogany);
             line-height: 1.2;
-            letter-spacing: 0.04em;
+            letter-spacing: -0.01em;
         }
         .logo-subtitle {
-            font-family: 'EB Garamond', serif;
-            font-size: 12px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
             color: var(--text-muted);
-            letter-spacing: 0.1em;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
-            margin-top: 1px;
+            margin-top: 2px;
         }
         
         .back-home {
@@ -163,10 +152,11 @@
             z-index: 2;
         }
         .card-title {
-            font-family: 'Cinzel Decorative', serif;
-            font-size: 22px;
-            font-weight: 700;
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
             color: var(--mahogany);
+            letter-spacing: -0.01em;
         }
         .card-subtitle {
             font-family: 'EB Garamond', serif;
@@ -315,33 +305,35 @@
             pointer-events: none;
         }
         .qris-header {
-            font-family: 'Cinzel', serif;
-            font-size: 20px;
-            font-weight: 700;
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            font-size: 19px;
+            font-weight: 800;
             color: var(--gold-light);
             margin-bottom: 14px;
-            letter-spacing: 0.05em;
+            letter-spacing: -0.01em;
         }
         .qris-desc {
             font-family: 'EB Garamond', serif;
             font-size: 16px;
-            color: rgba(255,255,255,0.75);
+            color: rgba(255,255,255,0.8);
             margin-bottom: 24px;
             line-height: 1.6;
         }
         .qris-img-container {
             background-color: #fff;
-            padding: 16px;
-            border-radius: 8px;
+            padding: 14px;
+            border-radius: 12px;
             display: inline-block;
-            margin-bottom: 20px;
-            max-width: 210px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin-bottom: 16px;
+            max-width: 220px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+            border: 2px solid rgba(200, 148, 26, 0.4);
         }
         .qris-img {
             width: 100%;
             height: auto;
             display: block;
+            border-radius: 4px;
         }
         .bank-details {
             background-color: rgba(255, 255, 255, 0.04);
@@ -353,8 +345,8 @@
             line-height: 1.6;
         }
         .bank-details-title {
-            font-family: 'Cinzel', serif;
-            font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
             color: var(--gold-light);
             margin-bottom: 6px;
             font-size: 12px;
@@ -365,7 +357,10 @@
            RIWAYAT TABLE (Parchment Styled)
            ═══════════════════════════════════════ */
         .table-wrapper {
-            overflow-x: auto;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
             margin-top: 16px;
         }
         table {
@@ -412,13 +407,56 @@
             /* split-layout already stacks at 868px */
         }
         @media (max-width: 768px) {
-            .container { padding: 24px 18px; }
+            .container { padding: 20px 14px; }
             .header-logo { flex-wrap: wrap; gap: 10px; }
-            .card-header { padding: 20px 22px; }
-            .card-body { padding: 22px; }
-            .card-title { font-size: 18px; }
-            .qris-panel { padding: 26px 22px; }
-            .nominal-options { grid-template-columns: repeat(3, 1fr); }
+            .card-header { padding: 18px 18px; }
+            .card-body { padding: 18px; }
+            .card-title { font-size: 17px; }
+            .qris-panel { padding: 22px 18px; }
+            .nominal-options { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            
+            /* Responsive stack table for history on mobile */
+            .table-responsive-stack table,
+            .table-responsive-stack thead,
+            .table-responsive-stack tbody,
+            .table-responsive-stack th,
+            .table-responsive-stack td,
+            .table-responsive-stack tr {
+                display: block !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .table-responsive-stack thead {
+                display: none !important;
+            }
+            .table-responsive-stack tbody tr {
+                background: var(--ivory);
+                border: 1px solid var(--border-warm);
+                border-radius: 10px;
+                padding: 12px 14px;
+                margin-bottom: 10px;
+            }
+            .table-responsive-stack td {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                padding: 6px 0 !important;
+                border-bottom: 1px solid rgba(232, 213, 170, 0.4) !important;
+                font-size: 12.5px !important;
+                text-align: right !important;
+            }
+            .table-responsive-stack td:last-child {
+                border-bottom: none !important;
+            }
+            .table-responsive-stack td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                color: var(--gold-dark);
+                font-size: 10.5px;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                text-align: left;
+            }
         }
         @media (max-width: 480px) {
             .container { padding: 18px 14px; }
@@ -447,7 +485,7 @@
         <!-- Logo Header -->
         <div class="header-logo">
             <a href="{{ route('home') }}" class="logo-area">
-                <div class="logo-cross-wrap"></div>
+                <img src="{{ asset('images/logo-gemindo.png') }}" alt="Logo GEMINDO" class="header-logo-img">
                 <div class="logo-texts">
                     <div class="logo-title">GEMINDO Kawan Kasih</div>
                     <div class="logo-subtitle">Portal Jemaat</div>
@@ -526,8 +564,8 @@
                             <h2 class="card-title" style="font-size: 16px;">10 Riwayat Persembahan Terakhir Anda</h2>
                         </div>
                         <div class="card-body" style="padding: 20px 24px;">
-                            <div class="table-wrapper">
-                                <table>
+                            <div class="table-wrapper table-responsive-stack">
+                                <table class="table-responsive-stack">
                                     <thead>
                                         <tr>
                                             <th>Tanggal</th>
@@ -539,10 +577,10 @@
                                     <tbody>
                                         @foreach($riwayat as $r)
                                             <tr>
-                                                <td>{{ $r->created_at->format('d/m/Y') }}</td>
-                                                <td>{{ $r->jenisPersembahan->nama ?? '-' }}</td>
-                                                <td style="font-weight: 700; color: var(--mahogany);">Rp {{ number_format($r->nominal, 0, ',', '.') }}</td>
-                                                <td>
+                                                <td data-label="Tanggal">{{ $r->created_at->format('d/m/Y') }}</td>
+                                                <td data-label="Jenis" class="cell-title">{{ $r->jenisPersembahan->nama ?? '-' }}</td>
+                                                <td data-label="Nominal" style="font-weight: 700; color: var(--success);">Rp {{ number_format($r->nominal, 0, ',', '.') }}</td>
+                                                <td data-label="Status">
                                                     @if($r->status === 'success')
                                                         <span class="badge badge-success">Selesai</span>
                                                     @elseif($r->status === 'pending')
@@ -566,16 +604,19 @@
                 <div class="qris-panel">
                     <h2 class="qris-header">Metode Alternatif</h2>
                     <p class="qris-desc">
-                        Selain melalui gerbang pembayaran digital di samping, Anda juga dapat memberikan persembahan secara langsung via kode QRIS Statis maupun transfer ke rekening bank resmi gereja berikut.
+                        Selain melalui formulir persembahan digital online di atas, Anda juga dapat memberikan persembahan secara langsung via kode QRIS Statis maupun transfer ke rekening bank resmi gereja berikut.
                     </p>
 
-                    @if($qrisStatis)
-                        <div class="qris-img-container">
-                            <!-- Show static QRIS image -->
-                            <img src="{{ asset('storage/' . $qrisStatis) }}" alt="QRIS Statis Gereja" class="qris-img">
-                        </div>
-                        <div style="font-size:13px; color:rgba(255,255,255,0.6); margin-bottom: 24px; font-family: 'EB Garamond', serif; font-style: italic;">Pindai kode QRIS di atas menggunakan aplikasi mobile banking atau e-wallet pilihan Anda.</div>
-                    @endif
+                    @php
+                        $qrisBarcodeSrc = $qrisStatis ? asset('storage/' . $qrisStatis) : asset('images/qris-persembahan.png');
+                    @endphp
+                    <div class="qris-img-container">
+                        <!-- Barcode QRIS Persembahan -->
+                        <img src="{{ $qrisBarcodeSrc }}" alt="Barcode QRIS Persembahan GEMINDO" class="qris-img">
+                    </div>
+                    <div style="font-size:13px; color:rgba(255,255,255,0.75); margin-bottom: 24px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 500; line-height: 1.5;">
+                        Pindai barcode QRIS di atas melalui mobile banking (BCA, Mandiri, BRI, BNI, dll) atau aplikasi dompet digital / e-wallet.
+                    </div>
 
                     @if($rekening)
                         <div class="bank-details">

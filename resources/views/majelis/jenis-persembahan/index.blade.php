@@ -20,7 +20,7 @@
     <div class="card-header"><div class="card-title">Daftar Kategori Persembahan</div></div>
     <div class="card-body">
         <div class="table-wrapper">
-            <table>
+            <table class="table-responsive-stack">
                 <thead>
                     <tr>
                         <th>Nama Kategori</th>
@@ -32,17 +32,17 @@
                 <tbody>
                     @forelse($kategori as $item)
                         <tr>
-                            <td class="fw-semibold">{{ $item->nama }}</td>
-                            <td class="text-muted">{{ $item->deskripsi ?: 'Tidak ada deskripsi' }}</td>
-                            <td>
+                            <td data-label="Nama Kategori" class="fw-semibold cell-title" style="font-size: 15px;">{{ $item->nama }}</td>
+                            <td data-label="Deskripsi" class="text-muted">{{ $item->deskripsi ?: 'Tidak ada deskripsi' }}</td>
+                            <td data-label="Status">
                                 @if($item->aktif)
                                     <span class="badge badge-success">Aktif</span>
                                 @else
                                     <span class="badge badge-danger">Tidak Aktif</span>
                                 @endif
                             </td>
-                            <td>
-                                <div class="d-flex gap-2">
+                            <td data-label="Aksi">
+                                <div class="table-actions">
                                     <a href="{{ route('majelis.jenis-persembahan.edit', $item->id) }}" class="btn btn-outline btn-sm">Edit</a>
                                     
                                     <form method="POST" action="{{ route('majelis.jenis-persembahan.destroy', $item->id) }}" onsubmit="return confirm('Apakah Anda yakin ingin menghapus/menonaktifkan kategori ini?');">
@@ -55,7 +55,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="text-center text-muted">Belum ada kategori persembahan. Silakan buat baru.</td>
+                            <td colspan="4" class="text-center text-muted" style="padding: 30px;">Belum ada kategori persembahan. Silakan buat baru.</td>
                         </tr>
                     @endforelse
                 </tbody>

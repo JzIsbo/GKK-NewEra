@@ -58,14 +58,17 @@ class DashboardController extends Controller
 
     private function bendaharaDashboard()
     {
+        $bulanIni   = now();
+        $bulanLalu  = now()->subMonthNoOverflow();
+
         $totalPersembahan    = Persembahan::where('status', 'success')->sum('nominal');
         $persembahanBulanIni = Persembahan::where('status', 'success')
-            ->whereMonth('paid_at', now()->month)
-            ->whereYear('paid_at', now()->year)
+            ->whereMonth('paid_at', $bulanIni->month)
+            ->whereYear('paid_at', $bulanIni->year)
             ->sum('nominal');
         $persembahanBulanLalu = Persembahan::where('status', 'success')
-            ->whereMonth('paid_at', now()->subMonth()->month)
-            ->whereYear('paid_at', now()->subMonth()->year)
+            ->whereMonth('paid_at', $bulanLalu->month)
+            ->whereYear('paid_at', $bulanLalu->year)
             ->sum('nominal');
         $recentPersembahan   = Persembahan::with('jenisPersembahan', 'user')
             ->where('status', 'success')
@@ -82,8 +85,8 @@ class DashboardController extends Controller
     {
         $pendingPendaftaran = PendaftaranJemaat::where('status', 'pending')->count();
         $totalJemaat        = User::role('jemaat')->count();
-        $totalPersembahan   = Persembahan::where('status', 'success')
-            ->whereMonth('paid_at', now()->month)
+        $totalPersembahan   = Persembahan::sukses()
+            ->bulanTahun(now()->month, now()->year)
             ->sum('nominal');
         $recentPersembahan  = Persembahan::with('jenisPersembahan', 'user')
             ->where('status', 'success')

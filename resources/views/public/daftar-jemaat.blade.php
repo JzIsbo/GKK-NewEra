@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pendaftaran Jemaat Baru – GEMINDO Kawan Kasih</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-gemindo.png') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo-gemindo.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         
@@ -33,7 +36,7 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             color: var(--text-dark);
             background: var(--parchment);
             /* Soft candlelight radial glow */
@@ -66,45 +69,30 @@
             text-align: center;
         }
         
-        .logo-cross-wrap {
-            position: relative; 
-            width: 36px; 
-            height: 48px; 
-            flex-shrink: 0;
+        .header-logo-img {
+            width: 52px;
+            height: 62px;
+            object-fit: contain;
             margin-bottom: 12px;
-        }
-        .logo-cross-wrap::before {
-            content: ''; position: absolute;
-            left: 50%; top: 0; transform: translateX(-50%);
-            width: 7px; height: 100%;
-            background: linear-gradient(180deg, var(--gold-light), var(--gold-dark));
-            border-radius: 3px;
-            box-shadow: 0 0 10px rgba(200,148,26,.5);
-        }
-        .logo-cross-wrap::after {
-            content: ''; position: absolute;
-            left: 0; top: 35%;
-            width: 100%; height: 7px;
-            background: linear-gradient(90deg, var(--gold-light), var(--gold-dark));
-            border-radius: 3px;
-            box-shadow: 0 0 10px rgba(200,148,26,.5);
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,.25));
         }
 
         .logo-title {
-            font-family: 'Cinzel', serif;
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
             font-size: 20px;
-            font-weight: 700;
+            font-weight: 800;
             color: var(--mahogany);
             line-height: 1.2;
-            letter-spacing: 0.04em;
+            letter-spacing: -0.01em;
         }
         .logo-subtitle {
-            font-family: 'EB Garamond', serif;
-            font-size: 13px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 11.5px;
+            font-weight: 600;
             color: var(--text-muted);
-            letter-spacing: 0.1em;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
-            margin-top: 2px;
+            margin-top: 3px;
         }
 
         /* ═══════════════════════════════════════
@@ -133,12 +121,13 @@
         }
 
         .form-title {
-            font-family: 'Cinzel Decorative', serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 26px;
-            font-weight: 700;
+            font-weight: 800;
             color: var(--mahogany);
             margin-bottom: 8px;
             text-align: center;
+            letter-spacing: -0.02em;
         }
         .form-subtitle {
             font-family: 'EB Garamond', serif;
@@ -383,7 +372,7 @@
     <div class="container">
         <!-- Brand -->
         <a href="{{ route('home') }}" class="header-logo">
-            <div class="logo-cross-wrap"></div>
+            <img src="{{ asset('images/logo-gemindo.png') }}" alt="Logo GEMINDO" class="header-logo-img">
             <div class="logo-text-wrapper">
                 <div class="logo-title">GEMINDO Kawan Kasih</div>
                 <div class="logo-subtitle">Portal Jemaat</div>

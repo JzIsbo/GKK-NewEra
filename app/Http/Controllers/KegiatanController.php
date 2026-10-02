@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AppRole;
 use App\Models\Kegiatan;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class KegiatanController extends Controller
         $user = Auth::user();
 
         // Scope queries by category for category coordinators
-        if ($user->hasRole('pengurus_kategorial')) {
+        if ($this->isPengurusKategorial($user)) {
             if (!$user->kategori_id) {
                 return redirect()->route('dashboard')->with('error', 'Akun Pengurus Kategorial Anda belum dikaitkan dengan kategori KPK apa pun. Silakan hubungi Majelis.');
             }
@@ -38,7 +39,7 @@ class KegiatanController extends Controller
         $user = Auth::user();
         $kategoris = [];
 
-        if ($user->hasRole('pengurus_kategorial')) {
+        if ($this->isPengurusKategorial($user)) {
             if (!$user->kategori_id) {
                 return redirect()->route('dashboard')->with('error', 'Akun Pengurus Kategorial Anda belum dikaitkan dengan kategori KPK apa pun.');
             }
@@ -63,7 +64,7 @@ class KegiatanController extends Controller
         ];
 
         // Only allow admin and majelis to choose categories
-        if (!$user->hasRole('pengurus_kategorial')) {
+        if (!$this->isPengurusKategorial($user)) {
             $rules['kategori_id'] = ['nullable', 'exists:kategoris,id'];
         }
 
@@ -79,7 +80,7 @@ class KegiatanController extends Controller
         $data['aktif']   = $request->has('aktif') ? true : false;
 
         // Auto-assign category for category coordinators
-        if ($user->hasRole('pengurus_kategorial')) {
+        if ($this->isPengurusKategorial($user)) {
             $data['kategori_id'] = $user->kategori_id;
         }
 
@@ -98,12 +99,12 @@ class KegiatanController extends Controller
         $user = Auth::user();
 
         // Enforce category scope check
-        if ($user->hasRole('pengurus_kategorial') && $kegiatan->kategori_id !== $user->kategori_id) {
+        if ($this->isPengurusKategorial($user) && $kegiatan->kategori_id !== $user->kategori_id) {
             abort(403, 'Anda tidak memiliki akses untuk mengelola kegiatan kategori ini.');
         }
 
         $kategoris = [];
-        if (!$user->hasRole('pengurus_kategorial')) {
+        if (!$this->isPengurusKategorial($user)) {
             $kategoris = Kategori::where('aktif', true)->get();
         }
 
@@ -115,7 +116,7 @@ class KegiatanController extends Controller
         $user = Auth::user();
 
         // Enforce category scope check
-        if ($user->hasRole('pengurus_kategorial') && $kegiatan->kategori_id !== $user->kategori_id) {
+        if ($this->isPengurusKategorial($user) && $kegiatan->kategori_id !== $user->kategori_id) {
             abort(403, 'Anda tidak memiliki akses untuk mengelola kegiatan kategori ini.');
         }
 
@@ -128,7 +129,7 @@ class KegiatanController extends Controller
             'gambar'          => ['nullable', 'image', 'max:2048'],
         ];
 
-        if (!$user->hasRole('pengurus_kategorial')) {
+        if (!$this->isPengurusKategorial($user)) {
             $rules['kategori_id'] = ['nullable', 'exists:kategoris,id'];
         }
 
@@ -143,7 +144,7 @@ class KegiatanController extends Controller
         $data['aktif'] = $request->has('aktif') ? true : false;
 
         // Force user's category for category coordinators
-        if ($user->hasRole('pengurus_kategorial')) {
+        if ($this->isPengurusKategorial($user)) {
             $data['kategori_id'] = $user->kategori_id;
         }
 
@@ -165,7 +166,7 @@ class KegiatanController extends Controller
         $user = Auth::user();
 
         // Enforce category scope check
-        if ($user->hasRole('pengurus_kategorial') && $kegiatan->kategori_id !== $user->kategori_id) {
+        if ($this->isPengurusKategorial($user) && $kegiatan->kategori_id !== $user->kategori_id) {
             abort(403, 'Anda tidak memiliki akses untuk mengelola kegiatan kategori ini.');
         }
 
@@ -177,5 +178,14 @@ class KegiatanController extends Controller
         $kegiatan->delete();
 
         return redirect()->route('kegiatan.index')->with('success', 'Kegiatan berhasil dihapus!');
+    }
+
+    /**
+     * Cek apakah user adalah pengurus kategorial.
+     * Menggunakan AppRole::KATEGORIAL sebagai sumber kebenaran tunggal.
+     */
+    private function isPengurusKategorial($user): bool
+    {
+        return $user->hasAnyRole(AppRole::KATEGORIAL);
     }
 }

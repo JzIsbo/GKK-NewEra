@@ -41,7 +41,7 @@
                 </div>
             @else
                 <div class="table-wrapper">
-                    <table>
+                    <table class="table-responsive-stack">
                         <thead>
                             <tr>
                                 <th>Nama</th>
@@ -52,8 +52,8 @@
                         <tbody>
                             @foreach($recentPendaftaran as $p)
                                 <tr>
-                                    <td class="fw-semibold">{{ $p->nama_lengkap }}</td>
-                                    <td>
+                                    <td data-label="Nama" class="fw-semibold cell-title">{{ $p->nama_lengkap }}</td>
+                                    <td data-label="Status">
                                         @if($p->status === 'pending')
                                             <span class="badge badge-warning">Pending</span>
                                         @elseif($p->status === 'approved')
@@ -62,7 +62,7 @@
                                             <span class="badge badge-danger">Ditolak</span>
                                         @endif
                                     </td>
-                                    <td>{{ $p->created_at->format('d/m/Y') }}</td>
+                                    <td data-label="Tanggal">{{ $p->created_at->format('d/m/Y') }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

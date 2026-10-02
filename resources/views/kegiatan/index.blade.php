@@ -31,7 +31,7 @@
     </div>
     <div class="card-body">
         <div class="table-wrapper">
-            <table>
+            <table class="table-responsive-stack">
                 <thead>
                     <tr>
                         <th>Nama Kegiatan</th>
@@ -46,27 +46,27 @@
                 <tbody>
                     @forelse($kegiatans as $k)
                         <tr>
-                            <td class="fw-semibold">
+                            <td data-label="Nama Kegiatan" class="fw-semibold cell-title">
                                 <div class="d-flex align-items-center gap-3">
                                     @if($k->gambar)
-                                        <img src="{{ asset('storage/' . $k->gambar) }}" alt="{{ $k->nama }}" style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border);">
+                                        <img src="{{ asset('storage/' . $k->gambar) }}" alt="{{ $k->nama }}" style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); flex-shrink: 0;">
                                     @else
-                                        <div style="width: 44px; height: 44px; background-color: var(--cream); border-radius: 6px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); font-size: 18px;">🕊️</div>
+                                        <div style="width: 44px; height: 44px; background-color: var(--cream); border-radius: 6px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); font-size: 18px; flex-shrink: 0;">🕊️</div>
                                     @endif
                                     <div>
-                                        <div>{{ $k->nama }}</div>
+                                        <div style="font-size: 15px;">{{ $k->nama }}</div>
                                         <div class="text-muted small fw-normal">{{ Str::limit($k->deskripsi, 60) }}</div>
                                     </div>
                                 </div>
                             </td>
-                            <td>
+                            <td data-label="Kategori / KPK">
                                 @if($k->kategori)
                                     <span style="font-weight: 600; color: var(--burgundy);">{{ $k->kategori->singkatan }}</span>
                                 @else
                                     <span class="text-muted">Umum / Semua</span>
                                 @endif
                             </td>
-                            <td>
+                            <td data-label="Waktu Kegiatan">
                                 <div style="font-size: 13px; font-weight: 500;">
                                     📅 {{ $k->tanggal_mulai->format('d/m/Y') }}
                                 </div>
@@ -77,17 +77,17 @@
                                     @endif
                                 </div>
                             </td>
-                            <td>{{ $k->lokasi ?: '-' }}</td>
-                            <td>
+                            <td data-label="Lokasi">{{ $k->lokasi ?: '-' }}</td>
+                            <td data-label="Status">
                                 @if($k->aktif)
                                     <span class="badge badge-success">Aktif</span>
                                 @else
                                     <span class="badge badge-danger">Nonaktif</span>
                                 @endif
                             </td>
-                            <td>{{ $k->penulis->nama_display ?? 'Staf / Majelis' }}</td>
-                            <td>
-                                <div class="d-flex gap-2">
+                            <td data-label="Penulis">{{ $k->penulis->nama_display ?? 'Staf / Majelis' }}</td>
+                            <td data-label="Aksi">
+                                <div class="table-actions">
                                     <a href="{{ route('kegiatan.edit', $k->id) }}" class="btn btn-outline btn-sm">Edit</a>
                                     
                                     <form method="POST" action="{{ route('kegiatan.destroy', $k->id) }}" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kegiatan ini?');">

@@ -35,7 +35,7 @@
         </div>
         <div class="card-body">
             <div class="table-wrapper">
-                <table>
+                <table class="table-responsive-stack">
                     <thead>
                         <tr>
                             <th>Tanggal</th>
@@ -47,10 +47,10 @@
                     <tbody>
                         @forelse($riwayatPersembahan as $p)
                             <tr>
-                                <td>{{ $p->paid_at ? $p->paid_at->format('d/m/Y') : ($p->created_at ? $p->created_at->format('d/m/Y') : '-') }}</td>
-                                <td><span class="badge badge-gold">{{ $p->jenisPersembahan->nama ?? '-' }}</span></td>
-                                <td class="fw-bold">Rp {{ number_format($p->nominal, 0, ',', '.') }}</td>
-                                <td>
+                                <td data-label="Tanggal">{{ $p->paid_at ? $p->paid_at->format('d/m/Y') : ($p->created_at ? $p->created_at->format('d/m/Y') : '-') }}</td>
+                                <td data-label="Jenis Persembahan" class="cell-title"><span class="badge badge-gold">{{ $p->jenisPersembahan->nama ?? '-' }}</span></td>
+                                <td data-label="Nominal" class="fw-bold" style="color: var(--burgundy);">Rp {{ number_format($p->nominal, 0, ',', '.') }}</td>
+                                <td data-label="Status">
                                     @if($p->status === 'success')
                                         <span class="badge badge-success">Selesai</span>
                                     @elseif($p->status === 'pending')
@@ -62,7 +62,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center text-muted">Belum ada riwayat persembahan.</td>
+                                <td colspan="4" class="text-center text-muted" style="padding: 30px;">Belum ada riwayat persembahan.</td>
                             </tr>
                         @endforelse
                     </tbody>

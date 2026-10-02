@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\PendaftaranJemaat;
 use App\Models\User;
+use App\Services\PendaftaranService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
+    public function __construct(private readonly PendaftaranService $pendaftaranService) {}
     public function index(Request $request)
     {
         $query = User::with('roles')->orderBy('created_at', 'desc');
@@ -34,7 +36,10 @@ class UserController extends Controller
         $users = $query->paginate(15)->withQueryString();
         $roles = Role::all();
 
-        return view('admin.users.index', compact('users', 'roles'));
+        // Jumlah user yang sudah di-soft delete (untuk info admin)
+        $trashedCount = User::onlyTrashed()->count();
+
+        return view('admin.users.index', compact('users', 'roles', 'trashedCount'));
     }
 
     public function show(User $user)
@@ -76,8 +81,25 @@ class UserController extends Controller
         if ($user->hasRole('super_admin')) {
             return back()->with('error', 'Super Admin tidak dapat dihapus.');
         }
+
+        // SoftDeletes: $user->delete() hanya set deleted_at, data tidak hilang.
+        // User yang di-soft-delete tidak bisa login (getAuthPassword() return '').
         $user->delete();
-        return redirect()->route('admin.users.index')->with('success', 'User berhasil dihapus.');
+
+        return redirect()->route('admin.users.index')
+            ->with('success', "User {$user->nama_display} berhasil dinonaktifkan. Data masih tersimpan dan dapat dipulihkan.");
+    }
+
+    /**
+     * Pulihkan user yang sudah di-soft delete.
+     */
+    public function restore(int $id)
+    {
+        $user = User::onlyTrashed()->findOrFail($id);
+        $user->restore();
+
+        return redirect()->route('admin.users.index')
+            ->with('success', "User {$user->nama_display} berhasil dipulihkan.");
     }
 
     // Approval pendaftaran jemaat
@@ -89,45 +111,16 @@ class UserController extends Controller
 
     public function pendaftaranApprove(PendaftaranJemaat $pendaftaran)
     {
-        // Buat akun user baru
-        $password = \Illuminate\Support\Str::random(10);
-        $user = User::create([
-            'name'               => $pendaftaran->nama_lengkap,
-            'nama_lengkap'       => $pendaftaran->nama_lengkap,
-            'email'              => $pendaftaran->email,
-            'no_telepon'         => $pendaftaran->no_telepon,
-            'tanggal_lahir'      => $pendaftaran->tanggal_lahir,
-            'tempat_lahir'       => $pendaftaran->tempat_lahir,
-            'jenis_kelamin'      => $pendaftaran->jenis_kelamin,
-            'alamat'             => $pendaftaran->alamat,
-            'pekerjaan'          => $pendaftaran->pekerjaan,
-            'password'           => Hash::make($password),
-            'status_keanggotaan' => 'aktif',
-            'nomor_jemaat'       => User::generateNomorJemaat(),
-            'approved_at'        => now(),
-            'email_verified_at'  => now(),
-        ]);
-        $user->assignRole('jemaat');
+        $result = $this->pendaftaranService->approve($pendaftaran);
 
-        $pendaftaran->update([
-            'status'      => 'disetujui',
-            'approved_by' => auth()->id(),
-            'approved_at' => now(),
-        ]);
-
-        // TODO: Kirim email dengan password ke jemaat baru
-
-        return back()->with('success', "Pendaftaran disetujui. Nomor jemaat: {$user->nomor_jemaat}. Password sementara: {$password}");
+        return back()->with('success',
+            "Pendaftaran disetujui. Nomor jemaat: {$result['user']->nomor_jemaat}. Password sementara: {$result['password']}"
+        );
     }
 
     public function pendaftaranReject(Request $request, PendaftaranJemaat $pendaftaran)
     {
-        $pendaftaran->update([
-            'status'         => 'ditolak',
-            'catatan_admin'  => $request->catatan,
-            'approved_by'    => auth()->id(),
-            'approved_at'    => now(),
-        ]);
+        $this->pendaftaranService->reject($pendaftaran, $request->catatan);
 
         return back()->with('info', 'Pendaftaran telah ditolak.');
     }
