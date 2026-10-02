@@ -31,6 +31,30 @@ Route::get('/persembahan/bukti/{orderId}', [PersembahanController::class, 'bukti
 Route::post('/webhook/midtrans', [PersembahanController::class, 'webhook'])
     ->name('persembahan.webhook');
 
+// PWA Static Fallbacks
+Route::get('/manifest.json', function () {
+    $path = public_path('manifest.json');
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    return response()->file($path, [
+        'Content-Type' => 'application/manifest+json; charset=utf-8',
+        'Access-Control-Allow-Origin' => '*',
+    ]);
+});
+
+Route::get('/sw.js', function () {
+    $path = public_path('sw.js');
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    return response()->file($path, [
+        'Content-Type' => 'application/javascript; charset=utf-8',
+        'Service-Worker-Allowed' => '/',
+        'Cache-Control' => 'no-cache, no-store, must-revalidate',
+    ]);
+});
+
 /*
 |--------------------------------------------------------------------------
 | Auth Routes

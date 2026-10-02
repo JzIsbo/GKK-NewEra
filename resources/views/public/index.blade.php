@@ -1349,7 +1349,29 @@ window.addEventListener('beforeinstallprompt', function(e) {
     if (directBox) directBox.style.display = 'flex';
 });
 
+window.addEventListener('appinstalled', function() {
+    console.log('[PWA Public] Application installed successfully!');
+    closeInstallModal();
+});
+
 function openInstallModal() {
+    // If native prompt is ready, trigger it directly!
+    if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then(function(choice) {
+            if (choice.outcome === 'accepted') {
+                console.log('[PWA Public] User accepted install');
+                closeInstallModal();
+            }
+            deferredInstallPrompt = null;
+        });
+        return;
+    }
+
+    // Auto-detect OS: if iOS, automatically switch to iOS tab
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    switchInstallTab(isIOS ? 'ios' : 'android');
+
     const modal = document.getElementById('installModal');
     if (modal) {
         modal.classList.add('open');
@@ -1382,6 +1404,8 @@ function switchInstallTab(os) {
     const guideAndroid = document.getElementById('guideAndroid');
     const guideIos = document.getElementById('guideIos');
 
+    if (!tabAndroid || !tabIos || !guideAndroid || !guideIos) return;
+
     if (os === 'android') {
         tabAndroid.classList.add('active');
         tabIos.classList.remove('active');
@@ -1406,7 +1430,7 @@ function triggerPwaPrompt() {
             deferredInstallPrompt = null;
         });
     } else {
-        alert('Silakan ikuti panduan langkah manual di bawah untuk memasang aplikasi di HP Anda.');
+        alert('Browser Anda belum memicu instalasi otomatis. Silakan ikuti 4 langkah mudah di bawah sesuai jenis HP Anda.');
     }
 }
 </script>
