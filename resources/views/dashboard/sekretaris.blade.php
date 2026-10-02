@@ -56,7 +56,7 @@
                                     <td data-label="Status">
                                         @if($p->status === 'pending')
                                             <span class="badge badge-warning">Pending</span>
-                                        @elseif($p->status === 'approved')
+                                        @elseif($p->status === 'disetujui' || $p->status === 'approved')
                                             <span class="badge badge-success">Disetujui</span>
                                         @else
                                             <span class="badge badge-danger">Ditolak</span>
@@ -86,8 +86,11 @@
                         <span class="badge" style="background:#fff; color:var(--primary);">{{ $pendingPendaftaran }}</span>
                     @endif
                 </a>
-                <a href="{{ route('majelis.jadwal.index') }}" class="btn btn-accent w-100 text-center">📅 Kelola Jadwal Ibadah</a>
-                <a href="{{ route('majelis.pengumuman.index') }}" class="btn btn-outline w-100 text-center">📢 Kelola Warta / Pengumuman</a>
+                <a href="{{ route('majelis.pengumuman.index') }}" class="btn btn-accent w-100 justify-content-between">
+                    <span>📰 Kelola Warta Jemaat</span>
+                    <span class="badge badge-gold" style="background:#fff; color:var(--primary-dark); font-size: 10px;">Publik</span>
+                </a>
+                <a href="{{ route('majelis.jadwal.index') }}" class="btn btn-outline w-100 text-center">📅 Kelola Jadwal Ibadah</a>
                 <a href="{{ route('majelis.kehadiran.index') }}" class="btn btn-outline w-100 text-center">✅ Data Kehadiran Ibadah</a>
             </div>
         </div>

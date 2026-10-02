@@ -913,6 +913,40 @@
         .text-center { text-align: center; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .grid-2 > *, .grid-3 > * { min-width: 0; }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        .dashboard-grid > * { min-width: 0; }
+
+        .text-truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .min-w-0 { min-width: 0; }
+        .avatar-sm {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(200,148,26,.3);
+        }
+
+        @media (max-width: 1100px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
         @media (max-width: 960px) {
             .grid-3 { grid-template-columns: 1fr 1fr; }
         }
@@ -995,6 +1029,11 @@
         <a href="{{ route('majelis.jadwal.index') }}" class="nav-link {{ request()->routeIs('majelis.jadwal*') ? 'active' : '' }}">
             <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
             Jadwal Ibadah
+        </a>
+        <a href="{{ route('majelis.pengumuman.index') }}" class="nav-link {{ request()->routeIs('majelis.pengumuman*') ? 'active' : '' }}">
+            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
+            Warta Jemaat
+            <span class="badge badge-gold" style="font-size: 9px; padding: 1px 6px; margin-left: auto;">Publik</span>
         </a>
         @endhasanyrole
 

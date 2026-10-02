@@ -24,16 +24,18 @@ class PengumumanController extends Controller
         $request->validate([
             'judul'           => ['required', 'string', 'max:255'],
             'isi'             => ['required', 'string'],
+            'tipe'            => ['nullable', 'in:umum,penting,kegiatan'],
             'tanggal_mulai'   => ['required', 'date'],
             'tanggal_selesai' => ['nullable', 'date', 'after_or_equal:tanggal_mulai'],
         ]);
 
         Pengumuman::create(array_merge($request->all(), [
+            'tipe'     => $request->input('tipe', 'umum'),
             'aktif'    => $request->boolean('aktif'),
             'user_id'  => Auth::id(),
         ]));
 
-        return redirect()->route('majelis.pengumuman.index')->with('success', 'Pengumuman berhasil ditambahkan.');
+        return redirect()->route('majelis.pengumuman.index')->with('success', 'Warta jemaat berhasil ditambahkan dan siap tampil di website publik.');
     }
 
     public function edit(Pengumuman $pengumuman)
@@ -46,20 +48,22 @@ class PengumumanController extends Controller
         $request->validate([
             'judul'           => ['required', 'string', 'max:255'],
             'isi'             => ['required', 'string'],
+            'tipe'            => ['nullable', 'in:umum,penting,kegiatan'],
             'tanggal_mulai'   => ['required', 'date'],
             'tanggal_selesai' => ['nullable', 'date', 'after_or_equal:tanggal_mulai'],
         ]);
 
         $pengumuman->update(array_merge($request->all(), [
+            'tipe'  => $request->input('tipe', 'umum'),
             'aktif' => $request->boolean('aktif'),
         ]));
 
-        return redirect()->route('majelis.pengumuman.index')->with('success', 'Pengumuman berhasil diperbarui.');
+        return redirect()->route('majelis.pengumuman.index')->with('success', 'Warta jemaat berhasil diperbarui.');
     }
 
     public function destroy(Pengumuman $pengumuman)
     {
         $pengumuman->delete();
-        return redirect()->route('majelis.pengumuman.index')->with('success', 'Pengumuman berhasil dihapus.');
+        return redirect()->route('majelis.pengumuman.index')->with('success', 'Warta jemaat berhasil dihapus.');
     }
 }
