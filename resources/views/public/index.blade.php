@@ -1367,10 +1367,10 @@
     <img src="{{ asset('icons/icon-96x96.png') }}" alt="Logo" class="pwa-float-icon">
     <div class="pwa-float-texts">
         <div class="pwa-float-title">GEMINDO Kawan Kasih</div>
-        <div class="pwa-float-sub">Pasang aplikasi di layar utama HP</div>
+        <div class="pwa-float-sub" id="floatBarSub">Download &amp; Pasang Aplikasi (2.7 MB)</div>
     </div>
     <button type="button" class="btn-pwa-float" onclick="openInstallModal()">
-        <span>📲 Pasang</span>
+        <span>⬇️ Pasang</span>
     </button>
     <button type="button" class="btn-pwa-float-close" onclick="closeFloatingBar()" aria-label="Tutup">✕</button>
 </div>
@@ -1435,6 +1435,14 @@ window.addEventListener('appinstalled', function() {
 });
 
 function openInstallModal() {
+    var isAndroid = /Android/i.test(navigator.userAgent);
+
+    // Android: langsung download APK tanpa buka modal
+    if (isAndroid) {
+        downloadApk();
+        return;
+    }
+
     // If native prompt is ready, trigger it directly!
     if (deferredInstallPrompt) {
         deferredInstallPrompt.prompt();
@@ -1504,6 +1512,15 @@ function switchInstallTab(os) {
 }
 
 function triggerPwaPrompt() {
+    var isAndroid = /Android/i.test(navigator.userAgent);
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    if (isAndroid) {
+        // Android: langsung download APK
+        downloadApk();
+        return;
+    }
+
     if (deferredInstallPrompt) {
         deferredInstallPrompt.prompt();
         deferredInstallPrompt.userChoice.then(function(choice) {
@@ -1516,6 +1533,26 @@ function triggerPwaPrompt() {
         });
     } else {
         showInstallGuideTip();
+    }
+}
+
+function downloadApk() {
+    var apkUrl = '/downloads/gemindo-kk.apk';
+    var a = document.createElement('a');
+    a.href = apkUrl;
+    a.download = 'GEMINDO-Kawan-Kasih.apk';
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    // Tampilkan pesan panduan instalasi APK
+    var notice = document.getElementById('installStatusNotice');
+    if (notice) {
+        notice.className = 'install-action-tip';
+        notice.style.display = 'block';
+        notice.innerHTML = '✅ <strong>APK sedang diunduh!</strong><br>' +
+            'Setelah selesai, buka file <strong>GEMINDO-Kawan-Kasih.apk</strong> dari notifikasi unduhan, ' +
+            'lalu ketuk <strong>"Instal"</strong>. Jika muncul peringatan, izinkan <em>"Instal aplikasi dari sumber tidak dikenal"</em> di Pengaturan.';
     }
 }
 
