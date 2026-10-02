@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gemindo-kk-v1';
+const CACHE_NAME = 'gemindo-kk-v2';
 const OFFLINE_URL = '/offline';
 
 // Assets to cache immediately on install

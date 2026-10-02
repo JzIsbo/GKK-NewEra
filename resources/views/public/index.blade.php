@@ -285,6 +285,65 @@
         }
         .pwa-benefit-box strong { color: var(--gold-light); }
 
+        /* Action tip in install modal */
+        .install-action-tip {
+            background: linear-gradient(135deg, rgba(200,148,26,.28), rgba(200,148,26,.12));
+            border: 1.5px solid var(--gold);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            line-height: 1.55;
+            color: #fff;
+            animation: pulseGlow 1.8s infinite alternate;
+        }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 8px rgba(200,148,26,.3); }
+            100% { box-shadow: 0 0 20px rgba(200,148,26,.7); }
+        }
+        .step-pulse {
+            border-color: var(--gold) !important;
+            background: rgba(200,148,26,.14) !important;
+            box-shadow: 0 0 12px rgba(200,148,26,.45);
+            transform: scale(1.02);
+            transition: all .3s ease;
+        }
+
+        /* Floating Install Bar for Mobile */
+        .pwa-floating-bar {
+            position: fixed; bottom: 18px; left: 16px; right: 16px; z-index: 9998;
+            background: linear-gradient(135deg, #24130d 0%, #150a06 100%);
+            border: 1.5px solid rgba(200, 148, 26, 0.6);
+            border-radius: 14px; padding: 12px 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px rgba(200,148,26,0.25);
+            display: flex; align-items: center; gap: 12px;
+            animation: floatSlideUp 0.35s ease-out;
+        }
+        @keyframes floatSlideUp {
+            0% { transform: translateY(100px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        .pwa-float-icon { width: 42px; height: 42px; border-radius: 10px; border: 1.5px solid var(--gold); object-fit: contain; flex-shrink: 0; }
+        .pwa-float-texts { flex: 1; min-width: 0; }
+        .pwa-float-title { font-size: 13.5px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pwa-float-sub { font-size: 11.5px; color: var(--gold-light); opacity: 0.9; margin-top: 1px; }
+        .btn-pwa-float {
+            background: linear-gradient(135deg, var(--gold-light), var(--gold-dark));
+            color: var(--mahogany-dark); font-weight: 800; font-size: 12.5px;
+            border: none; border-radius: 8px; padding: 9px 15px;
+            cursor: pointer; flex-shrink: 0;
+            box-shadow: 0 2px 10px rgba(200,148,26,0.5);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: all .2s;
+        }
+        .btn-pwa-float:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(200,148,26,0.7); }
+        .btn-pwa-float-close {
+            background: transparent; border: none; color: rgba(255,255,255,0.45);
+            font-size: 18px; cursor: pointer; padding: 4px; line-height: 1;
+            margin-left: -4px;
+        }
+        .btn-pwa-float-close:hover { color: #fff; }
+
         /* ═══════════════════════════════════════
            HERO — Full-screen church atmosphere
         ═══════════════════════════════════════ */
@@ -1210,16 +1269,19 @@
             </div>
         </div>
 
-        <!-- 1-Click Install Notification if supported -->
-        <div id="directInstallBox" class="modal-direct-install-box" style="display:none;">
+        <!-- 1-Click Install Notification (ALWAYS VISIBLE & ACTIONABLE) -->
+        <div id="directInstallBox" class="modal-direct-install-box" style="display:flex;">
             <div>
-                <div style="font-weight:700;font-size:13.5px;color:#fff;">Perangkat Mendukung 1-Klik</div>
-                <div style="font-size:12px;color:rgba(255,255,255,.75);margin-top:2px;">Klik tombol untuk langsung memasang ke layar utama HP Anda.</div>
+                <div style="font-weight:700;font-size:13.5px;color:#fff;">Pasang Langsung ke Layar HP</div>
+                <div style="font-size:12px;color:rgba(255,255,255,.75);margin-top:2px;">Aplikasi ringan &lt; 1MB, otomatis update warta & persembahan.</div>
             </div>
             <button type="button" class="btn-prompt-install" onclick="triggerPwaPrompt()">
                 <span>📲 Pasang Sekarang</span>
             </button>
         </div>
+
+        <!-- Status / Action Tip Area -->
+        <div id="installStatusNotice" style="display:none;"></div>
 
         <!-- Tabs OS -->
         <div class="modal-tabs">
@@ -1300,6 +1362,19 @@
     </div>
 </div>
 
+<!-- Floating PWA Install Bar for Mobile -->
+<div id="pwa-floating-bar" class="pwa-floating-bar" style="display:none;">
+    <img src="{{ asset('icons/icon-96x96.png') }}" alt="Logo" class="pwa-float-icon">
+    <div class="pwa-float-texts">
+        <div class="pwa-float-title">GEMINDO Kawan Kasih</div>
+        <div class="pwa-float-sub">Pasang aplikasi di layar utama HP</div>
+    </div>
+    <button type="button" class="btn-pwa-float" onclick="openInstallModal()">
+        <span>📲 Pasang</span>
+    </button>
+    <button type="button" class="btn-pwa-float-close" onclick="closeFloatingBar()" aria-label="Tutup">✕</button>
+</div>
+
 <script>
 // Mobile menu toggle
 const mobileMenuBtn = document.getElementById('mobileMenuBtn');
@@ -1347,11 +1422,16 @@ window.addEventListener('beforeinstallprompt', function(e) {
     deferredInstallPrompt = e;
     const directBox = document.getElementById('directInstallBox');
     if (directBox) directBox.style.display = 'flex';
+    const floatBar = document.getElementById('pwa-floating-bar');
+    if (floatBar && !sessionStorage.getItem('pwa_float_dismissed')) {
+        floatBar.style.display = 'flex';
+    }
 });
 
 window.addEventListener('appinstalled', function() {
     console.log('[PWA Public] Application installed successfully!');
     closeInstallModal();
+    closeFloatingBar();
 });
 
 function openInstallModal() {
@@ -1362,6 +1442,7 @@ function openInstallModal() {
             if (choice.outcome === 'accepted') {
                 console.log('[PWA Public] User accepted install');
                 closeInstallModal();
+                closeFloatingBar();
             }
             deferredInstallPrompt = null;
         });
@@ -1385,6 +1466,9 @@ function closeInstallModal() {
         modal.classList.remove('open');
         document.body.style.overflow = '';
     }
+    document.querySelectorAll('.guide-step-item').forEach(function(el) {
+        el.classList.remove('step-pulse');
+    });
 }
 
 function handleModalBackdropClick(event) {
@@ -1426,13 +1510,63 @@ function triggerPwaPrompt() {
             if (choice.outcome === 'accepted') {
                 console.log('[PWA Public] User accepted install');
                 closeInstallModal();
+                closeFloatingBar();
             }
             deferredInstallPrompt = null;
         });
     } else {
-        alert('Browser Anda belum memicu instalasi otomatis. Silakan ikuti 4 langkah mudah di bawah sesuai jenis HP Anda.');
+        showInstallGuideTip();
     }
 }
+
+function showInstallGuideTip() {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const notice = document.getElementById('installStatusNotice');
+    if (isIOS) {
+        switchInstallTab('ios');
+        if (notice) {
+            notice.className = 'install-action-tip';
+            notice.style.display = 'block';
+            notice.innerHTML = '👉 <strong>Langkah untuk iPhone (Safari):</strong><br>Ketuk tombol <strong>Share / Bagikan [⎋]</strong> di bilah bawah browser Safari Anda, lalu gulir dan pilih <strong>"Tambah ke Layar Utama" (➕)</strong>.';
+        }
+        document.querySelectorAll('#guideIos .guide-step-item').forEach(function(el) {
+            el.classList.add('step-pulse');
+        });
+    } else {
+        switchInstallTab('android');
+        if (notice) {
+            notice.className = 'install-action-tip';
+            notice.style.display = 'block';
+            notice.innerHTML = '👉 <strong>Langkah untuk Android (Chrome):</strong><br>Ketuk ikon <strong>titik tiga (⋮)</strong> di pojok kanan atas browser Chrome, lalu pilih menu <strong>"Instal aplikasi"</strong> atau <strong>"Tambahkan ke Layar utama"</strong>.';
+        }
+        document.querySelectorAll('#guideAndroid .guide-step-item').forEach(function(el) {
+            el.classList.add('step-pulse');
+        });
+    }
+}
+
+function initFloatingBar() {
+    try {
+        const isDismissed = sessionStorage.getItem('pwa_float_dismissed');
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        if (!isDismissed && !isStandalone) {
+            setTimeout(function() {
+                const bar = document.getElementById('pwa-floating-bar');
+                if (bar) bar.style.display = 'flex';
+            }, 1200);
+        }
+    } catch (e) {}
+}
+
+function closeFloatingBar() {
+    const bar = document.getElementById('pwa-floating-bar');
+    if (bar) bar.style.display = 'none';
+    try { sessionStorage.setItem('pwa_float_dismissed', '1'); } catch(e) {}
+}
+
+window.addEventListener('load', function() {
+    initFloatingBar();
+});
 </script>
 </body>
 </html>
