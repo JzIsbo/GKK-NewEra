@@ -71,7 +71,7 @@ class JemaatController extends Controller
         ];
 
         $pdf = Pdf::loadView('jemaat.kartu-jemaat-pdf', compact('user', 'qrBase64', 'settings'));
-        $pdf->setPaper([0, 0, 255, 155], 'portrait');
+        $pdf->setPaper([0, 0, 255, 155]);
 
         return $pdf->download('kartu-jemaat-' . ($user->nomor_jemaat ?: $user->id) . '.pdf');
     }
