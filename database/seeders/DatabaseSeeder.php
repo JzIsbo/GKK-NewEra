@@ -156,5 +156,8 @@ class DatabaseSeeder extends Seeder
 
         // Call RolesAndPermissionsSeeder
         $this->call(RolesAndPermissionsSeeder::class);
+
+        // Call DummyDataSeeder for menus that lack data
+        $this->call(DummyDataSeeder::class);
     }
 }
