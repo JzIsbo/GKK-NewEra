@@ -21,12 +21,17 @@ foreach ($directories as $dir) {
     }
 }
 
-// Fallback SQLite initialization in /tmp if using SQLite and database file does not exist
+// SQLite initialization: populate from seed database if /tmp database is not ready
 $dbConnection = getenv('DB_CONNECTION') ?: 'sqlite';
 if ($dbConnection === 'sqlite') {
     $dbPath = getenv('DB_DATABASE') ?: '/tmp/database.sqlite';
-    if (!file_exists($dbPath) && str_starts_with($dbPath, '/tmp/')) {
-        touch($dbPath);
+    if ((!file_exists($dbPath) || filesize($dbPath) === 0) && str_starts_with($dbPath, '/tmp/')) {
+        $seedDb = __DIR__ . '/../database/seed.sqlite';
+        if (file_exists($seedDb) && filesize($seedDb) > 0) {
+            copy($seedDb, $dbPath);
+        } else {
+            touch($dbPath);
+        }
     }
 }
 
