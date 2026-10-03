@@ -4,738 +4,837 @@
 @section('header-title', 'Panitia HABERJA')
 
 @section('content')
-<div class="page-header d-flex justify-content-between align-items-center" style="flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
-    <div>
-        <h1 class="page-header-title">Panitia Hari-Hari Besar Gereja (HABERJA)</h1>
-        <div class="breadcrumb">
-            <a href="{{ route('dashboard') }}">Beranda</a> &gt; <span>Pelayanan Jemaat</span> &gt; <span>Panitia HABERJA</span>
+<div class="haberja-container">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header haberja-page-header">
+        <div>
+            <h1 class="page-header-title">Panitia Hari-Hari Besar Gereja (HABERJA)</h1>
+            <div class="breadcrumb">
+                <a href="{{ route('dashboard') }}">Beranda</a> &gt; <span>Pelayanan Jemaat</span> &gt; <span>Panitia HABERJA</span>
+            </div>
+        </div>
+        <div class="haberja-header-actions">
+            <a href="{{ route('haberja.print', ['event' => $selectedKode]) }}" target="_blank" class="btn btn-outline btn-sm">
+                🖨️ <span class="hide-xs">Cetak / Print</span> RAB
+            </a>
+            @if($canManage)
+                @if($activeTab === 'struktur')
+                    <button type="button" class="btn btn-primary btn-sm" onclick="openModal('modalTambahPanitia')">
+                        ➕ <span class="hide-xs">Tambah</span> Personil
+                    </button>
+                @elseif($activeTab === 'dana')
+                    <button type="button" class="btn btn-primary btn-sm" onclick="openModal('modalTambahDana')">
+                        ➕ <span class="hide-xs">Tambah</span> Program Dana
+                    </button>
+                @elseif($activeTab === 'budget')
+                    <button type="button" class="btn btn-primary btn-sm" onclick="openModal('modalTambahBudget')">
+                        ➕ <span class="hide-xs">Tambah</span> Item RAB
+                    </button>
+                @endif
+            @endif
         </div>
     </div>
-    <div class="d-flex gap-2" style="flex-wrap: wrap;">
-        <a href="{{ route('haberja.print', ['event' => $selectedKode]) }}" target="_blank" class="btn btn-outline btn-sm">
-            🖨️ Cetak / Print RAB &amp; Struktur
-        </a>
-        @if($canManage)
-            @if($activeTab === 'struktur')
-                <button type="button" class="btn btn-primary btn-sm" onclick="openModal('modalTambahPanitia')">
-                    ➕ Tambah Personil Panitia
-                </button>
-            @elseif($activeTab === 'dana')
-                <button type="button" class="btn btn-primary btn-sm" onclick="openModal('modalTambahDana')">
-                    ➕ Tambah Program Dana
-                </button>
-            @elseif($activeTab === 'budget')
-                <button type="button" class="btn btn-primary btn-sm" onclick="openModal('modalTambahBudget')">
-                    ➕ Tambah Item RAB
-                </button>
-            @endif
-        @endif
-    </div>
-</div>
 
-@if(session('success'))
-    <div class="alert alert-success mb-3">✓ {{ session('success') }}</div>
-@endif
-@if(session('error'))
-    <div class="alert alert-danger mb-3">✕ {{ session('error') }}</div>
-@endif
+    @if(session('success'))
+        <div class="alert alert-success mb-3">✓ {{ session('success') }}</div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger mb-3">✕ {{ session('error') }}</div>
+    @endif
 
-<!-- HEADER BANNER & EVENT SELECTOR -->
-<div class="card mb-4" style="background: linear-gradient(135deg, rgba(44,24,16,0.95) 0%, rgba(107,26,46,0.92) 100%); color: #fff; border: 1px solid var(--accent); position: relative; overflow: hidden;">
-    <div style="position: absolute; right: -20px; bottom: -30px; font-size: 140px; color: rgba(200,148,26,0.06); font-family: 'Cinzel', serif; pointer-events: none;">✝</div>
-    <div class="card-body" style="padding: 22px 26px;">
-        <div class="d-flex justify-content-between align-items-start" style="flex-wrap: wrap; gap: 16px;">
-            <div style="max-width: 680px;">
-                <div class="d-flex align-items-center gap-2 mb-1">
-                    <span class="badge badge-gold" style="font-size: 10.5px; letter-spacing: 0.5px; text-transform: uppercase;">HABERJA 2026</span>
-                    @if($currentEvent)
-                        <span class="badge badge-info" style="font-size: 10.5px;">{{ $currentEvent->nama }}</span>
-                    @else
-                        <span class="badge badge-info" style="font-size: 10.5px;">Konsolidasi Seluruh Acara</span>
-                    @endif
-                </div>
-                <h2 style="font-family: 'EB Garamond', Georgia, serif; font-size: 26px; color: var(--accent-light); margin-bottom: 6px; font-weight: 600;">
-                    @if($currentEvent)
-                        {{ $currentEvent->nama }}
-                    @else
-                        Badan Kepanitiaan Hari-Hari Besar Gereja GEMINDO Kawan Kasih
-                    @endif
-                </h2>
-                <p style="font-size: 13px; color: #e8d9c0; line-height: 1.5; margin-bottom: 10px;">
-                    @if($currentEvent)
-                        <em>"{{ $currentEvent->tema }}"</em> &mdash; <strong>{{ $currentEvent->ayat_tema }}</strong>
-                        <br><span style="font-size: 12px; opacity: 0.9;">{{ $currentEvent->deskripsi }}</span>
-                    @else
-                        Mengkoordinir persiapan dan perayaan 3 Hari Besar Utama: <strong>Paskah</strong>, <strong>HUT Ke-28 Gereja GEMINDO Kawan Kasih</strong>, serta <strong>Natal &amp; Tahun Baru</strong> secara terpadu, transparan, dan bertanggung jawab.
-                    @endif
-                </p>
-                <div class="d-flex gap-3 align-items-center" style="font-size: 12px; color: #fdf6e3; flex-wrap: wrap;">
-                    <div>📅 <strong>Periode:</strong> {{ $currentEvent ? ($currentEvent->tanggal_mulai ? $currentEvent->tanggal_mulai->format('d M Y') . ' s/d ' . ($currentEvent->tanggal_selesai ? $currentEvent->tanggal_selesai->format('d M Y') : '-') : 'Tahun 2026') : 'Tahun Pelayanan 2026 / 2027' }}</div>
-                    <div>👥 <strong>Panitia Terdaftar:</strong> {{ $panitias->count() }} Personil</div>
-                    <div>💰 <strong>Target RAB:</strong> Rp {{ number_format($totalTargetRAB, 0, ',', '.') }}</div>
-                </div>
+    <!-- HERO CARD & EVENT CHIP SELECTOR -->
+    <div class="card haberja-hero-card mb-4">
+        <div class="haberja-watermark">✝</div>
+        <div class="card-body haberja-hero-body">
+            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                <span class="badge badge-gold" style="font-size: 10px; letter-spacing: 0.5px; text-transform: uppercase;">HABERJA 2026</span>
+                @if($currentEvent)
+                    <span class="badge badge-info" style="font-size: 10.5px;">{{ $currentEvent->nama }}</span>
+                @else
+                    <span class="badge badge-secondary" style="font-size: 10.5px;">Konsolidasi Seluruh Acara</span>
+                @endif
+                <span class="badge" style="background: rgba(255,255,255,0.15); color: #fff; font-size: 10.5px;">
+                    👥 {{ $panitias->count() }} Personil
+                </span>
             </div>
 
-            <!-- Event Selector Filter -->
-            <div style="background: rgba(255,255,255,0.08); padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); min-width: 240px;">
-                <label style="font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-light); font-weight: 600; display: block; margin-bottom: 6px;">Pilih Acara Hari Besar:</label>
-                <div class="d-flex flex-column gap-1">
+            <h2 class="haberja-hero-title">
+                @if($currentEvent)
+                    {{ $currentEvent->nama }}
+                @else
+                    Badan Panitia Hari-Hari Besar Gereja GEMINDO Kawan Kasih
+                @endif
+            </h2>
+
+            <p class="haberja-hero-desc">
+                @if($currentEvent)
+                    <em>"{{ $currentEvent->tema }}"</em> &mdash; <strong>{{ $currentEvent->ayat_tema }}</strong>
+                    <br><span style="font-size: 12px; opacity: 0.92;">{{ $currentEvent->deskripsi }}</span>
+                @else
+                    Mengorganisir perencanaan, kepanitiaan, pencarian dana, dan pelaksanaan 3 Hari Besar Utama: 
+                    <strong>Paskah</strong>, <strong>HUT Ke-28 Gereja</strong>, serta <strong>Natal &amp; Tahun Baru</strong> secara transparan, partisipatif, dan akuntabel.
+                @endif
+            </p>
+
+            <!-- EVENT SELECTOR CHIPS (HORIZONTAL SCROLLABLE ON MOBILE) -->
+            <div class="haberja-chips-container">
+                <span class="haberja-chips-label">Pilih Acara:</span>
+                <div class="haberja-chips-scroll">
                     <a href="{{ route('haberja.index', ['event' => 'semua', 'tab' => $activeTab]) }}" 
-                       class="btn btn-sm {{ $selectedKode === 'semua' ? 'btn-primary' : 'btn-outline' }}" 
-                       style="justify-content: flex-start; text-align: left; font-size: 12px; padding: 6px 12px;">
-                        ✨ Semua Acara (Konsolidasi)
+                       class="haberja-chip {{ $selectedKode === 'semua' ? 'active' : '' }}">
+                        ✨ Semua Acara
                     </a>
                     @foreach($events as $ev)
                         <a href="{{ route('haberja.index', ['event' => $ev->kode, 'tab' => $activeTab]) }}" 
-                           class="btn btn-sm {{ $selectedKode === $ev->kode ? 'btn-primary' : 'btn-outline' }}" 
-                           style="justify-content: flex-start; text-align: left; font-size: 12px; padding: 6px 12px;">
-                            @if($ev->kode === 'paskah') 🕊️ @elseif($ev->kode === 'hut') 🎂 @else 🎄 @endif {{ $ev->nama }}
+                           class="haberja-chip {{ $selectedKode === $ev->kode ? 'active' : '' }}">
+                            @if($ev->kode === 'paskah') 🕊️ @elseif($ev->kode === 'hut') 🎂 @else 🎄 @endif
+                            {{ $ev->nama }}
                         </a>
                     @endforeach
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- NAVIGATION TABS -->
-<div class="d-flex gap-2 mb-4" style="border-bottom: 2px solid var(--border); padding-bottom: 2px; flex-wrap: wrap;">
-    <a href="{{ route('haberja.index', ['event' => $selectedKode, 'tab' => 'overview']) }}" 
-       class="nav-tab {{ $activeTab === 'overview' ? 'active' : '' }}" 
-       style="padding: 10px 18px; font-weight: 600; font-size: 13.5px; border-radius: 8px 8px 0 0; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; {{ $activeTab === 'overview' ? 'background: var(--card); border: 1px solid var(--border); border-bottom: 2px solid var(--accent); color: var(--primary);' : 'color: var(--text-muted);' }}">
-        📊 Ringkasan &amp; Agenda
-    </a>
-    <a href="{{ route('haberja.index', ['event' => $selectedKode, 'tab' => 'struktur']) }}" 
-       class="nav-tab {{ $activeTab === 'struktur' ? 'active' : '' }}" 
-       style="padding: 10px 18px; font-weight: 600; font-size: 13.5px; border-radius: 8px 8px 0 0; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; {{ $activeTab === 'struktur' ? 'background: var(--card); border: 1px solid var(--border); border-bottom: 2px solid var(--accent); color: var(--primary);' : 'color: var(--text-muted);' }}">
-        👥 Struktur Panitia HABERJA
-        <span class="badge badge-secondary" style="font-size: 11px;">{{ $panitias->count() }}</span>
-    </a>
-    <a href="{{ route('haberja.index', ['event' => $selectedKode, 'tab' => 'dana']) }}" 
-       class="nav-tab {{ $activeTab === 'dana' ? 'active' : '' }}" 
-       style="padding: 10px 18px; font-weight: 600; font-size: 13.5px; border-radius: 8px 8px 0 0; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; {{ $activeTab === 'dana' ? 'background: var(--card); border: 1px solid var(--border); border-bottom: 2px solid var(--accent); color: var(--primary);' : 'color: var(--text-muted);' }}">
-        💰 Planning Pencarian Dana
-        <span class="badge badge-gold" style="font-size: 11px;">{{ $persenDana }}%</span>
-    </a>
-    <a href="{{ route('haberja.index', ['event' => $selectedKode, 'tab' => 'budget']) }}" 
-       class="nav-tab {{ $activeTab === 'budget' ? 'active' : '' }}" 
-       style="padding: 10px 18px; font-weight: 600; font-size: 13.5px; border-radius: 8px 8px 0 0; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; {{ $activeTab === 'budget' ? 'background: var(--card); border: 1px solid var(--border); border-bottom: 2px solid var(--accent); color: var(--primary);' : 'color: var(--text-muted);' }}">
-        📋 Budgeting &amp; RAB
-        <span class="badge badge-info" style="font-size: 11px;">{{ $pengeluarans->count() }} Pos</span>
-    </a>
-</div>
-
-<!-- ========================================== -->
-<!-- TAB 1: OVERVIEW & AGENDA ACARA             -->
-<!-- ========================================== -->
-@if($activeTab === 'overview')
-    <!-- KPI STATS CARDS -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
-        <div class="card" style="padding: 18px; border-left: 4px solid var(--accent);">
-            <div class="text-muted small" style="font-size: 12px; font-weight: 600; text-transform: uppercase;">Total Kebutuhan Anggaran (RAB)</div>
-            <div style="font-size: 22px; font-weight: 700; color: var(--primary); margin: 6px 0;">
-                Rp {{ number_format($totalTargetRAB, 0, ',', '.') }}
-            </div>
-            <div class="small text-muted" style="font-size: 11.5px;">
-                Total kebutuhan dana untuk {{ $currentEvent ? $currentEvent->nama : 'seluruh perayaan HABERJA' }}
-            </div>
-        </div>
-
-        <div class="card" style="padding: 18px; border-left: 4px solid var(--success);">
-            <div class="text-muted small" style="font-size: 12px; font-weight: 600; text-transform: uppercase;">Dana Usaha &amp; Donasi Masuk</div>
-            <div style="font-size: 22px; font-weight: 700; color: var(--success); margin: 6px 0;">
-                Rp {{ number_format($totalRealisasiDana, 0, ',', '.') }}
-            </div>
-            <div class="d-flex align-items-center gap-2">
-                <div style="flex: 1; background: #e0e0e0; height: 6px; border-radius: 3px; overflow: hidden;">
-                    <div style="width: {{ $persenDana }}%; background: var(--success); height: 100%;"></div>
-                </div>
-                <span style="font-size: 11px; font-weight: 700; color: var(--success);">{{ $persenDana }}%</span>
-            </div>
-        </div>
-
-        <div class="card" style="padding: 18px; border-left: 4px solid var(--burgundy);">
-            <div class="text-muted small" style="font-size: 12px; font-weight: 600; text-transform: uppercase;">Realisasi Pengeluaran</div>
-            <div style="font-size: 22px; font-weight: 700; color: var(--burgundy); margin: 6px 0;">
-                Rp {{ number_format($totalRealisasiPengeluaran, 0, ',', '.') }}
-            </div>
-            <div class="small text-muted" style="font-size: 11.5px;">
-                Belanja dan operasional yang telah dikeluarkan
-            </div>
-        </div>
-
-        <div class="card" style="padding: 18px; border-left: 4px solid var(--warning);">
-            <div class="text-muted small" style="font-size: 12px; font-weight: 600; text-transform: uppercase;">Sisa Target Usaha Dana</div>
-            <div style="font-size: 22px; font-weight: 700; color: var(--warning); margin: 6px 0;">
-                Rp {{ number_format($sisaTargetDana, 0, ',', '.') }}
-            </div>
-            <div class="small text-muted" style="font-size: 11.5px;">
-                Kekurangan target yang sedang dipacu seksi dana
-            </div>
-        </div>
+    <!-- RESPONSIVE HORIZONTAL NAVIGATION TABS -->
+    <div class="haberja-tabs-nav mb-4">
+        <a href="{{ route('haberja.index', ['event' => $selectedKode, 'tab' => 'overview']) }}" 
+           class="haberja-tab-link {{ $activeTab === 'overview' ? 'active' : '' }}">
+            <span class="tab-icon">📊</span>
+            <span class="tab-text">Ringkasan &amp; Agenda</span>
+        </a>
+        <a href="{{ route('haberja.index', ['event' => $selectedKode, 'tab' => 'struktur']) }}" 
+           class="haberja-tab-link {{ $activeTab === 'struktur' ? 'active' : '' }}">
+            <span class="tab-icon">👥</span>
+            <span class="tab-text">Struktur Panitia</span>
+            <span class="tab-badge">{{ $panitias->count() }}</span>
+        </a>
+        <a href="{{ route('haberja.index', ['event' => $selectedKode, 'tab' => 'dana']) }}" 
+           class="haberja-tab-link {{ $activeTab === 'dana' ? 'active' : '' }}">
+            <span class="tab-icon">💰</span>
+            <span class="tab-text">Planning Dana</span>
+            <span class="tab-badge tab-badge-gold">{{ $persenDana }}%</span>
+        </a>
+        <a href="{{ route('haberja.index', ['event' => $selectedKode, 'tab' => 'budget']) }}" 
+           class="haberja-tab-link {{ $activeTab === 'budget' ? 'active' : '' }}">
+            <span class="tab-icon">📋</span>
+            <span class="tab-text">Budgeting &amp; RAB</span>
+            <span class="tab-badge tab-badge-info">{{ $pengeluarans->count() }} Pos</span>
+        </a>
     </div>
 
-    <!-- 3 ACARA HARI BESAR SHOWCASE -->
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <div class="card-title">Agenda 3 Acara Hari Besar Gereja GEMINDO (HABERJA 2026)</div>
-            <span class="badge badge-gold">Kalender Gerejawi 2026</span>
-        </div>
-        <div class="card-body" style="padding: 20px;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 18px;">
-                @foreach($events as $ev)
-                    <div style="background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 2px 6px rgba(44,24,16,.04); transition: transform .2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                        <div>
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <div style="font-size: 28px;">
-                                    @if($ev->kode === 'paskah') 🕊️ @elseif($ev->kode === 'hut') 🎂 @else 🎄 @endif
-                                </div>
-                                <span class="badge {{ $ev->kode === 'paskah' ? 'badge-success' : ($ev->kode === 'hut' ? 'badge-gold' : 'badge-danger') }}">
-                                    {{ strtoupper($ev->kode) }} 2026
-                                </span>
-                            </div>
-                            <h3 style="font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 4px;">{{ $ev->nama }}</h3>
-                            <div style="font-size: 12px; color: var(--burgundy); font-weight: 600; margin-bottom: 8px;">
-                                📖 {{ $ev->ayat_tema }}: "{{ $ev->tema }}"
-                            </div>
-                            <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.45; margin-bottom: 14px;">
-                                {{ $ev->deskripsi }}
-                            </p>
-                        </div>
-                        <div style="border-top: 1px dashed var(--border); padding-top: 12px;">
-                            <div class="d-flex justify-content-between align-items-center mb-2" style="font-size: 12px;">
-                                <span class="text-muted">Target Anggaran:</span>
-                                <strong style="color: var(--primary);">Rp {{ number_format($ev->target_anggaran, 0, ',', '.') }}</strong>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mb-3" style="font-size: 12px;">
-                                <span class="text-muted">Jadwal:</span>
-                                <strong>{{ $ev->tanggal_mulai ? $ev->tanggal_mulai->format('d M Y') : '-' }}</strong>
-                            </div>
-                            <div class="d-flex gap-2">
-                                <a href="{{ route('haberja.index', ['event' => $ev->kode, 'tab' => 'budget']) }}" class="btn btn-outline btn-sm" style="flex: 1; font-size: 12px; justify-content: center;">
-                                    Lihat RAB
-                                </a>
-                                <a href="{{ route('haberja.index', ['event' => $ev->kode, 'tab' => 'struktur']) }}" class="btn btn-primary btn-sm" style="flex: 1; font-size: 12px; justify-content: center;">
-                                    Panitia
-                                </a>
-                            </div>
-                        </div>
+    <!-- ========================================== -->
+    <!-- TAB 1: OVERVIEW & AGENDA                   -->
+    <!-- ========================================== -->
+    @if($activeTab === 'overview')
+        <!-- 4 RESPONSIVE KPI CARDS (2x2 on mobile, 4x1 on desktop) -->
+        <div class="haberja-kpi-grid mb-4">
+            <div class="card haberja-kpi-card kpi-accent">
+                <div class="kpi-header">
+                    <span class="kpi-label">Target Anggaran (RAB)</span>
+                    <span class="kpi-icon">📋</span>
+                </div>
+                <div class="kpi-value">Rp {{ number_format($totalTargetRAB, 0, ',', '.') }}</div>
+                <div class="kpi-desc">Total kebutuhan dana operasional</div>
+            </div>
+
+            <div class="card haberja-kpi-card kpi-success">
+                <div class="kpi-header">
+                    <span class="kpi-label">Dana Usaha &amp; Donasi</span>
+                    <span class="kpi-icon">💰</span>
+                </div>
+                <div class="kpi-value kpi-val-success">Rp {{ number_format($totalRealisasiDana, 0, ',', '.') }}</div>
+                <div class="kpi-progress-wrap">
+                    <div class="kpi-progress-bar">
+                        <div class="kpi-progress-fill" style="width: {{ $persenDana }}%;"></div>
                     </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
-
-    <!-- QUICK OVERVIEW: DANA & STRUKTUR SNAPSHOT -->
-    <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 20px; align-items: start;" class="overview-grid">
-        <!-- Snapshot Usaha Dana -->
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <div class="card-title">Progress Program Pencarian Dana</div>
-                <a href="{{ route('haberja.index', ['event' => $selectedKode, 'tab' => 'dana']) }}" class="small" style="color: var(--accent-dark); font-weight: 600; text-decoration: none;">
-                    Selengkapnya &rarr;
-                </a>
-            </div>
-            <div class="card-body" style="padding: 16px;">
-                <div class="d-flex flex-column gap-3">
-                    @forelse($danaPlans->take(4) as $dp)
-                        <div style="padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: #fff;">
-                            <div class="d-flex justify-content-between align-items-start mb-1">
-                                <div style="font-weight: 600; font-size: 13.5px; color: var(--primary);">{{ $dp->nama_program }}</div>
-                                <span class="badge {{ $dp->status === 'tercapai' || $dp->status === 'selesai' ? 'badge-success' : 'badge-gold' }}" style="font-size: 10px;">
-                                    {{ ucfirst($dp->status) }}
-                                </span>
-                            </div>
-                            <div class="text-muted small mb-2" style="font-size: 11.5px;">PIC: {{ $dp->penanggung_jawab }}</div>
-                            <div class="d-flex justify-content-between align-items-center mb-1" style="font-size: 12px;">
-                                <span>Realisasi: <strong>Rp {{ number_format($dp->realisasi_dana, 0, ',', '.') }}</strong></span>
-                                <span class="text-muted">Target: Rp {{ number_format($dp->target_dana, 0, ',', '.') }}</span>
-                            </div>
-                            <div style="background: #e9ecef; height: 6px; border-radius: 3px; overflow: hidden;">
-                                <div style="width: {{ $dp->persentase }}%; background: var(--success); height: 100%;"></div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="text-muted text-center py-4">Belum ada program pencarian dana tercatat.</div>
-                    @endforelse
+                    <span class="kpi-progress-pct">{{ $persenDana }}%</span>
                 </div>
             </div>
-        </div>
 
-        <!-- Snapshot BPH Panitia -->
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <div class="card-title">Inti Kepengurusan (BPH) HABERJA</div>
-                <a href="{{ route('haberja.index', ['event' => $selectedKode, 'tab' => 'struktur']) }}" class="small" style="color: var(--accent-dark); font-weight: 600; text-decoration: none;">
-                    Semua Seksi &rarr;
-                </a>
-            </div>
-            <div class="card-body" style="padding: 16px;">
-                <div class="d-flex flex-column gap-2">
-                    @forelse($panitias->where('seksi', 'Badan Pengurus Harian (BPH)')->take(5) as $p)
-                        <div class="d-flex align-items-center gap-3 p-2" style="border-radius: 8px; border: 1px solid var(--border); background: #fff;">
-                            <div style="width: 38px; height: 38px; border-radius: 50%; background: var(--primary); color: var(--accent-light); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
-                                {{ strtoupper(substr($p->nama, 0, 1)) }}
-                            </div>
-                            <div style="flex: 1;">
-                                <div style="font-weight: 600; font-size: 13px; color: var(--primary);">{{ $p->nama }}</div>
-                                <div style="font-size: 11.5px; color: var(--accent-dark); font-weight: 600;">{{ $p->jabatan }}</div>
-                            </div>
-                            @if($p->telepon)
-                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $p->telepon) }}" target="_blank" class="btn btn-outline btn-sm" style="font-size: 11px; padding: 4px 8px;" title="Chat WhatsApp">
-                                    💬 WA
-                                </a>
-                            @endif
-                        </div>
-                    @empty
-                        <div class="text-muted text-center py-4">Data pengurus belum tersedia.</div>
-                    @endforelse
+            <div class="card haberja-kpi-card kpi-burgundy">
+                <div class="kpi-header">
+                    <span class="kpi-label">Realisasi Belanja</span>
+                    <span class="kpi-icon">📉</span>
                 </div>
+                <div class="kpi-value kpi-val-burgundy">Rp {{ number_format($totalRealisasiPengeluaran, 0, ',', '.') }}</div>
+                <div class="kpi-desc">Belanja operasional yang telah dikeluarkan</div>
             </div>
-        </div>
-    </div>
-@endif
 
-<!-- ========================================== -->
-<!-- TAB 2: STRUKTUR PANITIA HABERJA            -->
-<!-- ========================================== -->
-@if($activeTab === 'struktur')
-    <div class="card mb-4" style="background: linear-gradient(135deg, rgba(200,148,26,.08), rgba(44,24,16,.03)); border: 1px dashed var(--accent);">
-        <div class="card-body" style="padding: 14px 18px;">
-            <div class="d-flex align-items-center gap-3">
-                <div style="font-size: 26px;">🏛️</div>
-                <div>
-                    <div class="fw-bold" style="color: var(--primary); font-size: 13.5px;">Bagan &amp; Susunan Struktur Panitia HABERJA 2026</div>
-                    <div class="text-muted small" style="font-size: 12px;">
-                        Kepanitiaan ditetapkan berdasarkan Surat Keputusan Majelis Jemaat GEMINDO Kawan Kasih untuk melayani seluruh rangkaian perayaan hari besar gereja (Paskah, HUT Gereja, Natal &amp; Tahun Baru).
-                    </div>
+            <div class="card haberja-kpi-card kpi-warning">
+                <div class="kpi-header">
+                    <span class="kpi-label">Sisa Target Usaha Dana</span>
+                    <span class="kpi-icon">🎯</span>
                 </div>
+                <div class="kpi-value kpi-val-warning">Rp {{ number_format($sisaTargetDana, 0, ',', '.') }}</div>
+                <div class="kpi-desc">Kekurangan target yang sedang dipacu</div>
             </div>
         </div>
-    </div>
 
-    <!-- SECTIONS LOOP -->
-    @foreach($panitiaBySeksi as $seksiName => $members)
+        <!-- 3 ACARA HARI BESAR SHOWCASE -->
         <div class="card mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(90deg, #fdf6e3 0%, #fff 100%);">
-                <div class="d-flex align-items-center gap-2">
-                    <span style="font-size: 18px;">
-                        @if(str_contains(strtolower($seksiName), 'penasihat')) 🕊️
-                        @elseif(str_contains(strtolower($seksiName), 'bph') || str_contains(strtolower($seksiName), 'harian')) 👑
-                        @elseif(str_contains(strtolower($seksiName), 'acara')) 📖
-                        @elseif(str_contains(strtolower($seksiName), 'dana')) 💰
-                        @elseif(str_contains(strtolower($seksiName), 'perlengkapan') || str_contains(strtolower($seksiName), 'dekorasi')) 🎪
-                        @elseif(str_contains(strtolower($seksiName), 'konsumsi')) 🍱
-                        @elseif(str_contains(strtolower($seksiName), 'publikasi') || str_contains(strtolower($seksiName), 'multimedia')) 📡
-                        @elseif(str_contains(strtolower($seksiName), 'keamanan')) 🛡️
-                        @else ❤️ @endif
-                    </span>
-                    <div class="card-title" style="font-size: 15px;">{{ $seksiName }}</div>
-                </div>
-                <span class="badge badge-secondary">{{ $members->count() }} Personil</span>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-title">Agenda 3 Acara Hari Besar Gereja GEMINDO (HABERJA 2026)</div>
+                <span class="badge badge-gold hide-xs">Kalender Gerejawi</span>
             </div>
-            <div class="card-body" style="padding: 18px;">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
-                    @foreach($members as $m)
-                        <div style="background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
-                            <div>
-                                <div class="d-flex align-items-start gap-3 mb-2">
-                                    <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, #4a2818 100%); color: var(--accent-light); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 17px; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,.15);">
-                                        {{ strtoupper(substr($m->nama, 0, 1)) }}
+            <div class="card-body" style="padding: 16px;">
+                <div class="haberja-events-grid">
+                    @foreach($events as $ev)
+                        <div class="haberja-event-card">
+                            <div class="event-card-top">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div class="event-emoji">
+                                        @if($ev->kode === 'paskah') 🕊️ @elseif($ev->kode === 'hut') 🎂 @else 🎄 @endif
                                     </div>
-                                    <div style="flex: 1;">
-                                        <div style="font-weight: 700; font-size: 14px; color: var(--primary); line-height: 1.3;">{{ $m->nama }}</div>
-                                        <div style="font-size: 12px; color: var(--accent-dark); font-weight: 600; margin-top: 2px;">{{ $m->jabatan }}</div>
-                                        @if($m->event)
-                                            <span class="badge badge-info" style="font-size: 9px; margin-top: 4px;">{{ $m->event->nama }}</span>
-                                        @endif
-                                    </div>
+                                    <span class="badge {{ $ev->kode === 'paskah' ? 'badge-success' : ($ev->kode === 'hut' ? 'badge-gold' : 'badge-danger') }}">
+                                        {{ strtoupper($ev->kode) }} 2026
+                                    </span>
                                 </div>
-
-                                @if($m->tugas_pokok)
-                                    <div style="font-size: 11.5px; color: var(--text-muted); background: var(--bg); padding: 8px 10px; border-radius: 6px; line-height: 1.45; margin-bottom: 10px;">
-                                        <strong>Tugas Pokok:</strong> {{ $m->tugas_pokok }}
-                                    </div>
-                                @endif
+                                <h3 class="event-title">{{ $ev->nama }}</h3>
+                                <div class="event-verse">
+                                    📖 {{ $ev->ayat_tema }}: "{{ $ev->tema }}"
+                                </div>
+                                <p class="event-desc">
+                                    {{ $ev->deskripsi }}
+                                </p>
                             </div>
-
-                            <div class="d-flex justify-content-between align-items-center pt-2" style="border-top: 1px solid #f0e6d6; font-size: 11.5px;">
-                                <div>
-                                    @if($m->telepon)
-                                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $m->telepon) }}" target="_blank" style="color: var(--success); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
-                                            📞 {{ $m->telepon }}
-                                        </a>
-                                    @else
-                                        <span class="text-muted">-</span>
-                                    @endif
+                            <div class="event-card-bottom">
+                                <div class="d-flex justify-content-between align-items-center mb-1" style="font-size: 12px;">
+                                    <span class="text-muted">Target RAB:</span>
+                                    <strong style="color: var(--primary);">Rp {{ number_format($ev->target_anggaran, 0, ',', '.') }}</strong>
                                 </div>
-                                @if($canManage)
-                                    <div class="d-flex gap-1">
-                                        <button type="button" class="btn btn-outline btn-sm" style="padding: 2px 7px; font-size: 11px;" onclick="editPanitia({{ json_encode($m) }})">
-                                            ✏️ Edit
-                                        </button>
-                                        <form action="{{ route('haberja.panitia.destroy', $m->id) }}" method="POST" onsubmit="return confirm('Hapus anggota panitia {{ $m->nama }}?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-outline btn-sm" style="padding: 2px 7px; font-size: 11px; color: var(--danger); border-color: rgba(139,26,26,.3);">
-                                                🗑️
-                                            </button>
-                                        </form>
-                                    </div>
-                                @endif
+                                <div class="d-flex justify-content-between align-items-center mb-3" style="font-size: 12px;">
+                                    <span class="text-muted">Jadwal:</span>
+                                    <strong>{{ $ev->tanggal_mulai ? $ev->tanggal_mulai->format('d M Y') : '-' }}</strong>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="{{ route('haberja.index', ['event' => $ev->kode, 'tab' => 'budget']) }}" class="btn btn-outline btn-sm" style="flex: 1; font-size: 12px; justify-content: center;">
+                                        Lihat RAB
+                                    </a>
+                                    <a href="{{ route('haberja.index', ['event' => $ev->kode, 'tab' => 'struktur']) }}" class="btn btn-primary btn-sm" style="flex: 1; font-size: 12px; justify-content: center;">
+                                        Panitia
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     @endforeach
                 </div>
             </div>
         </div>
-    @endforeach
-@endif
 
-<!-- ========================================== -->
-<!-- TAB 3: PLANNING PENCARIAN DANA             -->
-<!-- ========================================== -->
-@if($activeTab === 'dana')
-    <!-- FINANCIAL FUNDRAISING SUMMARY -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; margin-bottom: 24px;">
-        <div class="card" style="padding: 18px; border-left: 4px solid var(--primary);">
-            <div class="text-muted small" style="font-size: 12px; font-weight: 600; text-transform: uppercase;">Total Target Usaha Dana</div>
-            <div style="font-size: 22px; font-weight: 700; color: var(--primary); margin: 6px 0;">
-                Rp {{ number_format($totalTargetDana, 0, ',', '.') }}
+        <!-- QUICK SNAPSHOTS: DANA & STRUKTUR -->
+        <div class="haberja-overview-grid">
+            <!-- Snapshot Usaha Dana -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-title">Progress Program Usaha Dana</div>
+                    <a href="{{ route('haberja.index', ['event' => $selectedKode, 'tab' => 'dana']) }}" class="small link-accent">
+                        Lihat Semua &rarr;
+                    </a>
+                </div>
+                <div class="card-body" style="padding: 14px;">
+                    <div class="d-flex flex-column gap-2">
+                        @forelse($danaPlans->take(4) as $dp)
+                            <div class="snapshot-card">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <div class="fw-bold" style="font-size: 13px; color: var(--primary); line-height: 1.3;">{{ $dp->nama_program }}</div>
+                                    <span class="badge {{ $dp->status === 'tercapai' || $dp->status === 'selesai' ? 'badge-success' : 'badge-gold' }}" style="font-size: 9.5px; margin-left: 6px; flex-shrink: 0;">
+                                        {{ ucfirst($dp->status) }}
+                                    </span>
+                                </div>
+                                <div class="text-muted small mb-2" style="font-size: 11px;">PIC: {{ $dp->penanggung_jawab }}</div>
+                                <div class="d-flex justify-content-between align-items-center mb-1" style="font-size: 11.5px;">
+                                    <span>Masuk: <strong style="color: var(--success);">Rp {{ number_format($dp->realisasi_dana, 0, ',', '.') }}</strong></span>
+                                    <span class="text-muted">Target: Rp {{ number_format($dp->target_dana, 0, ',', '.') }}</span>
+                                </div>
+                                <div class="mini-progress">
+                                    <div class="mini-progress-fill" style="width: {{ $dp->persentase }}%;"></div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-muted text-center py-4">Belum ada program dana.</div>
+                        @endforelse
+                    </div>
+                </div>
             </div>
-            <div class="small text-muted" style="font-size: 11.5px;">Akumulasi target seluruh program dana</div>
-        </div>
 
-        <div class="card" style="padding: 18px; border-left: 4px solid var(--success);">
-            <div class="text-muted small" style="font-size: 12px; font-weight: 600; text-transform: uppercase;">Total Realisasi Masuk</div>
-            <div style="font-size: 22px; font-weight: 700; color: var(--success); margin: 6px 0;">
-                Rp {{ number_format($totalRealisasiDana, 0, ',', '.') }}
+            <!-- Snapshot BPH Panitia -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-title">Inti Kepengurusan (BPH)</div>
+                    <a href="{{ route('haberja.index', ['event' => $selectedKode, 'tab' => 'struktur']) }}" class="small link-accent">
+                        Semua Seksi &rarr;
+                    </a>
+                </div>
+                <div class="card-body" style="padding: 14px;">
+                    <div class="d-flex flex-column gap-2">
+                        @forelse($panitias->where('seksi', 'Badan Pengurus Harian (BPH)')->take(5) as $p)
+                            @php
+                                $cleanWa = preg_replace('/[^0-9]/', '', $p->telepon ?? '');
+                                if (str_starts_with($cleanWa, '0')) {
+                                    $cleanWa = '62' . substr($cleanWa, 1);
+                                }
+                            @endphp
+                            <div class="bph-member-row">
+                                <div class="member-avatar">
+                                    {{ strtoupper(substr($p->nama, 0, 1)) }}
+                                </div>
+                                <div style="flex: 1; min-width: 0;">
+                                    <div class="member-name text-truncate">{{ $p->nama }}</div>
+                                    <div class="member-title">{{ $p->jabatan }}</div>
+                                </div>
+                                @if($cleanWa)
+                                    <a href="https://wa.me/{{ $cleanWa }}" target="_blank" class="btn btn-outline btn-sm wa-btn" title="Chat WhatsApp">
+                                        💬 <span class="hide-xs">WA</span>
+                                    </a>
+                                @endif
+                            </div>
+                        @empty
+                            <div class="text-muted text-center py-4">Data pengurus belum tersedia.</div>
+                        @endforelse
+                    </div>
+                </div>
             </div>
-            <div class="small text-success" style="font-size: 11.5px; font-weight: 600;">{{ $persenDana }}% dari total target tercapai</div>
         </div>
+    @endif
 
-        <div class="card" style="padding: 18px; border-left: 4px solid var(--warning);">
-            <div class="text-muted small" style="font-size: 12px; font-weight: 600; text-transform: uppercase;">Sisa Target Dana</div>
-            <div style="font-size: 22px; font-weight: 700; color: var(--warning); margin: 6px 0;">
-                Rp {{ number_format($sisaTargetDana, 0, ',', '.') }}
+    <!-- ========================================== -->
+    <!-- TAB 2: STRUKTUR PANITIA HABERJA            -->
+    <!-- ========================================== -->
+    @if($activeTab === 'struktur')
+        <div class="card mb-3 info-highlight-card">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div style="font-size: 26px; flex-shrink: 0;">🏛️</div>
+                    <div style="font-size: 12.5px; line-height: 1.45; color: var(--primary);">
+                        <strong>Susunan Panitia Hari-Hari Besar Gereja GEMINDO Kawan Kasih 2026</strong>. 
+                        Ditetapkan oleh Majelis Jemaat untuk mengkoordinir seluruh rangkaian perayaan secara berkesinambungan.
+                    </div>
+                </div>
             </div>
-            <div class="small text-muted" style="font-size: 11.5px;">Dikejar melalui aksi &amp; sponsor lanjutan</div>
         </div>
-    </div>
 
-    <!-- PROGRAM DANA LIST -->
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <div class="card-title">Daftar Rencana &amp; Realisasi Aksi Usaha Dana HABERJA</div>
-            <span class="badge badge-gold">{{ $danaPlans->count() }} Program</span>
+        <!-- QUICK SEKSI FILTER CHIPS -->
+        <div class="seksi-chips-wrapper mb-3">
+            <button type="button" class="seksi-chip active" onclick="filterSeksi('all', this)">
+                ✨ Semua Seksi ({{ $panitias->count() }})
+            </button>
+            @foreach($panitiaBySeksi as $seksiName => $members)
+                @php
+                    $seksiSlug = Str::slug($seksiName);
+                @endphp
+                <button type="button" class="seksi-chip" onclick="filterSeksi('{{ $seksiSlug }}', this)">
+                    {{ $seksiName }} ({{ $members->count() }})
+                </button>
+            @endforeach
         </div>
-        <div class="card-body" style="padding: 0;">
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Program &amp; Strategi Usaha Dana</th>
-                            <th>Target Dana</th>
-                            <th>Realisasi Terkumpul</th>
-                            <th style="width: 140px;">Capaian (%)</th>
-                            <th>Jadwal Pelaksanaan</th>
-                            <th>Penanggung Jawab (PIC)</th>
-                            <th>Status</th>
-                            @if($canManage)
-                                <th style="width: 120px; text-align: center;">Aksi</th>
-                            @endif
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($danaPlans as $dp)
-                            <tr>
-                                <td data-label="Program">
-                                    <div style="font-weight: 700; font-size: 13.5px; color: var(--primary);">{{ $dp->nama_program }}</div>
-                                    @if($dp->event)
-                                        <span class="badge badge-info" style="font-size: 9.5px; margin: 3px 0;">{{ $dp->event->nama }}</span>
-                                    @endif
-                                    <div class="text-muted small" style="font-size: 11.5px; line-height: 1.4; margin-top: 3px;">
-                                        {{ $dp->deskripsi }}
+
+        <!-- SECTIONS ACCORDION / GROUPS -->
+        @foreach($panitiaBySeksi as $seksiName => $members)
+            @php
+                $seksiSlug = Str::slug($seksiName);
+                $isBPH = str_contains(strtolower($seksiName), 'bph') || str_contains(strtolower($seksiName), 'harian');
+            @endphp
+            <div class="card mb-3 seksi-group-card" data-seksi="{{ $seksiSlug }}">
+                <div class="card-header d-flex justify-content-between align-items-center {{ $isBPH ? 'bph-header' : '' }}">
+                    <div class="d-flex align-items-center gap-2">
+                        <span style="font-size: 18px;">
+                            @if(str_contains(strtolower($seksiName), 'penasihat')) 🕊️
+                            @elseif($isBPH) 👑
+                            @elseif(str_contains(strtolower($seksiName), 'acara')) 📖
+                            @elseif(str_contains(strtolower($seksiName), 'dana')) 💰
+                            @elseif(str_contains(strtolower($seksiName), 'perlengkapan') || str_contains(strtolower($seksiName), 'dekorasi')) 🎪
+                            @elseif(str_contains(strtolower($seksiName), 'konsumsi')) 🍱
+                            @elseif(str_contains(strtolower($seksiName), 'publikasi') || str_contains(strtolower($seksiName), 'multimedia')) 📡
+                            @elseif(str_contains(strtolower($seksiName), 'keamanan')) 🛡️
+                            @else ❤️ @endif
+                        </span>
+                        <div class="card-title" style="font-size: 14.5px;">{{ $seksiName }}</div>
+                    </div>
+                    <span class="badge {{ $isBPH ? 'badge-gold' : 'badge-secondary' }}">{{ $members->count() }} Personil</span>
+                </div>
+                <div class="card-body" style="padding: 14px;">
+                    <div class="panitia-cards-grid">
+                        @foreach($members as $m)
+                            @php
+                                $cleanWa = preg_replace('/[^0-9]/', '', $m->telepon ?? '');
+                                if (str_starts_with($cleanWa, '0')) {
+                                    $cleanWa = '62' . substr($cleanWa, 1);
+                                }
+                            @endphp
+                            <div class="member-card {{ $isBPH ? 'member-card-bph' : '' }}">
+                                <div class="member-card-body">
+                                    <div class="d-flex align-items-start gap-3 mb-2">
+                                        <div class="member-avatar-lg">
+                                            {{ strtoupper(substr($m->nama, 0, 1)) }}
+                                        </div>
+                                        <div style="flex: 1; min-width: 0;">
+                                            <div class="member-full-name">{{ $m->nama }}</div>
+                                            <div class="member-role-title">{{ $m->jabatan }}</div>
+                                            @if($m->event)
+                                                <span class="badge badge-info" style="font-size: 9px; margin-top: 3px;">{{ $m->event->nama }}</span>
+                                            @endif
+                                        </div>
                                     </div>
-                                    @if($dp->catatan)
-                                        <div style="font-size: 11px; color: var(--accent-dark); font-style: italic; margin-top: 4px;">
-                                            💡 Catatan: {{ $dp->catatan }}
+
+                                    @if($m->tugas_pokok)
+                                        <div class="member-task-box">
+                                            <span class="task-label">Tugas:</span> {{ $m->tugas_pokok }}
                                         </div>
                                     @endif
-                                </td>
-                                <td data-label="Target" style="white-space: nowrap; font-weight: 600;">
-                                    Rp {{ number_format($dp->target_dana, 0, ',', '.') }}
-                                </td>
-                                <td data-label="Realisasi" style="white-space: nowrap; font-weight: 700; color: var(--success);">
-                                    Rp {{ number_format($dp->realisasi_dana, 0, ',', '.') }}
-                                </td>
-                                <td data-label="Capaian">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <div style="flex: 1; background: #e9ecef; height: 8px; border-radius: 4px; overflow: hidden; min-width: 60px;">
-                                            <div style="width: {{ $dp->persentase }}%; background: {{ $dp->persentase >= 100 ? 'var(--success)' : 'var(--accent)' }}; height: 100%;"></div>
-                                        </div>
-                                        <span style="font-size: 11.5px; font-weight: 700; color: {{ $dp->persentase >= 100 ? 'var(--success)' : 'var(--primary)' }};">
-                                            {{ $dp->persentase }}%
-                                        </span>
+                                </div>
+
+                                <div class="member-card-footer">
+                                    <div>
+                                        @if($cleanWa)
+                                            <a href="https://wa.me/{{ $cleanWa }}" target="_blank" class="contact-link" title="Hubungi via WhatsApp">
+                                                💬 <span>{{ $m->telepon }}</span>
+                                            </a>
+                                        @else
+                                            <span class="text-muted" style="font-size: 11px;">-</span>
+                                        @endif
                                     </div>
-                                </td>
-                                <td data-label="Jadwal" style="font-size: 12px; white-space: nowrap;">
-                                    {{ $dp->tanggal_mulai ? $dp->tanggal_mulai->format('d/m/Y') : '-' }} 
-                                    @if($dp->tanggal_selesai) s/d {{ $dp->tanggal_selesai->format('d/m/Y') }} @endif
-                                </td>
-                                <td data-label="PIC" style="font-size: 12.5px; font-weight: 500;">
-                                    {{ $dp->penanggung_jawab }}
-                                </td>
-                                <td data-label="Status">
-                                    @if($dp->status === 'selesai' || $dp->status === 'tercapai')
-                                        <span class="badge badge-success">{{ ucfirst($dp->status) }}</span>
-                                    @elseif($dp->status === 'berjalan')
-                                        <span class="badge badge-gold">Sedang Berjalan</span>
-                                    @else
-                                        <span class="badge badge-secondary">Rencana</span>
-                                    @endif
-                                </td>
-                                @if($canManage)
-                                    <td data-label="Aksi" style="text-align: center; white-space: nowrap;">
-                                        <button type="button" class="btn btn-outline btn-sm" style="padding: 3px 8px; font-size: 11px;" onclick="editDana({{ json_encode($dp) }})">
-                                            ✏️ Edit
-                                        </button>
-                                        <form action="{{ route('haberja.dana.destroy', $dp->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Hapus program {{ $dp->nama_program }}?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-outline btn-sm" style="padding: 3px 8px; font-size: 11px; color: var(--danger); border-color: rgba(139,26,26,.3);">
-                                                🗑️
+                                    @if($canManage)
+                                        <div class="d-flex gap-1">
+                                            <button type="button" class="btn btn-outline btn-sm action-btn" onclick="editPanitia({{ json_encode($m) }})">
+                                                ✏️
                                             </button>
-                                        </form>
-                                    </td>
+                                            <form action="{{ route('haberja.panitia.destroy', $m->id) }}" method="POST" onsubmit="return confirm('Hapus personil {{ $m->nama }}?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-outline btn-sm action-btn action-del">
+                                                    🗑️
+                                                </button>
+                                            </form>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    @endif
+
+    <!-- ========================================== -->
+    <!-- TAB 3: PLANNING PENCARIAN DANA             -->
+    <!-- ========================================== -->
+    @if($activeTab === 'dana')
+        <!-- SUMMARY STRIP -->
+        <div class="haberja-kpi-grid mb-3">
+            <div class="card haberja-kpi-card kpi-accent">
+                <div class="kpi-header">
+                    <span class="kpi-label">Target Usaha Dana</span>
+                    <span class="kpi-icon">🎯</span>
+                </div>
+                <div class="kpi-value">Rp {{ number_format($totalTargetDana, 0, ',', '.') }}</div>
+                <div class="kpi-desc">Akumulasi target seluruh program dana</div>
+            </div>
+
+            <div class="card haberja-kpi-card kpi-success">
+                <div class="kpi-header">
+                    <span class="kpi-label">Realisasi Masuk</span>
+                    <span class="kpi-icon">✅</span>
+                </div>
+                <div class="kpi-value kpi-val-success">Rp {{ number_format($totalRealisasiDana, 0, ',', '.') }}</div>
+                <div class="kpi-desc"><strong>{{ $persenDana }}%</strong> dari total target terkumpul</div>
+            </div>
+
+            <div class="card haberja-kpi-card kpi-warning">
+                <div class="kpi-header">
+                    <span class="kpi-label">Sisa Target</span>
+                    <span class="kpi-icon">⏳</span>
+                </div>
+                <div class="kpi-value kpi-val-warning">Rp {{ number_format($sisaTargetDana, 0, ',', '.') }}</div>
+                <div class="kpi-desc">Kekurangan target yang sedang dipacu</div>
+            </div>
+        </div>
+
+        <!-- LIST OF FUNDRAISING PROGRAMS -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-title">Rencana &amp; Realisasi Program Usaha Dana</div>
+                <span class="badge badge-gold">{{ $danaPlans->count() }} Program</span>
+            </div>
+
+            <!-- DESKTOP TABLE VIEW -->
+            <div class="card-body p-0 hide-mobile-table">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Program &amp; Strategi Dana</th>
+                                <th style="white-space: nowrap;">Target Dana</th>
+                                <th style="white-space: nowrap;">Realisasi Masuk</th>
+                                <th style="width: 140px;">Capaian (%)</th>
+                                <th>Jadwal Pelaksanaan</th>
+                                <th>Penanggung Jawab</th>
+                                <th>Status</th>
+                                @if($canManage)
+                                    <th style="width: 100px; text-align: center;">Aksi</th>
                                 @endif
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="{{ $canManage ? 8 : 7 }}" class="text-center py-4 text-muted">
-                                    Belum ada perencanaan pencarian dana.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @forelse($danaPlans as $dp)
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold" style="font-size: 13.5px; color: var(--primary);">{{ $dp->nama_program }}</div>
+                                        @if($dp->event)
+                                            <span class="badge badge-info" style="font-size: 9.5px; margin: 3px 0;">{{ $dp->event->nama }}</span>
+                                        @endif
+                                        <div class="text-muted small" style="font-size: 11.5px; line-height: 1.4; margin-top: 3px;">
+                                            {{ $dp->deskripsi }}
+                                        </div>
+                                        @if($dp->catatan)
+                                            <div style="font-size: 11px; color: var(--accent-dark); font-style: italic; margin-top: 4px;">
+                                                💡 {{ $dp->catatan }}
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td style="white-space: nowrap; font-weight: 600;">
+                                        Rp {{ number_format($dp->target_dana, 0, ',', '.') }}
+                                    </td>
+                                    <td style="white-space: nowrap; font-weight: 700; color: var(--success);">
+                                        Rp {{ number_format($dp->realisasi_dana, 0, ',', '.') }}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div style="flex: 1; background: #e9ecef; height: 8px; border-radius: 4px; overflow: hidden; min-width: 60px;">
+                                                <div style="width: {{ $dp->persentase }}%; background: {{ $dp->persentase >= 100 ? 'var(--success)' : 'var(--accent)' }}; height: 100%;"></div>
+                                            </div>
+                                            <span style="font-size: 11px; font-weight: 700; color: {{ $dp->persentase >= 100 ? 'var(--success)' : 'var(--primary)' }};">
+                                                {{ $dp->persentase }}%
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td style="font-size: 12px; white-space: nowrap;">
+                                        {{ $dp->tanggal_mulai ? $dp->tanggal_mulai->format('d/m/Y') : '-' }} 
+                                        @if($dp->tanggal_selesai) s/d {{ $dp->tanggal_selesai->format('d/m/Y') }} @endif
+                                    </td>
+                                    <td style="font-size: 12px; font-weight: 500;">
+                                        {{ $dp->penanggung_jawab ?? '-' }}
+                                    </td>
+                                    <td>
+                                        @if($dp->status === 'selesai' || $dp->status === 'tercapai')
+                                            <span class="badge badge-success">{{ ucfirst($dp->status) }}</span>
+                                        @elseif($dp->status === 'berjalan')
+                                            <span class="badge badge-gold">Sedang Berjalan</span>
+                                        @else
+                                            <span class="badge badge-secondary">Rencana</span>
+                                        @endif
+                                    </td>
+                                    @if($canManage)
+                                        <td style="text-align: center; white-space: nowrap;">
+                                            <button type="button" class="btn btn-outline btn-sm action-btn" onclick="editDana({{ json_encode($dp) }})">
+                                                ✏️
+                                            </button>
+                                            <form action="{{ route('haberja.dana.destroy', $dp->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Hapus program {{ $dp->nama_program }}?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-outline btn-sm action-btn action-del">
+                                                    🗑️
+                                                </button>
+                                            </form>
+                                        </td>
+                                    @endif
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="{{ $canManage ? 8 : 7 }}" class="text-center py-4 text-muted">
+                                        Belum ada data program pencarian dana.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
-    </div>
-@endif
 
-<!-- ========================================== -->
-<!-- TAB 4: BUDGETING & RAB                     -->
-<!-- ========================================== -->
-@if($activeTab === 'budget')
-    <!-- REKAPITULASI KEUANGAN RAB -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; margin-bottom: 24px;">
-        <div class="card" style="padding: 18px; border-left: 4px solid var(--burgundy);">
-            <div class="text-muted small" style="font-size: 12px; font-weight: 600; text-transform: uppercase;">Total Kebutuhan Biaya (Pengeluaran)</div>
-            <div style="font-size: 22px; font-weight: 700; color: var(--burgundy); margin: 6px 0;">
-                Rp {{ number_format($totalTargetRAB, 0, ',', '.') }}
-            </div>
-            <div class="small text-muted" style="font-size: 11.5px;">Realisasi belanja: <strong>Rp {{ number_format($totalRealisasiPengeluaran, 0, ',', '.') }}</strong></div>
-        </div>
+            <!-- MOBILE CARDS VIEW (CLEAN NATIVE APP STYLE) -->
+            <div class="card-body p-2 show-mobile-cards">
+                @forelse($danaPlans as $dp)
+                    <div class="mobile-program-card">
+                        <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                            <div>
+                                <div class="prog-title">{{ $dp->nama_program }}</div>
+                                @if($dp->event)
+                                    <span class="badge badge-info" style="font-size: 9px;">{{ $dp->event->nama }}</span>
+                                @endif
+                            </div>
+                            <span class="badge {{ $dp->status === 'tercapai' || $dp->status === 'selesai' ? 'badge-success' : 'badge-gold' }}" style="font-size: 9.5px; flex-shrink: 0;">
+                                {{ ucfirst($dp->status) }}
+                            </span>
+                        </div>
 
-        <div class="card" style="padding: 18px; border-left: 4px solid var(--success);">
-            <div class="text-muted small" style="font-size: 12px; font-weight: 600; text-transform: uppercase;">Total Estimasi Pemasukan</div>
-            <div style="font-size: 22px; font-weight: 700; color: var(--success); margin: 6px 0;">
-                Rp {{ number_format($totalRencanaPemasukan, 0, ',', '.') }}
-            </div>
-            <div class="small text-muted" style="font-size: 11.5px;">Realisasi masuk: <strong>Rp {{ number_format($totalRealisasiPemasukan, 0, ',', '.') }}</strong></div>
-        </div>
+                        @if($dp->deskripsi)
+                            <div class="prog-desc">{{ $dp->deskripsi }}</div>
+                        @endif
 
-        <div class="card" style="padding: 18px; border-left: 4px solid var(--accent);">
-            <div class="text-muted small" style="font-size: 12px; font-weight: 600; text-transform: uppercase;">Keseimbangan Anggaran (RAB)</div>
-            @php $selisihRAB = $totalRencanaPemasukan - $totalTargetRAB; @endphp
-            <div style="font-size: 22px; font-weight: 700; color: {{ $selisihRAB >= 0 ? 'var(--success)' : 'var(--danger)' }}; margin: 6px 0;">
-                {{ $selisihRAB >= 0 ? '+' : '' }} Rp {{ number_format($selisihRAB, 0, ',', '.') }}
-            </div>
-            <div class="small text-muted" style="font-size: 11.5px;">{{ $selisihRAB >= 0 ? 'Anggaran berimbang / surplus' : 'Perlu dipacu dari donatur & usaha dana' }}</div>
-        </div>
-    </div>
+                        <!-- Progress Bar & Amounts -->
+                        <div class="prog-stat-box">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span style="font-size: 11px; color: var(--text-muted);">Realisasi: <strong style="color: var(--success);">Rp {{ number_format($dp->realisasi_dana, 0, ',', '.') }}</strong></span>
+                                <span style="font-size: 11px; color: var(--text-muted);">Target: <strong>Rp {{ number_format($dp->target_dana, 0, ',', '.') }}</strong></span>
+                            </div>
+                            <div class="prog-bar-wrap">
+                                <div class="prog-bar-fill" style="width: {{ $dp->persentase }}%;"></div>
+                            </div>
+                            <div class="text-right" style="font-size: 10.5px; font-weight: 700; color: {{ $dp->persentase >= 100 ? 'var(--success)' : 'var(--accent-dark)' }}; margin-top: 3px;">
+                                {{ $dp->persentase }}% Tercapai
+                            </div>
+                        </div>
 
-    <!-- 1. TABEL RENCANA PENGELUARAN -->
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(90deg, #faf0f0 0%, #fff 100%);">
-            <div class="d-flex align-items-center gap-2">
-                <span style="font-size: 18px;">📉</span>
-                <div class="card-title" style="color: var(--burgundy);">Rencana Anggaran Biaya (RAB) Pengeluaran</div>
-            </div>
-            <span class="badge badge-danger">{{ $pengeluarans->count() }} Item Belanja</span>
-        </div>
-        <div class="card-body" style="padding: 0;">
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Pos Seksi / Alokasi</th>
-                            <th>Uraian Kebutuhan Belanja</th>
-                            <th>Volume</th>
-                            <th>Harga Satuan</th>
-                            <th>Total Anggaran</th>
-                            <th>Realisasi Belanja</th>
-                            <th>Selisih (Sisa)</th>
-                            <th>Keterangan</th>
+                        <!-- Footer Details & Actions -->
+                        <div class="prog-footer">
+                            <div class="prog-meta">
+                                <div>👤 PIC: <strong>{{ $dp->penanggung_jawab ?? '-' }}</strong></div>
+                                <div>📅 {{ $dp->tanggal_mulai ? $dp->tanggal_mulai->format('d/m/y') : '-' }} @if($dp->tanggal_selesai) - {{ $dp->tanggal_selesai->format('d/m/y') }} @endif</div>
+                            </div>
                             @if($canManage)
-                                <th style="width: 110px; text-align: center;">Aksi</th>
-                            @endif
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($pengeluarans as $bg)
-                            <tr>
-                                <td data-label="Seksi" style="font-weight: 600; font-size: 12.5px; color: var(--primary);">
-                                    {{ $bg->seksi }}
-                                    @if($bg->event)
-                                        <div style="font-size: 10px; color: var(--accent-dark);">{{ $bg->event->nama }}</div>
-                                    @endif
-                                </td>
-                                <td data-label="Uraian" style="font-weight: 600; font-size: 13px;">
-                                    {{ $bg->uraian }}
-                                </td>
-                                <td data-label="Volume" style="font-size: 12px; white-space: nowrap;">
-                                    {{ $bg->volume ?? '-' }}
-                                </td>
-                                <td data-label="Satuan" style="font-size: 12px; white-space: nowrap;">
-                                    Rp {{ number_format($bg->harga_satuan, 0, ',', '.') }}
-                                </td>
-                                <td data-label="Total" style="font-weight: 700; white-space: nowrap; color: var(--primary);">
-                                    Rp {{ number_format($bg->total_anggaran, 0, ',', '.') }}
-                                </td>
-                                <td data-label="Realisasi" style="font-weight: 600; white-space: nowrap; color: var(--burgundy);">
-                                    Rp {{ number_format($bg->realisasi, 0, ',', '.') }}
-                                </td>
-                                <td data-label="Selisih" style="font-weight: 600; white-space: nowrap; color: {{ $bg->selisih >= 0 ? 'var(--success)' : 'var(--danger)' }};">
-                                    Rp {{ number_format($bg->selisih, 0, ',', '.') }}
-                                </td>
-                                <td data-label="Keterangan" style="font-size: 11.5px; color: var(--text-muted);">
-                                    {{ $bg->keterangan ?? '-' }}
-                                </td>
-                                @if($canManage)
-                                    <td data-label="Aksi" style="text-align: center; white-space: nowrap;">
-                                        <button type="button" class="btn btn-outline btn-sm" style="padding: 2px 7px; font-size: 11px;" onclick="editBudget({{ json_encode($bg) }})">
-                                            ✏️
+                                <div class="d-flex gap-1">
+                                    <button type="button" class="btn btn-outline btn-sm action-btn" onclick="editDana({{ json_encode($dp) }})">
+                                        ✏️ Edit
+                                    </button>
+                                    <form action="{{ route('haberja.dana.destroy', $dp->id) }}" method="POST" onsubmit="return confirm('Hapus program {{ $dp->nama_program }}?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline btn-sm action-btn action-del">
+                                            🗑️
                                         </button>
-                                        <form action="{{ route('haberja.budget.destroy', $bg->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Hapus item belanja {{ $bg->uraian }}?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-outline btn-sm" style="padding: 2px 7px; font-size: 11px; color: var(--danger); border-color: rgba(139,26,26,.3);">
-                                                🗑️
-                                            </button>
-                                        </form>
-                                    </td>
-                                @endif
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="{{ $canManage ? 9 : 8 }}" class="text-center py-4 text-muted">
-                                    Belum ada item anggaran pengeluaran.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                    <tfoot>
-                        <tr style="background: var(--bg); font-weight: 700;">
-                            <td colspan="4" style="text-align: right;">TOTAL PENGELUARAN:</td>
-                            <td style="color: var(--primary);">Rp {{ number_format($totalTargetRAB, 0, ',', '.') }}</td>
-                            <td style="color: var(--burgundy);">Rp {{ number_format($totalRealisasiPengeluaran, 0, ',', '.') }}</td>
-                            <td style="color: var(--success);">Rp {{ number_format($totalTargetRAB - $totalRealisasiPengeluaran, 0, ',', '.') }}</td>
-                            <td colspan="{{ $canManage ? 2 : 1 }}"></td>
-                        </tr>
-                    </tfoot>
-                </table>
+                                    </form>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                @empty
+                    <div class="text-muted text-center py-4">Belum ada program dana.</div>
+                @endforelse
             </div>
         </div>
-    </div>
+    @endif
 
-    <!-- 2. TABEL RENCANA PEMASUKAN -->
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(90deg, #eef9f2 0%, #fff 100%);">
-            <div class="d-flex align-items-center gap-2">
-                <span style="font-size: 18px;">📈</span>
-                <div class="card-title" style="color: var(--success);">Rencana Sumber Pemasukan / Penerimaan Dana</div>
+    <!-- ========================================== -->
+    <!-- TAB 4: BUDGETING & RAB                     -->
+    <!-- ========================================== -->
+    @if($activeTab === 'budget')
+        <!-- FINANCIAL RECAP CARDS -->
+        <div class="haberja-kpi-grid mb-3">
+            <div class="card haberja-kpi-card kpi-burgundy">
+                <div class="kpi-header">
+                    <span class="kpi-label">Total Belanja (Pengeluaran)</span>
+                    <span class="kpi-icon">📉</span>
+                </div>
+                <div class="kpi-value kpi-val-burgundy">Rp {{ number_format($totalTargetRAB, 0, ',', '.') }}</div>
+                <div class="kpi-desc">Realisasi: <strong>Rp {{ number_format($totalRealisasiPengeluaran, 0, ',', '.') }}</strong></div>
             </div>
-            <span class="badge badge-success">{{ $pemasukans->count() }} Sumber Dana</span>
+
+            <div class="card haberja-kpi-card kpi-success">
+                <div class="kpi-header">
+                    <span class="kpi-label">Total Sumber Pemasukan</span>
+                    <span class="kpi-icon">📈</span>
+                </div>
+                <div class="kpi-value kpi-val-success">Rp {{ number_format($totalRencanaPemasukan, 0, ',', '.') }}</div>
+                <div class="kpi-desc">Realisasi: <strong>Rp {{ number_format($totalRealisasiPemasukan, 0, ',', '.') }}</strong></div>
+            </div>
+
+            <div class="card haberja-kpi-card kpi-accent">
+                <div class="kpi-header">
+                    <span class="kpi-label">Keseimbangan Anggaran</span>
+                    <span class="kpi-icon">⚖️</span>
+                </div>
+                @php $selisihRAB = $totalRencanaPemasukan - $totalTargetRAB; @endphp
+                <div class="kpi-value" style="color: {{ $selisihRAB >= 0 ? 'var(--success)' : 'var(--danger)' }};">
+                    {{ $selisihRAB >= 0 ? '+' : '' }} Rp {{ number_format($selisihRAB, 0, ',', '.') }}
+                </div>
+                <div class="kpi-desc">{{ $selisihRAB >= 0 ? 'Anggaran berimbang / surplus' : 'Perlu dipacu dari donatur & dana' }}</div>
+            </div>
         </div>
-        <div class="card-body" style="padding: 0;">
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Kategori Sumber</th>
-                            <th>Uraian Sumber Dana</th>
-                            <th>Target Penerimaan</th>
-                            <th>Realisasi Masuk</th>
-                            <th>Sisa Target</th>
-                            <th>Keterangan</th>
-                            @if($canManage)
-                                <th style="width: 110px; text-align: center;">Aksi</th>
-                            @endif
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($pemasukans as $pm)
+
+        <!-- 1. TABEL PENGELUARAN (BELANJA) -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(90deg, #fbf0f0 0%, #fff 100%);">
+                <div class="d-flex align-items-center gap-2">
+                    <span style="font-size: 18px;">📉</span>
+                    <div class="card-title" style="color: var(--burgundy);">RAB Pengeluaran (Kebutuhan Belanja)</div>
+                </div>
+                <span class="badge badge-danger">{{ $pengeluarans->count() }} Pos Belanja</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
                             <tr>
-                                <td data-label="Kategori" style="font-weight: 600; font-size: 12.5px; color: var(--primary);">
-                                    {{ $pm->seksi }}
-                                    @if($pm->event)
-                                        <div style="font-size: 10px; color: var(--accent-dark);">{{ $pm->event->nama }}</div>
-                                    @endif
-                                </td>
-                                <td data-label="Uraian" style="font-weight: 600; font-size: 13px;">
-                                    {{ $pm->uraian }}
-                                </td>
-                                <td data-label="Target" style="font-weight: 700; white-space: nowrap; color: var(--primary);">
-                                    Rp {{ number_format($pm->total_anggaran, 0, ',', '.') }}
-                                </td>
-                                <td data-label="Realisasi" style="font-weight: 700; white-space: nowrap; color: var(--success);">
-                                    Rp {{ number_format($pm->realisasi, 0, ',', '.') }}
-                                </td>
-                                <td data-label="Sisa" style="font-weight: 600; white-space: nowrap; color: {{ $pm->selisih > 0 ? 'var(--warning)' : 'var(--success)' }};">
-                                    Rp {{ number_format(max(0, $pm->total_anggaran - $pm->realisasi), 0, ',', '.') }}
-                                </td>
-                                <td data-label="Keterangan" style="font-size: 11.5px; color: var(--text-muted);">
-                                    {{ $pm->keterangan ?? '-' }}
-                                </td>
+                                <th>Pos Seksi</th>
+                                <th>Uraian Kebutuhan Belanja</th>
+                                <th style="white-space: nowrap;">Volume</th>
+                                <th style="white-space: nowrap;">Harga Satuan</th>
+                                <th style="white-space: nowrap;">Total Anggaran</th>
+                                <th style="white-space: nowrap;">Realisasi</th>
+                                <th style="white-space: nowrap;">Sisa Selisih</th>
+                                <th>Keterangan</th>
                                 @if($canManage)
-                                    <td data-label="Aksi" style="text-align: center; white-space: nowrap;">
-                                        <button type="button" class="btn btn-outline btn-sm" style="padding: 2px 7px; font-size: 11px;" onclick="editBudget({{ json_encode($pm) }})">
-                                            ✏️
-                                        </button>
-                                        <form action="{{ route('haberja.budget.destroy', $pm->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Hapus item penerimaan {{ $pm->uraian }}?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-outline btn-sm" style="padding: 2px 7px; font-size: 11px; color: var(--danger); border-color: rgba(139,26,26,.3);">
-                                                🗑️
-                                            </button>
-                                        </form>
-                                    </td>
+                                    <th style="width: 90px; text-align: center;">Aksi</th>
                                 @endif
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="{{ $canManage ? 7 : 6 }}" class="text-center py-4 text-muted">
-                                    Belum ada item rencana pemasukan.
-                                </td>
+                        </thead>
+                        <tbody>
+                            @forelse($pengeluarans as $bg)
+                                <tr>
+                                    <td style="font-weight: 600; font-size: 12px; color: var(--primary);">
+                                        {{ $bg->seksi }}
+                                        @if($bg->event)
+                                            <div style="font-size: 9.5px; color: var(--accent-dark);">{{ $bg->event->nama }}</div>
+                                        @endif
+                                    </td>
+                                    <td style="font-weight: 600; font-size: 13px;">
+                                        {{ $bg->uraian }}
+                                    </td>
+                                    <td style="font-size: 12px; white-space: nowrap;">
+                                        {{ $bg->volume ?? '-' }}
+                                    </td>
+                                    <td style="font-size: 12px; white-space: nowrap;">
+                                        Rp {{ number_format($bg->harga_satuan, 0, ',', '.') }}
+                                    </td>
+                                    <td style="font-weight: 700; white-space: nowrap; color: var(--primary);">
+                                        Rp {{ number_format($bg->total_anggaran, 0, ',', '.') }}
+                                    </td>
+                                    <td style="font-weight: 600; white-space: nowrap; color: var(--burgundy);">
+                                        Rp {{ number_format($bg->realisasi, 0, ',', '.') }}
+                                    </td>
+                                    <td style="font-weight: 600; white-space: nowrap; color: {{ $bg->selisih >= 0 ? 'var(--success)' : 'var(--danger)' }};">
+                                        Rp {{ number_format($bg->selisih, 0, ',', '.') }}
+                                    </td>
+                                    <td style="font-size: 11.5px; color: var(--text-muted);">
+                                        {{ $bg->keterangan ?? '-' }}
+                                    </td>
+                                    @if($canManage)
+                                        <td style="text-align: center; white-space: nowrap;">
+                                            <button type="button" class="btn btn-outline btn-sm action-btn" onclick="editBudget({{ json_encode($bg) }})">
+                                                ✏️
+                                            </button>
+                                            <form action="{{ route('haberja.budget.destroy', $bg->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Hapus item belanja {{ $bg->uraian }}?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-outline btn-sm action-btn action-del">
+                                                    🗑️
+                                                </button>
+                                            </form>
+                                        </td>
+                                    @endif
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="{{ $canManage ? 9 : 8 }}" class="text-center py-4 text-muted">
+                                        Belum ada item anggaran pengeluaran.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                        <tfoot>
+                            <tr style="background: var(--bg); font-weight: 700;">
+                                <td colspan="4" style="text-align: right;">TOTAL PENGELUARAN:</td>
+                                <td style="color: var(--primary);">Rp {{ number_format($totalTargetRAB, 0, ',', '.') }}</td>
+                                <td style="color: var(--burgundy);">Rp {{ number_format($totalRealisasiPengeluaran, 0, ',', '.') }}</td>
+                                <td style="color: var(--success);">Rp {{ number_format($totalTargetRAB - $totalRealisasiPengeluaran, 0, ',', '.') }}</td>
+                                <td colspan="{{ $canManage ? 2 : 1 }}"></td>
                             </tr>
-                        @endforelse
-                    </tbody>
-                    <tfoot>
-                        <tr style="background: var(--bg); font-weight: 700;">
-                            <td colspan="2" style="text-align: right;">TOTAL ESTIMASI PEMASUKAN:</td>
-                            <td style="color: var(--primary);">Rp {{ number_format($totalRencanaPemasukan, 0, ',', '.') }}</td>
-                            <td style="color: var(--success);">Rp {{ number_format($totalRealisasiPemasukan, 0, ',', '.') }}</td>
-                            <td style="color: var(--warning);">Rp {{ number_format(max(0, $totalRencanaPemasukan - $totalRealisasiPemasukan), 0, ',', '.') }}</td>
-                            <td colspan="{{ $canManage ? 2 : 1 }}"></td>
-                        </tr>
-                    </tfoot>
-                </table>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
-@endif
+
+        <!-- 2. TABEL PEMASUKAN (SUMBER DANA) -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(90deg, #edf8f1 0%, #fff 100%);">
+                <div class="d-flex align-items-center gap-2">
+                    <span style="font-size: 18px;">📈</span>
+                    <div class="card-title" style="color: var(--success);">Rencana Sumber Penerimaan / Pemasukan Dana</div>
+                </div>
+                <span class="badge badge-success">{{ $pemasukans->count() }} Sumber Dana</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Kategori Sumber</th>
+                                <th>Uraian Sumber Dana</th>
+                                <th style="white-space: nowrap;">Target Penerimaan</th>
+                                <th style="white-space: nowrap;">Realisasi Masuk</th>
+                                <th style="white-space: nowrap;">Sisa Target</th>
+                                <th>Keterangan</th>
+                                @if($canManage)
+                                    <th style="width: 90px; text-align: center;">Aksi</th>
+                                @endif
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($pemasukans as $pm)
+                                <tr>
+                                    <td style="font-weight: 600; font-size: 12px; color: var(--primary);">
+                                        {{ $pm->seksi }}
+                                        @if($pm->event)
+                                            <div style="font-size: 9.5px; color: var(--accent-dark);">{{ $pm->event->nama }}</div>
+                                        @endif
+                                    </td>
+                                    <td style="font-weight: 600; font-size: 13px;">
+                                        {{ $pm->uraian }}
+                                    </td>
+                                    <td style="font-weight: 700; white-space: nowrap; color: var(--primary);">
+                                        Rp {{ number_format($pm->total_anggaran, 0, ',', '.') }}
+                                    </td>
+                                    <td style="font-weight: 700; white-space: nowrap; color: var(--success);">
+                                        Rp {{ number_format($pm->realisasi, 0, ',', '.') }}
+                                    </td>
+                                    <td style="font-weight: 600; white-space: nowrap; color: {{ $pm->selisih > 0 ? 'var(--warning)' : 'var(--success)' }};">
+                                        Rp {{ number_format(max(0, $pm->total_anggaran - $pm->realisasi), 0, ',', '.') }}
+                                    </td>
+                                    <td style="font-size: 11.5px; color: var(--text-muted);">
+                                        {{ $pm->keterangan ?? '-' }}
+                                    </td>
+                                    @if($canManage)
+                                        <td style="text-align: center; white-space: nowrap;">
+                                            <button type="button" class="btn btn-outline btn-sm action-btn" onclick="editBudget({{ json_encode($pm) }})">
+                                                ✏️
+                                            </button>
+                                            <form action="{{ route('haberja.budget.destroy', $pm->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Hapus penerimaan {{ $pm->uraian }}?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-outline btn-sm action-btn action-del">
+                                                    🗑️
+                                                </button>
+                                            </form>
+                                        </td>
+                                    @endif
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="{{ $canManage ? 7 : 6 }}" class="text-center py-4 text-muted">
+                                        Belum ada item rencana pemasukan.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                        <tfoot>
+                            <tr style="background: var(--bg); font-weight: 700;">
+                                <td colspan="2" style="text-align: right;">TOTAL ESTIMASI PEMASUKAN:</td>
+                                <td style="color: var(--primary);">Rp {{ number_format($totalRencanaPemasukan, 0, ',', '.') }}</td>
+                                <td style="color: var(--success);">Rp {{ number_format($totalRealisasiPemasukan, 0, ',', '.') }}</td>
+                                <td style="color: var(--warning);">Rp {{ number_format(max(0, $totalRencanaPemasukan - $totalRealisasiPemasukan), 0, ',', '.') }}</td>
+                                <td colspan="{{ $canManage ? 2 : 1 }}"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    @endif
+
+</div>
 
 <!-- ========================================== -->
 <!-- MODALS FOR MANAGEMENT (ADMIN / MAJELIS)    -->
@@ -749,11 +848,11 @@
                 @csrf
                 <input type="hidden" name="_method" id="panitiaMethod" value="POST">
                 <div class="modal-header">
-                    <h3 id="panitiaModalTitle" style="font-size: 17px; font-weight: 700; color: var(--primary);">Tambah Anggota Panitia HABERJA</h3>
+                    <h3 id="panitiaModalTitle" class="modal-title">Tambah Personil Panitia HABERJA</h3>
                     <button type="button" class="btn-close" onclick="closeModal('modalTambahPanitia')">✕</button>
                 </div>
-                <div class="modal-body" style="display: flex; flex-direction: column; gap: 12px;">
-                    <div>
+                <div class="modal-body">
+                    <div class="form-group mb-2">
                         <label class="form-label">Terkait Acara:</label>
                         <select name="event_id" id="panitia_event_id" class="form-control">
                             <option value="">-- Panitia Induk / Semua Acara --</option>
@@ -762,7 +861,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div>
+                    <div class="form-group mb-2">
                         <label class="form-label">Seksi / Bidang: *</label>
                         <select name="seksi" id="panitia_seksi" class="form-control" required>
                             <option value="Badan Pengurus Harian (BPH)">Badan Pengurus Harian (BPH)</option>
@@ -776,23 +875,23 @@
                             <option value="Seksi Diakonia &amp; Aksi Kasih">Seksi Diakonia &amp; Aksi Kasih</option>
                         </select>
                     </div>
-                    <div>
+                    <div class="form-group mb-2">
                         <label class="form-label">Nama Lengkap &amp; Gelar: *</label>
                         <input type="text" name="nama" id="panitia_nama" class="form-control" required placeholder="Contoh: Daniel Sihombing, S.T.">
                     </div>
-                    <div>
+                    <div class="form-group mb-2">
                         <label class="form-label">Jabatan dalam Panitia: *</label>
                         <input type="text" name="jabatan" id="panitia_jabatan" class="form-control" required placeholder="Contoh: Koordinator Seksi Acara">
                     </div>
-                    <div>
+                    <div class="form-group mb-2">
                         <label class="form-label">Nomor WhatsApp / Telepon:</label>
                         <input type="text" name="telepon" id="panitia_telepon" class="form-control" placeholder="0812-xxxx-xxxx">
                     </div>
-                    <div>
+                    <div class="form-group mb-2">
                         <label class="form-label">Tugas Pokok &amp; Tanggung Jawab:</label>
-                        <textarea name="tugas_pokok" id="panitia_tugas_pokok" rows="3" class="form-control" placeholder="Rincian tugas dan fungsi koordinasi..."></textarea>
+                        <textarea name="tugas_pokok" id="panitia_tugas_pokok" rows="2" class="form-control" placeholder="Rincian tugas dan fungsi koordinasi..."></textarea>
                     </div>
-                    <div>
+                    <div class="form-group">
                         <label class="form-label">Urutan Tampilan:</label>
                         <input type="number" name="urutan" id="panitia_urutan" class="form-control" value="0">
                     </div>
@@ -813,11 +912,11 @@
                 @csrf
                 <input type="hidden" name="_method" id="danaMethod" value="POST">
                 <div class="modal-header">
-                    <h3 id="danaModalTitle" style="font-size: 17px; font-weight: 700; color: var(--primary);">Tambah Program Usaha Dana</h3>
+                    <h3 id="danaModalTitle" class="modal-title">Tambah Program Usaha Dana</h3>
                     <button type="button" class="btn-close" onclick="closeModal('modalTambahDana')">✕</button>
                 </div>
-                <div class="modal-body" style="display: flex; flex-direction: column; gap: 12px;">
-                    <div>
+                <div class="modal-body">
+                    <div class="form-group mb-2">
                         <label class="form-label">Terkait Acara:</label>
                         <select name="event_id" id="dana_event_id" class="form-control">
                             <option value="">-- Umum / Semua Acara --</option>
@@ -826,15 +925,15 @@
                             @endforeach
                         </select>
                     </div>
-                    <div>
+                    <div class="form-group mb-2">
                         <label class="form-label">Nama Program Aksi Dana: *</label>
                         <input type="text" name="nama_program" id="dana_nama_program" class="form-control" required placeholder="Contoh: Aksi Bazaar Makanan Tradisional">
                     </div>
-                    <div>
+                    <div class="form-group mb-2">
                         <label class="form-label">Strategi / Deskripsi Program:</label>
                         <textarea name="deskripsi" id="dana_deskripsi" rows="2" class="form-control" placeholder="Penjelasan teknis pengumpulan dana..."></textarea>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="grid-2-col mb-2">
                         <div>
                             <label class="form-label">Target Dana (Rp): *</label>
                             <input type="number" name="target_dana" id="dana_target_dana" class="form-control" required min="0" placeholder="10000000">
@@ -844,7 +943,7 @@
                             <input type="number" name="realisasi_dana" id="dana_realisasi_dana" class="form-control" min="0" value="0">
                         </div>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="grid-2-col mb-2">
                         <div>
                             <label class="form-label">Tanggal Mulai:</label>
                             <input type="date" name="tanggal_mulai" id="dana_tanggal_mulai" class="form-control">
@@ -854,11 +953,11 @@
                             <input type="date" name="tanggal_selesai" id="dana_tanggal_selesai" class="form-control">
                         </div>
                     </div>
-                    <div>
+                    <div class="form-group mb-2">
                         <label class="form-label">Penanggung Jawab (PIC):</label>
                         <input type="text" name="penanggung_jawab" id="dana_penanggung_jawab" class="form-control" placeholder="Nama koordinator seksi dana">
                     </div>
-                    <div>
+                    <div class="form-group mb-2">
                         <label class="form-label">Status Program: *</label>
                         <select name="status" id="dana_status" class="form-control" required>
                             <option value="rencana">Rencana</option>
@@ -867,7 +966,7 @@
                             <option value="selesai">Selesai</option>
                         </select>
                     </div>
-                    <div>
+                    <div class="form-group">
                         <label class="form-label">Catatan / Evaluasi:</label>
                         <input type="text" name="catatan" id="dana_catatan" class="form-control" placeholder="Catatan perkembangan atau kendala">
                     </div>
@@ -888,11 +987,11 @@
                 @csrf
                 <input type="hidden" name="_method" id="budgetMethod" value="POST">
                 <div class="modal-header">
-                    <h3 id="budgetModalTitle" style="font-size: 17px; font-weight: 700; color: var(--primary);">Tambah Item Anggaran (RAB)</h3>
+                    <h3 id="budgetModalTitle" class="modal-title">Tambah Item Anggaran (RAB)</h3>
                     <button type="button" class="btn-close" onclick="closeModal('modalTambahBudget')">✕</button>
                 </div>
-                <div class="modal-body" style="display: flex; flex-direction: column; gap: 12px;">
-                    <div>
+                <div class="modal-body">
+                    <div class="form-group mb-2">
                         <label class="form-label">Acara Hari Besar: *</label>
                         <select name="event_id" id="budget_event_id" class="form-control" required>
                             @foreach($events as $ev)
@@ -900,7 +999,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="grid-2-col mb-2">
                         <div>
                             <label class="form-label">Tipe Item: *</label>
                             <select name="tipe" id="budget_tipe" class="form-control" required>
@@ -909,15 +1008,15 @@
                             </select>
                         </div>
                         <div>
-                            <label class="form-label">Pos Seksi / Alokasi: *</label>
+                            <label class="form-label">Pos Seksi: *</label>
                             <input type="text" name="seksi" id="budget_seksi" class="form-control" required placeholder="Contoh: Seksi Acara & Ibadah">
                         </div>
                     </div>
-                    <div>
+                    <div class="form-group mb-2">
                         <label class="form-label">Uraian Kebutuhan / Sumber Dana: *</label>
                         <input type="text" name="uraian" id="budget_uraian" class="form-control" required placeholder="Contoh: Konsumsi Ibadah Paskah Subuh">
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="grid-2-col mb-2">
                         <div>
                             <label class="form-label">Volume (Jumlah/Satuan):</label>
                             <input type="text" name="volume" id="budget_volume" class="form-control" placeholder="Contoh: 350 porsi">
@@ -927,7 +1026,7 @@
                             <input type="number" name="harga_satuan" id="budget_harga_satuan" class="form-control" min="0" value="0">
                         </div>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="grid-2-col mb-2">
                         <div>
                             <label class="form-label">Total Anggaran (Rp): *</label>
                             <input type="number" name="total_anggaran" id="budget_total_anggaran" class="form-control" required min="0" placeholder="5000000">
@@ -937,8 +1036,8 @@
                             <input type="number" name="realisasi" id="budget_realisasi" class="form-control" min="0" value="0">
                         </div>
                     </div>
-                    <div>
-                        <label class="form-label">Keterangan / Rincian Tambahan:</label>
+                    <div class="form-group">
+                        <label class="form-label">Keterangan / Catatan:</label>
                         <input type="text" name="keterangan" id="budget_keterangan" class="form-control" placeholder="Vendor atau peruntukan spesifik">
                     </div>
                 </div>
@@ -951,58 +1050,827 @@
     </div>
 @endif
 
+<!-- ========================================== -->
+<!-- STYLESHEET (CLEAN, MODERN, RESPONSIVE)     -->
+<!-- ========================================== -->
 <style>
-/* CSS MODAL & OVERLAY */
-.custom-modal {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 9999; display: flex; align-items: center; justify-content: center;
+/* Container & Header */
+.haberja-container {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.haberja-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.haberja-header-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Hero Card */
+.haberja-hero-card {
+    background: linear-gradient(135deg, rgba(44,24,16,0.96) 0%, rgba(107,26,46,0.92) 100%);
+    color: #fff;
+    border: 1px solid var(--accent);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(44,24,16,.15);
+}
+
+.haberja-watermark {
+    position: absolute;
+    right: -20px;
+    bottom: -30px;
+    font-size: 140px;
+    color: rgba(200,148,26,0.06);
+    font-family: 'Cinzel', serif;
+    pointer-events: none;
+    user-select: none;
+}
+
+.haberja-hero-body {
+    padding: 20px 24px;
+    position: relative;
+    z-index: 1;
+}
+
+.haberja-hero-title {
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 24px;
+    color: var(--accent-light);
+    margin-bottom: 6px;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.haberja-hero-desc {
+    font-size: 13px;
+    color: #e8d9c0;
+    line-height: 1.5;
+    margin-bottom: 14px;
+    max-width: 800px;
+}
+
+/* Event Chips Selector */
+.haberja-chips-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+}
+
+.haberja-chips-container::-webkit-scrollbar {
+    display: none;
+}
+
+.haberja-chips-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--accent-light);
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.haberja-chips-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+}
+
+.haberja-chips-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.haberja-chip {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 20px;
+    text-decoration: none;
+    background: rgba(255,255,255,0.1);
+    color: #fdf6e3;
+    border: 1px solid rgba(255,255,255,0.18);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all .2s ease;
+    flex-shrink: 0;
+}
+
+.haberja-chip:hover {
+    background: rgba(200,148,26,0.3);
+    color: #fff;
+    border-color: var(--accent-light);
+}
+
+.haberja-chip.active {
+    background: var(--accent);
+    color: var(--primary-dark);
+    font-weight: 700;
+    border-color: var(--accent-light);
+    box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+
+/* Horizontal Responsive Tabs */
+.haberja-tabs-nav {
+    display: flex;
+    gap: 6px;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 2px;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.haberja-tabs-nav::-webkit-scrollbar {
+    display: none;
+}
+
+.haberja-tab-link {
+    padding: 9px 16px;
+    font-weight: 600;
+    font-size: 13px;
+    border-radius: 8px 8px 0 0;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--text-muted);
+    transition: all .15s ease;
+    border: 1px solid transparent;
+    border-bottom: none;
+    flex-shrink: 0;
+}
+
+.haberja-tab-link:hover {
+    color: var(--primary);
+    background: rgba(255,255,255,0.5);
+}
+
+.haberja-tab-link.active {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-bottom: 2px solid var(--accent);
+    color: var(--primary);
+    font-weight: 700;
+    box-shadow: 0 -2px 6px rgba(44,24,16,.03);
+}
+
+.tab-badge {
+    background: #e8d9c0;
+    color: var(--primary);
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 10px;
+}
+
+.tab-badge-gold {
+    background: var(--accent);
+    color: #fff;
+}
+
+.tab-badge-info {
+    background: var(--info);
+    color: #fff;
+}
+
+/* KPI Responsive Grid */
+.haberja-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+
+.haberja-kpi-card {
     padding: 16px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform .2s ease;
 }
+
+.haberja-kpi-card:hover {
+    transform: translateY(-2px);
+}
+
+.kpi-accent { border-left: 4px solid var(--accent); }
+.kpi-success { border-left: 4px solid var(--success); }
+.kpi-burgundy { border-left: 4px solid var(--burgundy); }
+.kpi-warning { border-left: 4px solid var(--warning); }
+
+.kpi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.kpi-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-muted);
+}
+
+.kpi-icon {
+    font-size: 16px;
+}
+
+.kpi-value {
+    font-size: clamp(17px, 2.5vw, 21px);
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1.2;
+    margin-bottom: 6px;
+    word-break: break-word;
+}
+
+.kpi-val-success { color: var(--success); }
+.kpi-val-burgundy { color: var(--burgundy); }
+.kpi-val-warning { color: var(--warning); }
+
+.kpi-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.35;
+}
+
+.kpi-progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.kpi-progress-bar {
+    flex: 1;
+    background: #e9ecef;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.kpi-progress-fill {
+    height: 100%;
+    background: var(--success);
+    border-radius: 3px;
+}
+
+.kpi-progress-pct {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--success);
+}
+
+/* 3 Events Grid */
+.haberja-events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 16px;
+}
+
+.haberja-event-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 2px 6px rgba(44,24,16,.04);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.haberja-event-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(44,24,16,.08);
+}
+
+.event-emoji {
+    font-size: 26px;
+}
+
+.event-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 4px;
+}
+
+.event-verse {
+    font-size: 11.5px;
+    color: var(--burgundy);
+    font-weight: 600;
+    margin-bottom: 8px;
+    line-height: 1.35;
+}
+
+.event-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.45;
+    margin-bottom: 12px;
+}
+
+.event-card-bottom {
+    border-top: 1px dashed var(--border);
+    padding-top: 10px;
+}
+
+/* Overview Dual-Grid */
+.haberja-overview-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 18px;
+    align-items: start;
+}
+
+.link-accent {
+    color: var(--accent-dark);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.link-accent:hover {
+    text-decoration: underline;
+}
+
+.snapshot-card {
+    padding: 11px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.mini-progress {
+    background: #e9ecef;
+    height: 5px;
+    border-radius: 2.5px;
+    overflow: hidden;
+}
+
+.mini-progress-fill {
+    height: 100%;
+    background: var(--success);
+}
+
+/* BPH Snapshot Row */
+.bph-member-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #fff;
+}
+
+.member-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: var(--accent-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13.5px;
+    flex-shrink: 0;
+}
+
+.member-name {
+    font-weight: 600;
+    font-size: 12.5px;
+    color: var(--primary);
+}
+
+.member-title {
+    font-size: 11px;
+    color: var(--accent-dark);
+    font-weight: 600;
+}
+
+.wa-btn {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-color: #25d366;
+    color: #128c7e;
+}
+
+.wa-btn:hover {
+    background: #25d366;
+    color: #fff;
+}
+
+/* Struktur Panitia Tab */
+.info-highlight-card {
+    background: linear-gradient(135deg, rgba(200,148,26,.08), rgba(44,24,16,.03));
+    border: 1px dashed var(--accent);
+}
+
+.seksi-chips-wrapper {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+}
+
+.seksi-chips-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+.seksi-chip {
+    padding: 5px 12px;
+    font-size: 11.5px;
+    font-weight: 600;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all .15s ease;
+    flex-shrink: 0;
+}
+
+.seksi-chip:hover {
+    border-color: var(--accent);
+    color: var(--primary);
+}
+
+.seksi-chip.active {
+    background: var(--primary);
+    color: var(--accent-light);
+    border-color: var(--primary-dark);
+    font-weight: 700;
+}
+
+.bph-header {
+    background: linear-gradient(90deg, #fdf4df 0%, #fff 100%) !important;
+}
+
+.panitia-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+}
+
+.member-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all .2s ease;
+}
+
+.member-card-bph {
+    border-left: 3px solid var(--accent);
+    background: #fffdf9;
+}
+
+.member-avatar-lg {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary) 0%, #4a2818 100%);
+    color: var(--accent-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,.12);
+}
+
+.member-full-name {
+    font-weight: 700;
+    font-size: 13.5px;
+    color: var(--primary);
+    line-height: 1.3;
+}
+
+.member-role-title {
+    font-size: 11.5px;
+    color: var(--accent-dark);
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.member-task-box {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    background: var(--bg);
+    padding: 8px 10px;
+    border-radius: 6px;
+    line-height: 1.4;
+    margin-top: 10px;
+}
+
+.task-label {
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.member-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid #f2e9dc;
+}
+
+.contact-link {
+    color: #128c7e;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 11.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.contact-link:hover {
+    text-decoration: underline;
+}
+
+.action-btn {
+    padding: 2px 7px;
+    font-size: 11px;
+}
+
+.action-del {
+    color: var(--danger);
+    border-color: rgba(139,26,26,.3);
+}
+
+/* Mobile Program Cards (Tab 3) */
+.show-mobile-cards {
+    display: none;
+}
+
+.mobile-program-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+
+.prog-title {
+    font-weight: 700;
+    font-size: 13.5px;
+    color: var(--primary);
+    line-height: 1.3;
+}
+
+.prog-desc {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    line-height: 1.4;
+    margin-bottom: 8px;
+}
+
+.prog-stat-box {
+    background: var(--bg);
+    padding: 8px 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.prog-bar-wrap {
+    background: #e0e0e0;
+    height: 7px;
+    border-radius: 3.5px;
+    overflow: hidden;
+}
+
+.prog-bar-fill {
+    height: 100%;
+    background: var(--success);
+}
+
+.prog-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--border);
+}
+
+.prog-meta {
+    color: var(--text-muted);
+    line-height: 1.35;
+}
+
+/* Modals */
+.custom-modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+}
+
 .modal-backdrop {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(44,24,16,0.55); backdrop-filter: blur(3px);
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(44,24,16,0.6);
+    backdrop-filter: blur(4px);
 }
+
 .modal-dialog {
-    position: relative; z-index: 10000; background: #fffcf5;
-    border: 1px solid var(--border); border-radius: 12px;
-    width: 100%; max-width: 540px; box-shadow: 0 10px 30px rgba(0,0,0,.25);
-    overflow: hidden; animation: popIn .2s ease;
+    position: relative;
+    z-index: 10000;
+    background: #fffcf5;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0,0,0,.3);
+    overflow: hidden;
+    animation: popIn .2s ease;
 }
+
 @keyframes popIn {
-    from { opacity: 0; transform: scale(.95); }
+    from { opacity: 0; transform: scale(.96); }
     to { opacity: 1; transform: scale(1); }
 }
+
 .modal-header {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
     background: #faf3e0;
 }
+
+.modal-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 0;
+}
+
 .modal-body {
-    padding: 20px; max-height: 75vh; overflow-y: auto;
+    padding: 16px 18px;
+    overflow-y: auto;
+    flex: 1;
 }
+
 .modal-footer {
-    display: flex; justify-content: flex-end; gap: 8px;
-    padding: 14px 20px; border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 18px;
+    border-top: 1px solid var(--border);
     background: #faf3e0;
 }
+
 .btn-close {
-    background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-muted);
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: var(--text-muted);
 }
+
 .form-label {
-    display: block; font-size: 12px; font-weight: 600; color: var(--primary); margin-bottom: 4px;
+    display: block;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 4px;
 }
+
 .form-control {
-    width: 100%; padding: 8px 12px; border: 1px solid var(--border);
-    border-radius: 6px; font-size: 13px; font-family: inherit; background: #fff;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-family: inherit;
+    background: #fff;
 }
+
 .form-control:focus {
-    outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(200,148,26,.2);
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(200,148,26,.2);
 }
-@media (max-width: 900px) {
-    .overview-grid { grid-template-columns: 1fr !important; }
+
+.grid-2-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+/* ========================================== */
+/* RESPONSIVE MEDIA QUERIES                   */
+/* ========================================== -->
+@media (max-width: 991px) {
+    .haberja-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    .haberja-overview-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .hide-mobile-table {
+        display: none !important;
+    }
+    .show-mobile-cards {
+        display: block !important;
+    }
+    .haberja-hero-body {
+        padding: 16px;
+    }
+    .haberja-hero-title {
+        font-size: 20px;
+    }
+    .haberja-watermark {
+        font-size: 90px;
+        right: -10px;
+        bottom: -20px;
+    }
+    .panitia-cards-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .hide-xs {
+        display: none !important;
+    }
+    .haberja-page-header {
+        margin-bottom: 14px;
+    }
+    .page-header-title {
+        font-size: 18px !important;
+    }
+    .haberja-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    .haberja-kpi-card {
+        padding: 12px;
+    }
+    .kpi-value {
+        font-size: 15px;
+    }
+    .kpi-label {
+        font-size: 9.5px;
+    }
+    .haberja-tab-link {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    .grid-2-col {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
 }
 </style>
 
+<!-- SCRIPT LOGIC -->
 <script>
 function openModal(id) {
     document.getElementById(id).style.display = 'flex';
@@ -1011,8 +1879,24 @@ function closeModal(id) {
     document.getElementById(id).style.display = 'none';
 }
 
+function filterSeksi(slug, btn) {
+    // Update active chip
+    document.querySelectorAll('.seksi-chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+
+    // Show/hide groups
+    const groups = document.querySelectorAll('.seksi-group-card');
+    groups.forEach(g => {
+        if (slug === 'all' || g.getAttribute('data-seksi') === slug) {
+            g.style.display = 'block';
+        } else {
+            g.style.display = 'none';
+        }
+    });
+}
+
 function editPanitia(data) {
-    document.getElementById('panitiaModalTitle').innerText = 'Edit Anggota Panitia';
+    document.getElementById('panitiaModalTitle').innerText = 'Edit Personil Panitia';
     const form = document.getElementById('formPanitia');
     form.action = '/haberja/panitia/' + data.id;
     document.getElementById('panitiaMethod').value = 'PUT';
