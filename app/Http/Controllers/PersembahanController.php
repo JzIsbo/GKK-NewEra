@@ -179,4 +179,25 @@ class PersembahanController extends Controller
 
         return view('jemaat.riwayat-persembahan', compact('persembahans'));
     }
+
+    public function downloadQris()
+    {
+        $qrisStatis = PengaturanApp::get('qr_statis_gereja');
+        if ($qrisStatis && file_exists(storage_path('app/public/' . $qrisStatis))) {
+            $filePath = storage_path('app/public/' . $qrisStatis);
+        } elseif ($qrisStatis && file_exists(public_path('storage/' . $qrisStatis))) {
+            $filePath = public_path('storage/' . $qrisStatis);
+        } else {
+            $filePath = public_path('images/qris-persembahan.png');
+        }
+
+        if (!file_exists($filePath)) {
+            abort(404, 'File barcode QRIS tidak ditemukan.');
+        }
+
+        return response()->download($filePath, 'QRIS-Persembahan-GEMINDO.png', [
+            'Content-Type' => 'image/png',
+            'Cache-Control' => 'no-cache, private',
+        ]);
+    }
 }

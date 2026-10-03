@@ -335,6 +335,33 @@
             display: block;
             border-radius: 4px;
         }
+        .btn-unduh-qris {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold-dark));
+            color: var(--mahogany-dark);
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            font-size: 13.5px;
+            font-weight: 800;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(200, 148, 26, 0.4);
+            transition: all 0.25s ease;
+            margin-bottom: 18px;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-unduh-qris:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(200, 148, 26, 0.6);
+            color: var(--mahogany-dark);
+        }
+        .btn-unduh-qris:active {
+            transform: translateY(0);
+        }
         .bank-details {
             background-color: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(200, 148, 26, 0.3);
@@ -612,10 +639,24 @@
                     @endphp
                     <div class="qris-img-container">
                         <!-- Barcode QRIS Persembahan -->
-                        <img src="{{ $qrisBarcodeSrc }}" alt="Barcode QRIS Persembahan GEMINDO" class="qris-img">
+                        <img id="qrisBarcodeImg" src="{{ $qrisBarcodeSrc }}" alt="Barcode QRIS Persembahan GEMINDO" class="qris-img">
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <a href="{{ route('persembahan.download-qris') }}" 
+                           download="QRIS-Persembahan-GEMINDO.png" 
+                           id="btnUnduhQris"
+                           class="btn-unduh-qris" 
+                           onclick="handleQrisDownload(event, '{{ $qrisBarcodeSrc }}', '{{ route('persembahan.download-qris') }}')">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            <span id="btnUnduhQrisText">Unduh Barcode QRIS</span>
+                        </a>
                     </div>
                     <div style="font-size:13px; color:rgba(255,255,255,0.75); margin-bottom: 24px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 500; line-height: 1.5;">
-                        Pindai barcode QRIS di atas melalui mobile banking (BCA, Mandiri, BRI, BNI, dll) atau aplikasi dompet digital / e-wallet.
+                        Pindai atau unduh barcode QRIS di atas untuk persembahan via mobile banking (BCA, Mandiri, BRI, BNI, dll) atau dompet digital.
                     </div>
 
                     @if($rekening)
@@ -699,6 +740,58 @@
                 submitBtn.innerText = 'Lanjutkan Pembayaran';
             });
         });
+
+        function handleQrisDownload(e, imgSrc, downloadUrl) {
+            if (window.fetch && window.Blob) {
+                e.preventDefault();
+                const btn = document.getElementById('btnUnduhQris');
+                const textSpan = document.getElementById('btnUnduhQrisText');
+                const origText = textSpan ? textSpan.innerText : 'Unduh Barcode QRIS';
+                if (textSpan) textSpan.innerText = 'Mengunduh...';
+                if (btn) {
+                    btn.style.opacity = '0.75';
+                    btn.style.pointerEvents = 'none';
+                }
+
+                fetch(downloadUrl || imgSrc)
+                    .then(function(res) {
+                        if (!res.ok) throw new Error('Download failed');
+                        return res.blob();
+                    })
+                    .then(function(blob) {
+                        const blobUrl = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = blobUrl;
+                        a.download = 'QRIS-Persembahan-GEMINDO.png';
+                        document.body.appendChild(a);
+                        a.click();
+                        setTimeout(function() {
+                            window.URL.revokeObjectURL(blobUrl);
+                            document.body.removeChild(a);
+                            if (textSpan) textSpan.innerText = '✅ Berhasil Diunduh!';
+                            setTimeout(function() {
+                                if (textSpan) textSpan.innerText = origText;
+                                if (btn) {
+                                    btn.style.opacity = '';
+                                    btn.style.pointerEvents = '';
+                                }
+                            }, 2200);
+                        }, 400);
+                    })
+                    .catch(function(err) {
+                        console.warn('[QRIS Download Fallback]', err);
+                        window.location.href = downloadUrl;
+                        setTimeout(function() {
+                            if (textSpan) textSpan.innerText = origText;
+                            if (btn) {
+                                btn.style.opacity = '';
+                                btn.style.pointerEvents = '';
+                            }
+                        }, 1500);
+                    });
+            }
+        }
     </script>
 
 </body>

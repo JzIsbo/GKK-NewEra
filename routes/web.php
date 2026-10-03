@@ -26,6 +26,7 @@ Route::get('/persembahan', [PersembahanController::class, 'index'])->name('perse
 Route::post('/persembahan', [PersembahanController::class, 'store'])->name('persembahan.store');
 Route::get('/persembahan/sukses/{orderId}', [PersembahanController::class, 'success'])->name('persembahan.success');
 Route::get('/persembahan/bukti/{orderId}', [PersembahanController::class, 'buktiPdf'])->name('persembahan.bukti');
+Route::get('/persembahan/unduh-qris', [PersembahanController::class, 'downloadQris'])->name('persembahan.download-qris');
 
 // Midtrans Webhook (no CSRF)
 Route::post('/webhook/midtrans', [PersembahanController::class, 'webhook'])
