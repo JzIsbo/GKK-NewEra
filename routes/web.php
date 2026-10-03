@@ -83,6 +83,21 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('kegiatan', \App\Http\Controllers\KegiatanController::class)->except(['show']);
     });
 
+    // Panitia HABERJA (Hari Besar Gereja) Routes
+    Route::prefix('haberja')->name('haberja.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\HaberjaController::class, 'index'])->name('index');
+        Route::get('/print', [\App\Http\Controllers\HaberjaController::class, 'print'])->name('print');
+        Route::post('/panitia', [\App\Http\Controllers\HaberjaController::class, 'storePanitia'])->name('panitia.store');
+        Route::put('/panitia/{panitia}', [\App\Http\Controllers\HaberjaController::class, 'updatePanitia'])->name('panitia.update');
+        Route::delete('/panitia/{panitia}', [\App\Http\Controllers\HaberjaController::class, 'destroyPanitia'])->name('panitia.destroy');
+        Route::post('/dana-plan', [\App\Http\Controllers\HaberjaController::class, 'storeDanaPlan'])->name('dana.store');
+        Route::put('/dana-plan/{danaPlan}', [\App\Http\Controllers\HaberjaController::class, 'updateDanaPlan'])->name('dana.update');
+        Route::delete('/dana-plan/{danaPlan}', [\App\Http\Controllers\HaberjaController::class, 'destroyDanaPlan'])->name('dana.destroy');
+        Route::post('/budget', [\App\Http\Controllers\HaberjaController::class, 'storeBudget'])->name('budget.store');
+        Route::put('/budget/{budget}', [\App\Http\Controllers\HaberjaController::class, 'updateBudget'])->name('budget.update');
+        Route::delete('/budget/{budget}', [\App\Http\Controllers\HaberjaController::class, 'destroyBudget'])->name('budget.destroy');
+    });
+
     // Jemaat Routes
     Route::prefix('jemaat')->name('jemaat.')->group(function () {
         Route::get('/profil', [JemaatController::class, 'profil'])->name('profil');
