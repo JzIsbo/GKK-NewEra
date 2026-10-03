@@ -4,10 +4,18 @@
 @section('header-title', 'Manajemen User')
 
 @section('content')
-<div class="page-header">
-    <h1 class="page-header-title">Manajemen Data Pengguna</h1>
-    <div class="breadcrumb">
-        <a href="{{ route('dashboard') }}">Beranda</a> &gt; <span>User</span>
+<div class="page-header d-flex justify-content-between align-items-center" style="flex-wrap: wrap; gap: 12px;">
+    <div>
+        <h1 class="page-header-title">Manajemen Data Pengguna</h1>
+        <div class="breadcrumb">
+            <a href="{{ route('dashboard') }}">Beranda</a> &gt; <span>User</span>
+        </div>
+    </div>
+    <div>
+        <a href="{{ route('admin.users.create') }}" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 6px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Tambah Pengguna
+        </a>
     </div>
 </div>
 

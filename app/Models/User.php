@@ -52,6 +52,16 @@ class User extends Authenticatable
         return $this->hasMany(Persembahan::class);
     }
 
+    public function kegiatans()
+    {
+        return $this->hasMany(Kegiatan::class, 'user_id');
+    }
+
+    public function pengumuman()
+    {
+        return $this->hasMany(Pengumuman::class, 'user_id');
+    }
+
     public function getNamaDisplayAttribute(): string
     {
         return $this->nama_lengkap ?: $this->name;

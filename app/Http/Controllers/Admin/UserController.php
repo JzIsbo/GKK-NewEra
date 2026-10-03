@@ -42,6 +42,36 @@ class UserController extends Controller
         return view('admin.users.index', compact('users', 'roles', 'trashedCount'));
     }
 
+    public function create()
+    {
+        $roles     = Role::all();
+        $kategoris = \App\Models\Kategori::where('aktif', true)->get();
+        return view('admin.users.create', compact('roles', 'kategoris'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nama_lengkap'       => ['required', 'string', 'max:255'],
+            'email'              => ['required', 'email', 'unique:users,email'],
+            'password'           => ['required', 'string', 'min:8'],
+            'no_telepon'         => ['nullable', 'string', 'max:20'],
+            'status_keanggotaan' => ['required', 'in:pending,aktif,non-aktif'],
+            'role'               => ['required', 'exists:roles,name'],
+            'kategori_id'        => ['nullable', 'exists:kategoris,id'],
+        ]);
+
+        $userData = $request->except('role', 'password', '_token');
+        $userData['password'] = Hash::make($request->password);
+        $userData['nomor_jemaat'] = User::generateNomorJemaat();
+        $userData['name'] = $request->nama_lengkap;
+
+        $user = User::create($userData);
+        $user->assignRole($request->role);
+
+        return redirect()->route('admin.users.index')->with('success', "Pengguna {$user->nama_display} berhasil ditambahkan dengan Nomor Jemaat: {$user->nomor_jemaat}.");
+    }
+
     public function show(User $user)
     {
         $user->load('roles', 'kategori', 'persembahans.jenisPersembahan');
@@ -63,6 +93,7 @@ class UserController extends Controller
             'no_telepon'         => ['nullable', 'string', 'max:20'],
             'status_keanggotaan' => ['required', 'in:pending,aktif,non-aktif'],
             'role'               => ['required', 'exists:roles,name'],
+            'kategori_id'        => ['nullable', 'exists:kategoris,id'],
         ]);
 
         $user->update($request->except('role', 'password', '_token', '_method'));

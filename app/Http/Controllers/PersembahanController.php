@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AppRole;
 use App\Models\JenisPersembahan;
 use App\Models\Persembahan;
 use App\Models\PengaturanApp;
@@ -125,14 +126,14 @@ class PersembahanController extends Controller
         // Proteksi Otorisasi (Cegah IDOR):
         // Diizinkan jika:
         // 1. User login adalah donatur transaksi
-        // 2. User login memiliki role super_admin / majelis / bendahara
+        // 2. User login memiliki role super_admin / majelis / bendahara_majelis
         // 3. User memiliki session token transaksi saat ini (baru saja bayar sebagai guest)
         $isAuthorized = false;
         if (auth()->check()) {
             $user = auth()->user();
             if ($persembahan->user_id && $persembahan->user_id === $user->id) {
                 $isAuthorized = true;
-            } elseif ($user->hasAnyRole(['super_admin', 'majelis', 'bendahara'])) {
+            } elseif ($user->hasAnyRole(AppRole::KEUANGAN)) {
                 $isAuthorized = true;
             }
         }
