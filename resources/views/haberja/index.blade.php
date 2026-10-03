@@ -308,13 +308,49 @@
     <!-- TAB 2: STRUKTUR PANITIA HABERJA            -->
     <!-- ========================================== -->
     @if($activeTab === 'struktur')
+        @php
+            $penasihatMembers = $panitias->filter(function($p) {
+                $lower = strtolower($p->seksi);
+                return str_contains($lower, 'penasihat') || str_contains($lower, 'pelindung') || str_contains($lower, 'pendamping');
+            });
+            $bphMembers = $panitias->filter(function($p) {
+                $lower = strtolower($p->seksi);
+                return str_contains($lower, 'bph') || str_contains($lower, 'badan pengurus harian') || str_contains($lower, 'inti');
+            });
+            $seksiGroups = $panitiaBySeksi->reject(function($members, $name) {
+                $lower = strtolower($name);
+                return str_contains($lower, 'penasihat') || str_contains($lower, 'pelindung') || str_contains($lower, 'pendamping') || str_contains($lower, 'bph') || str_contains($lower, 'badan pengurus harian') || str_contains($lower, 'inti');
+            });
+        @endphp
+
+        <!-- INTRO & STATS SUMMARY BANNER -->
         <div class="card mb-3 info-highlight-card">
             <div class="card-body p-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div style="font-size: 26px; flex-shrink: 0;">🏛️</div>
-                    <div style="font-size: 12.5px; line-height: 1.45; color: var(--primary);">
-                        <strong>Susunan Panitia Hari-Hari Besar Gereja GEMINDO Kawan Kasih 2026</strong>. 
-                        Ditetapkan oleh Majelis Jemaat untuk mengkoordinir seluruh rangkaian perayaan secara berkesinambungan.
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="info-icon-badge">🏛️</div>
+                        <div>
+                            <div class="fw-bold" style="font-size: 13.5px; color: var(--primary);">
+                                Struktur Kepanitiaan Hari-Hari Besar Gereja (HABERJA) GEMINDO Kawan Kasih
+                            </div>
+                            <div class="text-muted" style="font-size: 12px; margin-top: 2px;">
+                                Ditetapkan oleh Majelis Jemaat untuk mengkoordinir perayaan Paskah, HUT Gereja, serta Natal &amp; Tahun Baru.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panitia-quick-stats">
+                        <div class="panitia-stat-item">
+                            <span class="stat-num">{{ $panitias->count() }}</span>
+                            <span class="stat-lbl">Personil</span>
+                        </div>
+                        <div class="panitia-stat-item">
+                            <span class="stat-num">{{ $bphMembers->count() }}</span>
+                            <span class="stat-lbl">BPH Inti</span>
+                        </div>
+                        <div class="panitia-stat-item">
+                            <span class="stat-num">{{ count($seksiGroups) }}</span>
+                            <span class="stat-lbl">Seksi Pelayanan</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -323,41 +359,207 @@
         <!-- QUICK SEKSI FILTER CHIPS -->
         <div class="seksi-chips-wrapper mb-3">
             <button type="button" class="seksi-chip active" onclick="filterSeksi('all', this)">
-                ✨ Semua Seksi ({{ $panitias->count() }})
+                ✨ Semua ({{ $panitias->count() }})
             </button>
-            @foreach($panitiaBySeksi as $seksiName => $members)
+            @if($penasihatMembers->count() > 0)
+                <button type="button" class="seksi-chip" onclick="filterSeksi('penasihat', this)">
+                    🕊️ Penasihat ({{ $penasihatMembers->count() }})
+                </button>
+            @endif
+            @if($bphMembers->count() > 0)
+                <button type="button" class="seksi-chip" onclick="filterSeksi('bph', this)">
+                    👑 BPH Inti ({{ $bphMembers->count() }})
+                </button>
+            @endif
+            @foreach($seksiGroups as $seksiName => $members)
                 @php
                     $seksiSlug = Str::slug($seksiName);
                 @endphp
                 <button type="button" class="seksi-chip" onclick="filterSeksi('{{ $seksiSlug }}', this)">
+                    @if(str_contains(strtolower($seksiName), 'acara')) 📖
+                    @elseif(str_contains(strtolower($seksiName), 'dana')) 💰
+                    @elseif(str_contains(strtolower($seksiName), 'perlengkapan') || str_contains(strtolower($seksiName), 'dekorasi')) 🎪
+                    @elseif(str_contains(strtolower($seksiName), 'konsumsi')) 🍱
+                    @elseif(str_contains(strtolower($seksiName), 'publikasi') || str_contains(strtolower($seksiName), 'multimedia')) 📡
+                    @elseif(str_contains(strtolower($seksiName), 'keamanan')) 🛡️
+                    @elseif(str_contains(strtolower($seksiName), 'diakonia')) ❤️
+                    @else 👥 @endif
                     {{ $seksiName }} ({{ $members->count() }})
                 </button>
             @endforeach
         </div>
 
-        <!-- SECTIONS ACCORDION / GROUPS -->
-        @foreach($panitiaBySeksi as $seksiName => $members)
+        <!-- TIER 1: PELINDUNG & PENASIHAT ROHANI -->
+        @if($penasihatMembers->count() > 0)
+            <div class="card mb-4 seksi-group-card penasihat-card-tier" data-seksi="penasihat">
+                <div class="card-header d-flex justify-content-between align-items-center penasihat-header">
+                    <div class="d-flex align-items-center gap-2">
+                        <span style="font-size: 20px;">🕊️</span>
+                        <div>
+                            <div class="card-title" style="color: var(--primary-dark); font-size: 15px; margin: 0;">
+                                Pelindung &amp; Penasihat Rohani Majelis Jemaat
+                            </div>
+                            <div style="font-size: 11px; color: var(--accent-dark); font-weight: 500;">
+                                Memberikan pendampingan pastoral, pengawasan teologis, dan restu pelayanan
+                            </div>
+                        </div>
+                    </div>
+                    <span class="badge badge-gold" style="font-size: 11px; font-weight: 700;">
+                        {{ $penasihatMembers->count() }} Penasihat
+                    </span>
+                </div>
+                <div class="card-body" style="padding: 16px;">
+                    <div class="panitia-cards-grid">
+                        @foreach($penasihatMembers as $m)
+                            @php
+                                $cleanWa = preg_replace('/[^0-9]/', '', $m->telepon ?? '');
+                                if (str_starts_with($cleanWa, '0')) {
+                                    $cleanWa = '62' . substr($cleanWa, 1);
+                                }
+                            @endphp
+                            <div class="member-card member-card-penasihat">
+                                <div class="member-card-body">
+                                    <div class="d-flex align-items-start gap-3 mb-2">
+                                        <div class="member-avatar-penasihat">
+                                            ✝
+                                        </div>
+                                        <div style="flex: 1; min-width: 0;">
+                                            <div class="member-full-name">{{ $m->nama }}</div>
+                                            <div class="member-role-title">{{ $m->jabatan }}</div>
+                                            @if($m->event)
+                                                <span class="badge badge-info" style="font-size: 9px; margin-top: 3px;">{{ $m->event->nama }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @if($m->tugas_pokok)
+                                        <div class="member-task-box">
+                                            <span class="task-label">Peran:</span> {{ $m->tugas_pokok }}
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="member-card-footer">
+                                    <div>
+                                        @if($cleanWa)
+                                            <a href="https://wa.me/{{ $cleanWa }}" target="_blank" class="contact-link" title="Hubungi via WhatsApp">
+                                                💬 <span>{{ $m->telepon }}</span>
+                                            </a>
+                                        @else
+                                            <span class="text-muted" style="font-size: 11px;">-</span>
+                                        @endif
+                                    </div>
+                                    @if($canManage)
+                                        <div class="d-flex gap-1">
+                                            <button type="button" class="btn btn-outline btn-sm action-btn" onclick="editPanitia({{ json_encode($m) }})">✏️</button>
+                                            <form action="{{ route('haberja.panitia.destroy', $m->id) }}" method="POST" onsubmit="return confirm('Hapus personil {{ $m->nama }}?')">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="btn btn-outline btn-sm action-btn action-del">🗑️</button>
+                                            </form>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        <!-- TIER 2: BADAN PENGURUS HARIAN (BPH) -->
+        @if($bphMembers->count() > 0)
+            <div class="card mb-4 seksi-group-card bph-card-tier" data-seksi="bph">
+                <div class="card-header d-flex justify-content-between align-items-center bph-header">
+                    <div class="d-flex align-items-center gap-2">
+                        <span style="font-size: 20px;">👑</span>
+                        <div>
+                            <div class="card-title" style="color: var(--primary); font-size: 15px; margin: 0;">
+                                Badan Pengurus Harian (BPH) HABERJA
+                            </div>
+                            <div style="font-size: 11px; color: var(--text-muted); font-weight: 500;">
+                                Pimpinan eksekutif yang bertanggung jawab atas seluruh kelancaran rangkaian acara
+                            </div>
+                        </div>
+                    </div>
+                    <span class="badge badge-gold" style="font-size: 11px; font-weight: 700;">
+                        {{ $bphMembers->count() }} Pengurus
+                    </span>
+                </div>
+                <div class="card-body" style="padding: 16px;">
+                    <div class="panitia-cards-grid">
+                        @foreach($bphMembers as $m)
+                            @php
+                                $cleanWa = preg_replace('/[^0-9]/', '', $m->telepon ?? '');
+                                if (str_starts_with($cleanWa, '0')) {
+                                    $cleanWa = '62' . substr($cleanWa, 1);
+                                }
+                            @endphp
+                            <div class="member-card member-card-bph">
+                                <div class="member-card-body">
+                                    <div class="d-flex align-items-start gap-3 mb-2">
+                                        <div class="member-avatar-lg">
+                                            {{ strtoupper(substr($m->nama, 0, 1)) }}
+                                        </div>
+                                        <div style="flex: 1; min-width: 0;">
+                                            <div class="member-full-name">{{ $m->nama }}</div>
+                                            <div class="member-role-title">{{ $m->jabatan }}</div>
+                                            @if($m->event)
+                                                <span class="badge badge-info" style="font-size: 9px; margin-top: 3px;">{{ $m->event->nama }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @if($m->tugas_pokok)
+                                        <div class="member-task-box">
+                                            <span class="task-label">Tugas:</span> {{ $m->tugas_pokok }}
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="member-card-footer">
+                                    <div>
+                                        @if($cleanWa)
+                                            <a href="https://wa.me/{{ $cleanWa }}" target="_blank" class="contact-link" title="Hubungi via WhatsApp">
+                                                💬 <span>{{ $m->telepon }}</span>
+                                            </a>
+                                        @else
+                                            <span class="text-muted" style="font-size: 11px;">-</span>
+                                        @endif
+                                    </div>
+                                    @if($canManage)
+                                        <div class="d-flex gap-1">
+                                            <button type="button" class="btn btn-outline btn-sm action-btn" onclick="editPanitia({{ json_encode($m) }})">✏️</button>
+                                            <form action="{{ route('haberja.panitia.destroy', $m->id) }}" method="POST" onsubmit="return confirm('Hapus personil {{ $m->nama }}?')">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="btn btn-outline btn-sm action-btn action-del">🗑️</button>
+                                            </form>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        <!-- TIER 3: SEKSI-SEKSI PELAYANAN TEKNIS -->
+        @foreach($seksiGroups as $seksiName => $members)
             @php
                 $seksiSlug = Str::slug($seksiName);
-                $isBPH = str_contains(strtolower($seksiName), 'bph') || str_contains(strtolower($seksiName), 'harian');
             @endphp
             <div class="card mb-3 seksi-group-card" data-seksi="{{ $seksiSlug }}">
-                <div class="card-header d-flex justify-content-between align-items-center {{ $isBPH ? 'bph-header' : '' }}">
+                <div class="card-header d-flex justify-content-between align-items-center seksi-header">
                     <div class="d-flex align-items-center gap-2">
                         <span style="font-size: 18px;">
-                            @if(str_contains(strtolower($seksiName), 'penasihat')) 🕊️
-                            @elseif($isBPH) 👑
-                            @elseif(str_contains(strtolower($seksiName), 'acara')) 📖
+                            @if(str_contains(strtolower($seksiName), 'acara')) 📖
                             @elseif(str_contains(strtolower($seksiName), 'dana')) 💰
                             @elseif(str_contains(strtolower($seksiName), 'perlengkapan') || str_contains(strtolower($seksiName), 'dekorasi')) 🎪
                             @elseif(str_contains(strtolower($seksiName), 'konsumsi')) 🍱
                             @elseif(str_contains(strtolower($seksiName), 'publikasi') || str_contains(strtolower($seksiName), 'multimedia')) 📡
                             @elseif(str_contains(strtolower($seksiName), 'keamanan')) 🛡️
-                            @else ❤️ @endif
+                            @elseif(str_contains(strtolower($seksiName), 'diakonia')) ❤️
+                            @else 👥 @endif
                         </span>
                         <div class="card-title" style="font-size: 14.5px;">{{ $seksiName }}</div>
                     </div>
-                    <span class="badge {{ $isBPH ? 'badge-gold' : 'badge-secondary' }}">{{ $members->count() }} Personil</span>
+                    <span class="badge badge-secondary" style="font-size: 11px;">{{ $members->count() }} Personil</span>
                 </div>
                 <div class="card-body" style="padding: 14px;">
                     <div class="panitia-cards-grid">
@@ -367,15 +569,21 @@
                                 if (str_starts_with($cleanWa, '0')) {
                                     $cleanWa = '62' . substr($cleanWa, 1);
                                 }
+                                $isKoordinator = str_contains(strtolower($m->jabatan), 'koordinator') || str_contains(strtolower($m->jabatan), 'ketua seksi');
                             @endphp
-                            <div class="member-card {{ $isBPH ? 'member-card-bph' : '' }}">
+                            <div class="member-card {{ $isKoordinator ? 'member-card-koordinator' : '' }}">
                                 <div class="member-card-body">
                                     <div class="d-flex align-items-start gap-3 mb-2">
-                                        <div class="member-avatar-lg">
+                                        <div class="member-avatar-lg {{ $isKoordinator ? 'avatar-koordinator' : '' }}">
                                             {{ strtoupper(substr($m->nama, 0, 1)) }}
                                         </div>
                                         <div style="flex: 1; min-width: 0;">
-                                            <div class="member-full-name">{{ $m->nama }}</div>
+                                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                                <div class="member-full-name">{{ $m->nama }}</div>
+                                                @if($isKoordinator)
+                                                    <span class="badge badge-gold" style="font-size: 9px; padding: 2px 6px;">Koordinator</span>
+                                                @endif
+                                            </div>
                                             <div class="member-role-title">{{ $m->jabatan }}</div>
                                             @if($m->event)
                                                 <span class="badge badge-info" style="font-size: 9px; margin-top: 3px;">{{ $m->event->nama }}</span>
@@ -427,7 +635,7 @@
     <!-- TAB 3: PLANNING PENCARIAN DANA             -->
     <!-- ========================================== -->
     @if($activeTab === 'dana')
-        <!-- SUMMARY STRIP -->
+        <!-- SUMMARY STRIP & KPI CARDS -->
         <div class="haberja-kpi-grid mb-3">
             <div class="card haberja-kpi-card kpi-accent">
                 <div class="kpi-header">
@@ -435,16 +643,21 @@
                     <span class="kpi-icon">🎯</span>
                 </div>
                 <div class="kpi-value">Rp {{ number_format($totalTargetDana, 0, ',', '.') }}</div>
-                <div class="kpi-desc">Akumulasi target seluruh program dana</div>
+                <div class="kpi-desc">Akumulasi target seluruh program aksi dana</div>
             </div>
 
             <div class="card haberja-kpi-card kpi-success">
                 <div class="kpi-header">
-                    <span class="kpi-label">Realisasi Masuk</span>
+                    <span class="kpi-label">Realisasi Terkumpul</span>
                     <span class="kpi-icon">✅</span>
                 </div>
                 <div class="kpi-value kpi-val-success">Rp {{ number_format($totalRealisasiDana, 0, ',', '.') }}</div>
-                <div class="kpi-desc"><strong>{{ $persenDana }}%</strong> dari total target terkumpul</div>
+                <div class="kpi-progress-wrap">
+                    <div class="kpi-progress-bar">
+                        <div class="kpi-progress-fill" style="width: {{ $persenDana }}%;"></div>
+                    </div>
+                    <span class="kpi-progress-pct">{{ $persenDana }}%</span>
+                </div>
             </div>
 
             <div class="card haberja-kpi-card kpi-warning">
@@ -455,6 +668,39 @@
                 <div class="kpi-value kpi-val-warning">Rp {{ number_format($sisaTargetDana, 0, ',', '.') }}</div>
                 <div class="kpi-desc">Kekurangan target yang sedang dipacu</div>
             </div>
+        </div>
+
+        <!-- PROGRESS BAR OVERALL MILESTONE -->
+        <div class="card mb-3 milestone-banner-card">
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                    <div class="fw-bold" style="font-size: 13px; color: var(--primary);">
+                        Milestone Capaian Aksi Usaha Dana
+                    </div>
+                    <div style="font-size: 12px; font-weight: 700; color: {{ $persenDana >= 100 ? 'var(--success)' : 'var(--accent-dark)' }};">
+                        Rp {{ number_format($totalRealisasiDana, 0, ',', '.') }} / Rp {{ number_format($totalTargetDana, 0, ',', '.') }} ({{ $persenDana }}%)
+                    </div>
+                </div>
+                <div class="milestone-bar-wrap">
+                    <div class="milestone-bar-fill" style="width: {{ $persenDana }}%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROGRAM STATUS FILTER TABS -->
+        <div class="dana-filter-wrapper mb-3">
+            <button type="button" class="dana-filter-btn active" onclick="filterDanaStatus('all', this)">
+                ✨ Semua ({{ $danaPlans->count() }})
+            </button>
+            <button type="button" class="dana-filter-btn" onclick="filterDanaStatus('berjalan', this)">
+                ⚡ Berjalan ({{ $danaPlans->where('status', 'berjalan')->count() }})
+            </button>
+            <button type="button" class="dana-filter-btn" onclick="filterDanaStatus('tercapai', this)">
+                ✅ Tercapai / Selesai ({{ $danaPlans->whereIn('status', ['tercapai', 'selesai'])->count() }})
+            </button>
+            <button type="button" class="dana-filter-btn" onclick="filterDanaStatus('rencana', this)">
+                📅 Rencana ({{ $danaPlans->where('status', 'rencana')->count() }})
+            </button>
         </div>
 
         <!-- LIST OF FUNDRAISING PROGRAMS -->
@@ -471,9 +717,9 @@
                         <thead>
                             <tr>
                                 <th>Program &amp; Strategi Dana</th>
-                                <th style="white-space: nowrap;">Target Dana</th>
-                                <th style="white-space: nowrap;">Realisasi Masuk</th>
-                                <th style="width: 140px;">Capaian (%)</th>
+                                <th style="white-space: nowrap; text-align: right;">Target Dana</th>
+                                <th style="white-space: nowrap; text-align: right;">Realisasi Masuk</th>
+                                <th style="width: 140px; text-align: center;">Capaian (%)</th>
                                 <th>Jadwal Pelaksanaan</th>
                                 <th>Penanggung Jawab</th>
                                 <th>Status</th>
@@ -484,7 +730,10 @@
                         </thead>
                         <tbody>
                             @forelse($danaPlans as $dp)
-                                <tr>
+                                @php
+                                    $stClass = in_array($dp->status, ['tercapai', 'selesai']) ? 'tercapai' : ($dp->status === 'berjalan' ? 'berjalan' : 'rencana');
+                                @endphp
+                                <tr class="dana-table-row" data-status="{{ $stClass }}">
                                     <td>
                                         <div class="fw-bold" style="font-size: 13.5px; color: var(--primary);">{{ $dp->nama_program }}</div>
                                         @if($dp->event)
@@ -499,10 +748,10 @@
                                             </div>
                                         @endif
                                     </td>
-                                    <td style="white-space: nowrap; font-weight: 600;">
+                                    <td style="white-space: nowrap; font-weight: 600; text-align: right;">
                                         Rp {{ number_format($dp->target_dana, 0, ',', '.') }}
                                     </td>
-                                    <td style="white-space: nowrap; font-weight: 700; color: var(--success);">
+                                    <td style="white-space: nowrap; font-weight: 700; color: var(--success); text-align: right;">
                                         Rp {{ number_format($dp->realisasi_dana, 0, ',', '.') }}
                                     </td>
                                     <td>
@@ -554,6 +803,15 @@
                                 </tr>
                             @endforelse
                         </tbody>
+                        <tfoot>
+                            <tr style="background: var(--bg); font-weight: 700;">
+                                <td>TOTAL USAHA DANA:</td>
+                                <td style="text-align: right; color: var(--primary);">Rp {{ number_format($totalTargetDana, 0, ',', '.') }}</td>
+                                <td style="text-align: right; color: var(--success);">Rp {{ number_format($totalRealisasiDana, 0, ',', '.') }}</td>
+                                <td style="text-align: center; color: {{ $persenDana >= 100 ? 'var(--success)' : 'var(--accent-dark)' }};">{{ $persenDana }}%</td>
+                                <td colspan="{{ $canManage ? 4 : 3 }}">Sisa Target: <strong>Rp {{ number_format($sisaTargetDana, 0, ',', '.') }}</strong></td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
@@ -561,15 +819,18 @@
             <!-- MOBILE CARDS VIEW (CLEAN NATIVE APP STYLE) -->
             <div class="card-body p-2 show-mobile-cards">
                 @forelse($danaPlans as $dp)
-                    <div class="mobile-program-card">
+                    @php
+                        $stClass = in_array($dp->status, ['tercapai', 'selesai']) ? 'tercapai' : ($dp->status === 'berjalan' ? 'berjalan' : 'rencana');
+                    @endphp
+                    <div class="mobile-program-card dana-mobile-card" data-status="{{ $stClass }}">
                         <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
-                            <div>
+                            <div style="flex: 1; min-width: 0;">
                                 <div class="prog-title">{{ $dp->nama_program }}</div>
                                 @if($dp->event)
-                                    <span class="badge badge-info" style="font-size: 9px;">{{ $dp->event->nama }}</span>
+                                    <span class="badge badge-info" style="font-size: 9.5px; margin-top: 3px;">{{ $dp->event->nama }}</span>
                                 @endif
                             </div>
-                            <span class="badge {{ $dp->status === 'tercapai' || $dp->status === 'selesai' ? 'badge-success' : 'badge-gold' }}" style="font-size: 9.5px; flex-shrink: 0;">
+                            <span class="badge {{ $dp->status === 'tercapai' || $dp->status === 'selesai' ? 'badge-success' : ($dp->status === 'berjalan' ? 'badge-gold' : 'badge-secondary') }}" style="font-size: 10px; flex-shrink: 0;">
                                 {{ ucfirst($dp->status) }}
                             </span>
                         </div>
@@ -578,25 +839,40 @@
                             <div class="prog-desc">{{ $dp->deskripsi }}</div>
                         @endif
 
-                        <!-- Progress Bar & Amounts -->
+                        <!-- Financial Tiles (Target vs Realisasi) -->
                         <div class="prog-stat-box">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <span style="font-size: 11px; color: var(--text-muted);">Realisasi: <strong style="color: var(--success);">Rp {{ number_format($dp->realisasi_dana, 0, ',', '.') }}</strong></span>
-                                <span style="font-size: 11px; color: var(--text-muted);">Target: <strong>Rp {{ number_format($dp->target_dana, 0, ',', '.') }}</strong></span>
+                            <div class="prog-tiles-grid mb-2">
+                                <div class="prog-tile">
+                                    <div class="prog-tile-label">Target Dana</div>
+                                    <div class="prog-tile-val">Rp {{ number_format($dp->target_dana, 0, ',', '.') }}</div>
+                                </div>
+                                <div class="prog-tile">
+                                    <div class="prog-tile-label">Realisasi Masuk</div>
+                                    <div class="prog-tile-val text-success">Rp {{ number_format($dp->realisasi_dana, 0, ',', '.') }}</div>
+                                </div>
                             </div>
                             <div class="prog-bar-wrap">
                                 <div class="prog-bar-fill" style="width: {{ $dp->persentase }}%;"></div>
                             </div>
-                            <div class="text-right" style="font-size: 10.5px; font-weight: 700; color: {{ $dp->persentase >= 100 ? 'var(--success)' : 'var(--accent-dark)' }}; margin-top: 3px;">
-                                {{ $dp->persentase }}% Tercapai
+                            <div class="d-flex justify-content-between align-items-center mt-1" style="font-size: 11px;">
+                                <span class="text-muted">Sisa: Rp {{ number_format(max(0, $dp->target_dana - $dp->realisasi_dana), 0, ',', '.') }}</span>
+                                <span style="font-weight: 700; color: {{ $dp->persentase >= 100 ? 'var(--success)' : 'var(--accent-dark)' }};">
+                                    {{ $dp->persentase }}% Tercapai
+                                </span>
                             </div>
                         </div>
+
+                        @if($dp->catatan)
+                            <div style="font-size: 11px; color: var(--accent-dark); font-style: italic; margin-bottom: 8px;">
+                                💡 {{ $dp->catatan }}
+                            </div>
+                        @endif
 
                         <!-- Footer Details & Actions -->
                         <div class="prog-footer">
                             <div class="prog-meta">
-                                <div>👤 PIC: <strong>{{ $dp->penanggung_jawab ?? '-' }}</strong></div>
-                                <div>📅 {{ $dp->tanggal_mulai ? $dp->tanggal_mulai->format('d/m/y') : '-' }} @if($dp->tanggal_selesai) - {{ $dp->tanggal_selesai->format('d/m/y') }} @endif</div>
+                                <div>👤 <strong>{{ $dp->penanggung_jawab ?? '-' }}</strong></div>
+                                <div>📅 {{ $dp->tanggal_mulai ? $dp->tanggal_mulai->format('d/m/y') : '-' }} @if($dp->tanggal_selesai) s/d {{ $dp->tanggal_selesai->format('d/m/y') }} @endif</div>
                             </div>
                             @if($canManage)
                                 <div class="d-flex gap-1">
@@ -658,8 +934,21 @@
             </div>
         </div>
 
-        <!-- 1. TABEL PENGELUARAN (BELANJA) -->
-        <div class="card mb-4">
+        <!-- QUICK CATEGORY TOGGLE (SEMUA / BELANJA / PEMASUKAN) -->
+        <div class="budget-toggle-wrapper mb-3">
+            <button type="button" class="budget-toggle-btn active" onclick="filterBudgetType('all', this)">
+                📑 Semua Pos ({{ $pengeluarans->count() + $pemasukans->count() }})
+            </button>
+            <button type="button" class="budget-toggle-btn" onclick="filterBudgetType('pengeluaran', this)">
+                📉 Belanja / Pengeluaran ({{ $pengeluarans->count() }})
+            </button>
+            <button type="button" class="budget-toggle-btn" onclick="filterBudgetType('pemasukan', this)">
+                📈 Pemasukan / Sumber Dana ({{ $pemasukans->count() }})
+            </button>
+        </div>
+
+        <!-- 1. SECTION PENGELUARAN (BELANJA) -->
+        <div class="card mb-4 budget-section-card" id="sectionPengeluaran">
             <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(90deg, #fbf0f0 0%, #fff 100%);">
                 <div class="d-flex align-items-center gap-2">
                     <span style="font-size: 18px;">📉</span>
@@ -667,7 +956,9 @@
                 </div>
                 <span class="badge badge-danger">{{ $pengeluarans->count() }} Pos Belanja</span>
             </div>
-            <div class="card-body p-0">
+
+            <!-- DESKTOP TABLE -->
+            <div class="card-body p-0 hide-mobile-table">
                 <div class="table-wrapper">
                     <table>
                         <thead>
@@ -675,10 +966,10 @@
                                 <th>Pos Seksi</th>
                                 <th>Uraian Kebutuhan Belanja</th>
                                 <th style="white-space: nowrap;">Volume</th>
-                                <th style="white-space: nowrap;">Harga Satuan</th>
-                                <th style="white-space: nowrap;">Total Anggaran</th>
-                                <th style="white-space: nowrap;">Realisasi</th>
-                                <th style="white-space: nowrap;">Sisa Selisih</th>
+                                <th style="white-space: nowrap; text-align: right;">Harga Satuan</th>
+                                <th style="white-space: nowrap; text-align: right;">Total Anggaran</th>
+                                <th style="white-space: nowrap; text-align: right;">Realisasi</th>
+                                <th style="white-space: nowrap; text-align: right;">Sisa Selisih</th>
                                 <th>Keterangan</th>
                                 @if($canManage)
                                     <th style="width: 90px; text-align: center;">Aksi</th>
@@ -700,16 +991,16 @@
                                     <td style="font-size: 12px; white-space: nowrap;">
                                         {{ $bg->volume ?? '-' }}
                                     </td>
-                                    <td style="font-size: 12px; white-space: nowrap;">
+                                    <td style="font-size: 12px; white-space: nowrap; text-align: right;">
                                         Rp {{ number_format($bg->harga_satuan, 0, ',', '.') }}
                                     </td>
-                                    <td style="font-weight: 700; white-space: nowrap; color: var(--primary);">
+                                    <td style="font-weight: 700; white-space: nowrap; color: var(--primary); text-align: right;">
                                         Rp {{ number_format($bg->total_anggaran, 0, ',', '.') }}
                                     </td>
-                                    <td style="font-weight: 600; white-space: nowrap; color: var(--burgundy);">
+                                    <td style="font-weight: 600; white-space: nowrap; color: var(--burgundy); text-align: right;">
                                         Rp {{ number_format($bg->realisasi, 0, ',', '.') }}
                                     </td>
-                                    <td style="font-weight: 600; white-space: nowrap; color: {{ $bg->selisih >= 0 ? 'var(--success)' : 'var(--danger)' }};">
+                                    <td style="font-weight: 600; white-space: nowrap; color: {{ $bg->selisih >= 0 ? 'var(--success)' : 'var(--danger)' }}; text-align: right;">
                                         Rp {{ number_format($bg->selisih, 0, ',', '.') }}
                                     </td>
                                     <td style="font-size: 11.5px; color: var(--text-muted);">
@@ -741,19 +1032,82 @@
                         <tfoot>
                             <tr style="background: var(--bg); font-weight: 700;">
                                 <td colspan="4" style="text-align: right;">TOTAL PENGELUARAN:</td>
-                                <td style="color: var(--primary);">Rp {{ number_format($totalTargetRAB, 0, ',', '.') }}</td>
-                                <td style="color: var(--burgundy);">Rp {{ number_format($totalRealisasiPengeluaran, 0, ',', '.') }}</td>
-                                <td style="color: var(--success);">Rp {{ number_format($totalTargetRAB - $totalRealisasiPengeluaran, 0, ',', '.') }}</td>
+                                <td style="color: var(--primary); text-align: right;">Rp {{ number_format($totalTargetRAB, 0, ',', '.') }}</td>
+                                <td style="color: var(--burgundy); text-align: right;">Rp {{ number_format($totalRealisasiPengeluaran, 0, ',', '.') }}</td>
+                                <td style="color: var(--success); text-align: right;">Rp {{ number_format($totalTargetRAB - $totalRealisasiPengeluaran, 0, ',', '.') }}</td>
                                 <td colspan="{{ $canManage ? 2 : 1 }}"></td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
             </div>
+
+            <!-- MOBILE CARDS VIEW FOR PENGELUARAN -->
+            <div class="card-body p-2 show-mobile-cards">
+                @forelse($pengeluarans as $bg)
+                    <div class="mobile-budget-card">
+                        <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                            <span class="badge badge-secondary" style="font-size: 10px;">{{ $bg->seksi }}</span>
+                            @if($bg->event)
+                                <span class="badge badge-info" style="font-size: 9px;">{{ $bg->event->nama }}</span>
+                            @endif
+                        </div>
+                        <div class="budget-item-title">{{ $bg->uraian }}</div>
+                        @if($bg->volume)
+                            <div class="budget-item-unit">
+                                Volume: <strong>{{ $bg->volume }}</strong> 
+                                @if($bg->harga_satuan > 0)
+                                    @ Rp {{ number_format($bg->harga_satuan, 0, ',', '.') }}
+                                @endif
+                            </div>
+                        @endif
+
+                        <div class="budget-amount-grid mt-2">
+                            <div class="budget-amount-col">
+                                <div class="b-lbl">Anggaran</div>
+                                <div class="b-val text-primary">Rp {{ number_format($bg->total_anggaran, 0, ',', '.') }}</div>
+                            </div>
+                            <div class="budget-amount-col">
+                                <div class="b-lbl">Realisasi</div>
+                                <div class="b-val text-burgundy">Rp {{ number_format($bg->realisasi, 0, ',', '.') }}</div>
+                            </div>
+                            <div class="budget-amount-col">
+                                <div class="b-lbl">Selisih</div>
+                                <div class="b-val" style="color: {{ $bg->selisih >= 0 ? 'var(--success)' : 'var(--danger)' }};">
+                                    Rp {{ number_format($bg->selisih, 0, ',', '.') }}
+                                </div>
+                            </div>
+                        </div>
+
+                        @if($bg->keterangan)
+                            <div class="budget-item-notes mt-2">
+                                📌 {{ $bg->keterangan }}
+                            </div>
+                        @endif
+
+                        @if($canManage)
+                            <div class="d-flex justify-content-end gap-1 mt-2 pt-2 border-top">
+                                <button type="button" class="btn btn-outline btn-sm action-btn" onclick="editBudget({{ json_encode($bg) }})">
+                                    ✏️ Edit
+                                </button>
+                                <form action="{{ route('haberja.budget.destroy', $bg->id) }}" method="POST" onsubmit="return confirm('Hapus item belanja {{ $bg->uraian }}?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-outline btn-sm action-btn action-del">
+                                        🗑️ Hapus
+                                    </button>
+                                </form>
+                            </div>
+                        @endif
+                    </div>
+                @empty
+                    <div class="text-muted text-center py-4">Belum ada item anggaran pengeluaran.</div>
+                @endforelse
+            </div>
         </div>
 
-        <!-- 2. TABEL PEMASUKAN (SUMBER DANA) -->
-        <div class="card mb-4">
+        <!-- 2. SECTION PEMASUKAN (SUMBER DANA) -->
+        <div class="card mb-4 budget-section-card" id="sectionPemasukan">
             <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(90deg, #edf8f1 0%, #fff 100%);">
                 <div class="d-flex align-items-center gap-2">
                     <span style="font-size: 18px;">📈</span>
@@ -761,16 +1115,18 @@
                 </div>
                 <span class="badge badge-success">{{ $pemasukans->count() }} Sumber Dana</span>
             </div>
-            <div class="card-body p-0">
+
+            <!-- DESKTOP TABLE -->
+            <div class="card-body p-0 hide-mobile-table">
                 <div class="table-wrapper">
                     <table>
                         <thead>
                             <tr>
                                 <th>Kategori Sumber</th>
                                 <th>Uraian Sumber Dana</th>
-                                <th style="white-space: nowrap;">Target Penerimaan</th>
-                                <th style="white-space: nowrap;">Realisasi Masuk</th>
-                                <th style="white-space: nowrap;">Sisa Target</th>
+                                <th style="white-space: nowrap; text-align: right;">Target Penerimaan</th>
+                                <th style="white-space: nowrap; text-align: right;">Realisasi Masuk</th>
+                                <th style="white-space: nowrap; text-align: right;">Sisa Target</th>
                                 <th>Keterangan</th>
                                 @if($canManage)
                                     <th style="width: 90px; text-align: center;">Aksi</th>
@@ -789,13 +1145,13 @@
                                     <td style="font-weight: 600; font-size: 13px;">
                                         {{ $pm->uraian }}
                                     </td>
-                                    <td style="font-weight: 700; white-space: nowrap; color: var(--primary);">
+                                    <td style="font-weight: 700; white-space: nowrap; color: var(--primary); text-align: right;">
                                         Rp {{ number_format($pm->total_anggaran, 0, ',', '.') }}
                                     </td>
-                                    <td style="font-weight: 700; white-space: nowrap; color: var(--success);">
+                                    <td style="font-weight: 700; white-space: nowrap; color: var(--success); text-align: right;">
                                         Rp {{ number_format($pm->realisasi, 0, ',', '.') }}
                                     </td>
-                                    <td style="font-weight: 600; white-space: nowrap; color: {{ $pm->selisih > 0 ? 'var(--warning)' : 'var(--success)' }};">
+                                    <td style="font-weight: 600; white-space: nowrap; color: {{ $pm->selisih > 0 ? 'var(--warning)' : 'var(--success)' }}; text-align: right;">
                                         Rp {{ number_format(max(0, $pm->total_anggaran - $pm->realisasi), 0, ',', '.') }}
                                     </td>
                                     <td style="font-size: 11.5px; color: var(--text-muted);">
@@ -827,14 +1183,77 @@
                         <tfoot>
                             <tr style="background: var(--bg); font-weight: 700;">
                                 <td colspan="2" style="text-align: right;">TOTAL ESTIMASI PEMASUKAN:</td>
-                                <td style="color: var(--primary);">Rp {{ number_format($totalRencanaPemasukan, 0, ',', '.') }}</td>
-                                <td style="color: var(--success);">Rp {{ number_format($totalRealisasiPemasukan, 0, ',', '.') }}</td>
-                                <td style="color: var(--warning);">Rp {{ number_format(max(0, $totalRencanaPemasukan - $totalRealisasiPemasukan), 0, ',', '.') }}</td>
+                                <td style="color: var(--primary); text-align: right;">Rp {{ number_format($totalRencanaPemasukan, 0, ',', '.') }}</td>
+                                <td style="color: var(--success); text-align: right;">Rp {{ number_format($totalRealisasiPemasukan, 0, ',', '.') }}</td>
+                                <td style="color: var(--warning); text-align: right;">Rp {{ number_format(max(0, $totalRencanaPemasukan - $totalRealisasiPemasukan), 0, ',', '.') }}</td>
                                 <td colspan="{{ $canManage ? 2 : 1 }}"></td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
+            </div>
+
+            <!-- MOBILE CARDS VIEW FOR PEMASUKAN -->
+            <div class="card-body p-2 show-mobile-cards">
+                @forelse($pemasukans as $pm)
+                    @php
+                        $pctPm = $pm->total_anggaran > 0 ? min(100, round(($pm->realisasi / $pm->total_anggaran) * 100, 1)) : 0;
+                    @endphp
+                    <div class="mobile-budget-card">
+                        <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                            <span class="badge badge-success" style="font-size: 10px;">{{ $pm->seksi }}</span>
+                            @if($pm->event)
+                                <span class="badge badge-info" style="font-size: 9px;">{{ $pm->event->nama }}</span>
+                            @endif
+                        </div>
+                        <div class="budget-item-title">{{ $pm->uraian }}</div>
+
+                        <div class="budget-amount-grid mt-2">
+                            <div class="budget-amount-col">
+                                <div class="b-lbl">Target</div>
+                                <div class="b-val text-primary">Rp {{ number_format($pm->total_anggaran, 0, ',', '.') }}</div>
+                            </div>
+                            <div class="budget-amount-col">
+                                <div class="b-lbl">Terkumpul</div>
+                                <div class="b-val text-success">Rp {{ number_format($pm->realisasi, 0, ',', '.') }}</div>
+                            </div>
+                            <div class="budget-amount-col">
+                                <div class="b-lbl">Sisa</div>
+                                <div class="b-val text-warning">Rp {{ number_format(max(0, $pm->total_anggaran - $pm->realisasi), 0, ',', '.') }}</div>
+                            </div>
+                        </div>
+
+                        <div class="prog-bar-wrap mt-2">
+                            <div class="prog-bar-fill" style="width: {{ $pctPm }}%;"></div>
+                        </div>
+                        <div class="text-end mt-1" style="font-size: 10px; font-weight: 700; color: {{ $pctPm >= 100 ? 'var(--success)' : 'var(--accent-dark)' }};">
+                            {{ $pctPm }}% Terkumpul
+                        </div>
+
+                        @if($pm->keterangan)
+                            <div class="budget-item-notes mt-2">
+                                📌 {{ $pm->keterangan }}
+                            </div>
+                        @endif
+
+                        @if($canManage)
+                            <div class="d-flex justify-content-end gap-1 mt-2 pt-2 border-top">
+                                <button type="button" class="btn btn-outline btn-sm action-btn" onclick="editBudget({{ json_encode($pm) }})">
+                                    ✏️ Edit
+                                </button>
+                                <form action="{{ route('haberja.budget.destroy', $pm->id) }}" method="POST" onsubmit="return confirm('Hapus penerimaan {{ $pm->uraian }}?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-outline btn-sm action-btn action-del">
+                                        🗑️ Hapus
+                                    </button>
+                                </form>
+                            </div>
+                        @endif
+                    </div>
+                @empty
+                    <div class="text-muted text-center py-4">Belum ada item rencana pemasukan.</div>
+                @endforelse
             </div>
         </div>
     @endif
@@ -1530,10 +1949,58 @@
     color: #fff;
 }
 
-/* Struktur Panitia Tab */
+/* ========================================== */
+/* TAB 2: STRUKTUR PANITIA STYLES             */
+/* ========================================== */
 .info-highlight-card {
     background: linear-gradient(135deg, rgba(200,148,26,.08), rgba(44,24,16,.03));
     border: 1px dashed var(--accent);
+}
+
+.info-icon-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: rgba(200,148,26,0.15);
+    color: var(--accent-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.panitia-quick-stats {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.panitia-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 12px;
+    min-width: 65px;
+    box-shadow: 0 1px 3px rgba(44,24,16,.04);
+}
+
+.stat-num {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1.1;
+}
+
+.stat-lbl {
+    font-size: 9.5px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    font-weight: 700;
 }
 
 .seksi-chips-wrapper {
@@ -1574,13 +2041,71 @@
     font-weight: 700;
 }
 
+/* Tier 1: Penasihat */
+.penasihat-card-tier {
+    border: 1px solid rgba(200,148,26,0.35);
+    background: #fffefb;
+    box-shadow: 0 2px 8px rgba(200,148,26,0.06);
+}
+
+.penasihat-header {
+    background: linear-gradient(90deg, #fbf4e6 0%, #fff 100%) !important;
+    border-bottom: 1px solid rgba(200,148,26,0.2) !important;
+}
+
+.member-card-penasihat {
+    border: 1px solid rgba(200,148,26,0.25) !important;
+    background: linear-gradient(180deg, #ffffff 0%, #fdfbf7 100%) !important;
+}
+
+.member-avatar-penasihat {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #c8941a 0%, #8b1a1a 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 20px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(200,148,26,0.25);
+}
+
+/* Tier 2: BPH */
+.bph-card-tier {
+    border: 1px solid rgba(107,26,46,0.25);
+    background: #fff;
+}
+
 .bph-header {
     background: linear-gradient(90deg, #fdf4df 0%, #fff 100%) !important;
+    border-bottom: 1px solid rgba(200,148,26,0.2) !important;
+}
+
+.member-card-bph {
+    border-left: 4px solid var(--accent) !important;
+    background: #fffdfa !important;
+}
+
+/* Tier 3: Seksi & Koordinator */
+.seksi-header {
+    background: #faf8f5 !important;
+    border-bottom: 1px solid var(--border) !important;
+}
+
+.member-card-koordinator {
+    border-left: 3px solid var(--accent) !important;
+}
+
+.avatar-koordinator {
+    background: linear-gradient(135deg, var(--accent-dark) 0%, var(--primary) 100%) !important;
 }
 
 .panitia-cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
     gap: 14px;
 }
 
@@ -1593,11 +2118,11 @@
     flex-direction: column;
     justify-content: space-between;
     transition: all .2s ease;
+    box-shadow: 0 1px 3px rgba(44,24,16,.03);
 }
 
-.member-card-bph {
-    border-left: 3px solid var(--accent);
-    background: #fffdf9;
+.member-card:hover {
+    box-shadow: 0 3px 8px rgba(44,24,16,.08);
 }
 
 .member-avatar-lg {
@@ -1668,7 +2193,7 @@
 }
 
 .action-btn {
-    padding: 2px 7px;
+    padding: 3px 8px;
     font-size: 11px;
 }
 
@@ -1677,7 +2202,66 @@
     border-color: rgba(139,26,26,.3);
 }
 
-/* Mobile Program Cards (Tab 3) */
+/* ========================================== */
+/* TAB 3: PLANNING PENCARIAN DANA STYLES      */
+/* ========================================== */
+.milestone-banner-card {
+    background: linear-gradient(135deg, #fdf9f0 0%, #fff 100%);
+    border: 1px solid rgba(200,148,26,0.25);
+}
+
+.milestone-bar-wrap {
+    background: #e9ecef;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.milestone-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--success) 100%);
+    border-radius: 5px;
+    transition: width .4s ease;
+}
+
+.dana-filter-wrapper, .budget-toggle-wrapper {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+}
+
+.dana-filter-wrapper::-webkit-scrollbar, .budget-toggle-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+.dana-filter-btn, .budget-toggle-btn {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all .15s ease;
+    flex-shrink: 0;
+}
+
+.dana-filter-btn:hover, .budget-toggle-btn:hover {
+    border-color: var(--accent);
+    color: var(--primary);
+}
+
+.dana-filter-btn.active, .budget-toggle-btn.active {
+    background: var(--primary);
+    color: var(--accent-light);
+    border-color: var(--primary-dark);
+    font-weight: 700;
+}
+
 .show-mobile-cards {
     display: none;
 }
@@ -1686,8 +2270,9 @@
     background: #fff;
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 12px;
+    padding: 12px 14px;
     margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(44,24,16,.04);
 }
 
 .prog-title {
@@ -1709,6 +2294,34 @@
     padding: 8px 10px;
     border-radius: 6px;
     margin-bottom: 10px;
+}
+
+.prog-tiles-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.prog-tile {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+}
+
+.prog-tile-label {
+    font-size: 9.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+.prog-tile-val {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--primary);
+    margin-top: 2px;
 }
 
 .prog-bar-wrap {
@@ -1735,6 +2348,67 @@
 .prog-meta {
     color: var(--text-muted);
     line-height: 1.35;
+}
+
+/* ========================================== */
+/* TAB 4: BUDGETING & RAB MOBILE CARDS        */
+/* ========================================== */
+.mobile-budget-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(44,24,16,.04);
+}
+
+.budget-item-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1.35;
+    margin: 4px 0;
+}
+
+.budget-item-unit {
+    font-size: 11.5px;
+    color: var(--text-muted);
+}
+
+.budget-amount-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    background: var(--bg);
+    padding: 8px 10px;
+    border-radius: 6px;
+}
+
+.budget-amount-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.b-lbl {
+    font-size: 9.5px;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.b-val {
+    font-size: 11.5px;
+    font-weight: 700;
+    margin-top: 2px;
+    word-break: break-all;
+}
+
+.budget-item-notes {
+    font-size: 11px;
+    color: var(--accent-dark);
+    background: rgba(200,148,26,0.06);
+    padding: 6px 8px;
+    border-radius: 4px;
 }
 
 /* Modals */
@@ -1942,6 +2616,50 @@ function filterSeksi(slug, btn) {
             g.style.display = 'none';
         }
     });
+}
+
+function filterDanaStatus(status, btn) {
+    document.querySelectorAll('.dana-filter-btn').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+
+    // Desktop rows
+    const rows = document.querySelectorAll('.dana-table-row');
+    rows.forEach(r => {
+        if (status === 'all' || r.getAttribute('data-status') === status) {
+            r.style.display = '';
+        } else {
+            r.style.display = 'none';
+        }
+    });
+
+    // Mobile cards
+    const cards = document.querySelectorAll('.dana-mobile-card');
+    cards.forEach(c => {
+        if (status === 'all' || c.getAttribute('data-status') === status) {
+            c.style.display = 'block';
+        } else {
+            c.style.display = 'none';
+        }
+    });
+}
+
+function filterBudgetType(type, btn) {
+    document.querySelectorAll('.budget-toggle-btn').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+
+    const secPengeluaran = document.getElementById('sectionPengeluaran');
+    const secPemasukan = document.getElementById('sectionPemasukan');
+
+    if (type === 'all') {
+        if (secPengeluaran) secPengeluaran.style.display = 'block';
+        if (secPemasukan) secPemasukan.style.display = 'block';
+    } else if (type === 'pengeluaran') {
+        if (secPengeluaran) secPengeluaran.style.display = 'block';
+        if (secPemasukan) secPemasukan.style.display = 'none';
+    } else if (type === 'pemasukan') {
+        if (secPengeluaran) secPengeluaran.style.display = 'none';
+        if (secPemasukan) secPemasukan.style.display = 'block';
+    }
 }
 
 function editPanitia(data) {
