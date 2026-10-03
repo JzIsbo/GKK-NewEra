@@ -954,52 +954,7 @@
             }
         }
 
-        /* Mobile App Entrance Splash */
-        #app-entrance-splash {
-            position: fixed; inset: 0; z-index: 999999;
-            background: linear-gradient(180deg, #1f100a 0%, #2c1810 50%, #1a0c07 100%);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity .35s ease, visibility .35s ease;
-        }
-        #app-entrance-splash.splash-hidden {
-            opacity: 0; visibility: hidden; pointer-events: none;
-        }
-        .splash-logo-box {
-            width: 86px; height: 86px; border-radius: 22px;
-            background: rgba(255,255,255,.06);
-            border: 1.5px solid rgba(200,148,26,.3);
-            display: flex; align-items: center; justify-content: center;
-            padding: 12px; margin-bottom: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,.45), 0 0 24px rgba(200,148,26,.2);
-            animation: pulse-splash 2s infinite ease-in-out;
-        }
-        @keyframes pulse-splash {
-            0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(0,0,0,.45), 0 0 24px rgba(200,148,26,.2); }
-            50% { transform: scale(1.04); box-shadow: 0 14px 36px rgba(0,0,0,.55), 0 0 32px rgba(200,148,26,.35); }
-        }
-        .splash-title {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 19px; font-weight: 800; color: #ffffff;
-            letter-spacing: -0.01em; margin-bottom: 4px; text-align: center;
-        }
-        .splash-sub {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 11px; font-weight: 700; color: #c8941a;
-            letter-spacing: 0.12em; text-transform: uppercase; text-align: center;
-        }
-        .splash-bar {
-            width: 110px; height: 3px; background: rgba(200,148,26,.2);
-            border-radius: 3px; margin-top: 22px; overflow: hidden; position: relative;
-        }
-        .splash-bar-inner {
-            position: absolute; top: 0; left: 0; height: 100%; width: 45%;
-            background: linear-gradient(90deg, #c8941a, #ffd978);
-            border-radius: 3px; animation: splash-load 1.1s infinite ease-in-out;
-        }
-        @keyframes splash-load {
-            0% { left: -45%; }
-            100% { left: 100%; }
-        }
+
 
         /* ====== UTILITIES ====== */
         .text-muted   { color: var(--text-muted); }
@@ -1082,17 +1037,7 @@
 </head>
 <body>
 
-{{-- App Entrance Splash --}}
-<div id="app-entrance-splash">
-    <div class="splash-logo-box">
-        <img src="{{ asset('images/logo-gemindo.png') }}" style="width:100%; height:100%; object-fit:contain;" alt="Logo GEMINDO">
-    </div>
-    <div class="splash-title">GEMINDO Kawan Kasih</div>
-    <div class="splash-sub">Portal Jemaat</div>
-    <div class="splash-bar">
-        <div class="splash-bar-inner"></div>
-    </div>
-</div>
+
 
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
@@ -1384,20 +1329,6 @@ document.querySelectorAll('.sidebar .nav-link').forEach(function(link) {
 </div>
 
 <script>
-// ── App Entrance Splash Fade-Out (2 Detik Entrance) ──
-function dismissSplash() {
-    const splash = document.getElementById('app-entrance-splash');
-    if (splash) {
-        splash.classList.add('splash-hidden');
-        setTimeout(function() {
-            if (splash.parentNode) splash.parentNode.removeChild(splash);
-        }, 500);
-    }
-}
-window.addEventListener('load', function() {
-    setTimeout(dismissSplash, 2000);
-});
-setTimeout(dismissSplash, 3500); // safety fallback
 
 // ── Check if app is installed / running in standalone mode ──
 function isAppInstalledOrStandalone() {
