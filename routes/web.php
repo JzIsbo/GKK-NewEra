@@ -55,6 +55,17 @@ Route::get('/sw.js', function () {
     ]);
 });
 
+Route::get('/downloads/gemindo-kk.apk', function () {
+    $path = public_path('downloads/gemindo-kk.apk');
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    return response()->download($path, 'GEMINDO-Kawan-Kasih.apk', [
+        'Content-Type' => 'application/vnd.android.package-archive',
+        'Cache-Control' => 'public, max-age=3600, must-revalidate',
+    ]);
+});
+
 /*
 |--------------------------------------------------------------------------
 | Auth Routes
