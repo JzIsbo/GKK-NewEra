@@ -3,8 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $settings['nama_gereja'] }} – Beranda</title>
+    <title>{{ $settings['nama_gereja'] }} - PORTAL</title>
     <meta name="description" content="{{ $settings['tentang_gereja'] ?? 'Portal Jemaat GEMINDO Kawan Kasih' }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url('/') }}">
+    <meta property="og:site_name" content="{{ $settings['nama_gereja'] }}">
+    <meta property="og:title" content="{{ $settings['nama_gereja'] }} - PORTAL">
+    <meta property="og:description" content="{{ $settings['tentang_gereja'] ?? 'Portal Jemaat GEMINDO Kawan Kasih' }}">
+    <meta property="og:image" content="{{ asset('images/logo-gemindo.png') }}">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ $settings['nama_gereja'] }} - PORTAL">
+    <meta name="twitter:description" content="{{ $settings['tentang_gereja'] ?? 'Portal Jemaat GEMINDO Kawan Kasih' }}">
+    <meta name="twitter:image" content="{{ asset('images/logo-gemindo.png') }}">
     <link rel="icon" type="image/png" href="{{ asset('images/logo-gemindo.png') }}">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
     <link rel="apple-touch-icon" href="{{ asset('icons/icon-192x192.png') }}">
