@@ -904,6 +904,8 @@
         .mt-2 { margin-top: 16px; }
         .mt-3 { margin-top: 24px; }
         .d-flex { display: flex; }
+        .flex-column { flex-direction: column !important; }
+        .flex-wrap { flex-wrap: wrap; }
         .align-items-center { align-items: center; }
         .justify-content-between { justify-content: space-between; }
         .gap-2 { gap: 8px; }

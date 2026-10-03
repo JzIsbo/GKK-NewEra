@@ -233,23 +233,26 @@
                         Lihat Semua &rarr;
                     </a>
                 </div>
-                <div class="card-body" style="padding: 14px;">
-                    <div class="d-flex flex-column gap-2">
+                <div class="card-body" style="padding: 16px;">
+                    <div class="snapshot-list">
                         @forelse($danaPlans->take(4) as $dp)
                             <div class="snapshot-card">
-                                <div class="d-flex justify-content-between align-items-start mb-1">
-                                    <div class="fw-bold" style="font-size: 13px; color: var(--primary); line-height: 1.3;">{{ $dp->nama_program }}</div>
-                                    <span class="badge {{ $dp->status === 'tercapai' || $dp->status === 'selesai' ? 'badge-success' : 'badge-gold' }}" style="font-size: 9.5px; margin-left: 6px; flex-shrink: 0;">
+                                <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                                    <div class="fw-bold" style="font-size: 13.5px; color: var(--primary); line-height: 1.35;">{{ $dp->nama_program }}</div>
+                                    <span class="badge {{ $dp->status === 'tercapai' || $dp->status === 'selesai' ? 'badge-success' : 'badge-gold' }}" style="font-size: 10px; flex-shrink: 0;">
                                         {{ ucfirst($dp->status) }}
                                     </span>
                                 </div>
-                                <div class="text-muted small mb-2" style="font-size: 11px;">PIC: {{ $dp->penanggung_jawab }}</div>
-                                <div class="d-flex justify-content-between align-items-center mb-1" style="font-size: 11.5px;">
-                                    <span>Masuk: <strong style="color: var(--success);">Rp {{ number_format($dp->realisasi_dana, 0, ',', '.') }}</strong></span>
-                                    <span class="text-muted">Target: Rp {{ number_format($dp->target_dana, 0, ',', '.') }}</span>
+                                <div class="text-muted small mb-2" style="font-size: 11.5px;">PIC: <strong>{{ $dp->penanggung_jawab }}</strong></div>
+                                <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-2" style="font-size: 12px;">
+                                    <span>Terkumpul: <strong style="color: var(--success); font-size: 12.5px;">Rp {{ number_format($dp->realisasi_dana, 0, ',', '.') }}</strong></span>
+                                    <span class="text-muted">Target: <strong>Rp {{ number_format($dp->target_dana, 0, ',', '.') }}</strong></span>
                                 </div>
                                 <div class="mini-progress">
                                     <div class="mini-progress-fill" style="width: {{ $dp->persentase }}%;"></div>
+                                </div>
+                                <div class="text-end mt-1" style="font-size: 10.5px; font-weight: 700; color: {{ $dp->persentase >= 100 ? 'var(--success)' : 'var(--accent-dark)' }};">
+                                    {{ $dp->persentase }}% Tercapai
                                 </div>
                             </div>
                         @empty
@@ -262,14 +265,14 @@
             <!-- Snapshot BPH Panitia -->
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <div class="card-title">Inti Kepengurusan (BPH)</div>
+                    <div class="card-title">Inti Kepengurusan (BPH) HABERJA</div>
                     <a href="{{ route('haberja.index', ['event' => $selectedKode, 'tab' => 'struktur']) }}" class="small link-accent">
                         Semua Seksi &rarr;
                     </a>
                 </div>
-                <div class="card-body" style="padding: 14px;">
-                    <div class="d-flex flex-column gap-2">
-                        @forelse($panitias->where('seksi', 'Badan Pengurus Harian (BPH)')->take(5) as $p)
+                <div class="card-body" style="padding: 16px;">
+                    <div class="bph-list">
+                        @forelse($panitias->where('seksi', 'Badan Pengurus Harian (BPH)') as $p)
                             @php
                                 $cleanWa = preg_replace('/[^0-9]/', '', $p->telepon ?? '');
                                 if (str_starts_with($cleanWa, '0')) {
@@ -277,12 +280,14 @@
                                 }
                             @endphp
                             <div class="bph-member-row">
-                                <div class="member-avatar">
-                                    {{ strtoupper(substr($p->nama, 0, 1)) }}
-                                </div>
-                                <div style="flex: 1; min-width: 0;">
-                                    <div class="member-name text-truncate">{{ $p->nama }}</div>
-                                    <div class="member-title">{{ $p->jabatan }}</div>
+                                <div class="d-flex align-items-center gap-3" style="min-width: 0; flex: 1;">
+                                    <div class="member-avatar">
+                                        {{ strtoupper(substr($p->nama, 0, 1)) }}
+                                    </div>
+                                    <div style="min-width: 0; flex: 1;">
+                                        <div class="member-name">{{ $p->nama }}</div>
+                                        <div class="member-title">{{ $p->jabatan }}</div>
+                                    </div>
                                 </div>
                                 @if($cleanWa)
                                     <a href="https://wa.me/{{ $cleanWa }}" target="_blank" class="btn btn-outline btn-sm wa-btn" title="Chat WhatsApp">
@@ -1402,7 +1407,7 @@
 .haberja-overview-grid {
     display: grid;
     grid-template-columns: 1.1fr 0.9fr;
-    gap: 18px;
+    gap: 20px;
     align-items: start;
 }
 
@@ -1410,73 +1415,114 @@
     color: var(--accent-dark);
     font-weight: 600;
     text-decoration: none;
+    font-size: 12px;
 }
 
 .link-accent:hover {
     text-decoration: underline;
 }
 
+.snapshot-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100%;
+}
+
 .snapshot-card {
-    padding: 11px;
+    padding: 14px 16px;
     border: 1px solid var(--border);
     border-radius: 8px;
     background: #fff;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 0 1px 3px rgba(44,24,16,.04);
 }
 
 .mini-progress {
     background: #e9ecef;
-    height: 5px;
-    border-radius: 2.5px;
+    height: 6px;
+    border-radius: 3px;
     overflow: hidden;
+    margin-top: 4px;
 }
 
 .mini-progress-fill {
     height: 100%;
     background: var(--success);
+    border-radius: 3px;
 }
 
-/* BPH Snapshot Row */
+/* BPH Snapshot List & Row */
+.bph-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100%;
+}
+
 .bph-member-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 10px;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px;
+    padding: 10px 14px;
     border-radius: 8px;
     border: 1px solid var(--border);
     background: #fff;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 0 1px 3px rgba(44,24,16,.04);
+    transition: transform .15s ease;
+}
+
+.bph-member-row:hover {
+    transform: translateX(2px);
+    border-color: var(--accent);
 }
 
 .member-avatar {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background: var(--primary);
+    background: linear-gradient(135deg, var(--primary) 0%, #4a2818 100%);
     color: var(--accent-light);
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    font-size: 13.5px;
+    font-size: 15px;
     flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
 }
 
 .member-name {
-    font-weight: 600;
-    font-size: 12.5px;
+    font-weight: 700;
+    font-size: 13.5px;
     color: var(--primary);
+    line-height: 1.3;
+    word-break: normal;
 }
 
 .member-title {
-    font-size: 11px;
+    font-size: 11.5px;
     color: var(--accent-dark);
     font-weight: 600;
+    margin-top: 2px;
 }
 
 .wa-btn {
-    font-size: 11px;
-    padding: 3px 8px;
+    font-size: 11.5px;
+    padding: 5px 10px;
     border-color: #25d366;
     color: #128c7e;
+    font-weight: 600;
+    background: rgba(37,211,102,0.06);
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .wa-btn:hover {
@@ -1802,14 +1848,17 @@
 
 /* ========================================== */
 /* RESPONSIVE MEDIA QUERIES                   */
-/* ========================================== -->
+/* ========================================== */
+@media (max-width: 1100px) {
+    .haberja-overview-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
 @media (max-width: 991px) {
     .haberja-kpi-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
-    }
-    .haberja-overview-grid {
-        grid-template-columns: 1fr;
     }
 }
 
