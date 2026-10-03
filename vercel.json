@@ -85,6 +85,7 @@
   "env": {
     "APP_NAME": "Gemindo Kawan Kasih",
     "APP_ENV": "production",
+    "APP_URL": "https://gkk-newera.vercel.app",
     "APP_KEY": "base64:/ECOOb0k/h9lPzA+A0PvBAOOLrZzcUg96fM6So7AEps=",
     "APP_DEBUG": "false",
     "APP_CONFIG_CACHE": "/tmp/config.php",

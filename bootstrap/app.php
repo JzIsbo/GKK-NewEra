@@ -12,6 +12,9 @@ $app = Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Trust all proxies (essential for Vercel reverse proxy / SSL termination)
+        $middleware->trustProxies(at: '*');
+
         // Register Spatie Permission middleware aliases
         $middleware->alias([
             'role'       => \Spatie\Permission\Middleware\RoleMiddleware::class,
