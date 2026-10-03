@@ -6,6 +6,14 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') – GEMINDO Kawan Kasih</title>
     <meta name="description" content="Portal Jemaat GEMINDO Kawan Kasih">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="GEMINDO Kawan Kasih - PORTAL">
+    <meta property="og:description" content="Portal Jemaat GEMINDO Kawan Kasih">
+    <meta property="og:image" content="{{ asset('images/og-preview.png') }}?v=2">
+    <meta property="og:image:width" content="800">
+    <meta property="og:image:height" content="800">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:image" content="{{ asset('images/og-preview.png') }}?v=2">
     <link rel="icon" type="image/png" href="{{ asset('images/logo-gemindo.png') }}">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
     <link rel="apple-touch-icon" sizes="192x192" href="{{ asset('icons/icon-192x192.png') }}">

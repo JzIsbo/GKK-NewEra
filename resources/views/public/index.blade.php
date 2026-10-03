@@ -10,13 +10,16 @@
     <meta property="og:site_name" content="{{ $settings['nama_gereja'] }}">
     <meta property="og:title" content="{{ $settings['nama_gereja'] }} - PORTAL">
     <meta property="og:description" content="{{ $settings['tentang_gereja'] ?? 'Portal Jemaat GEMINDO Kawan Kasih' }}">
-    <meta property="og:image" content="{{ asset('images/logo-gemindo.png') }}">
-    <meta property="og:image:width" content="512">
-    <meta property="og:image:height" content="512">
+    <meta property="og:image" content="{{ asset('images/og-preview.png') }}?v=2">
+    <meta property="og:image:secure_url" content="{{ asset('images/og-preview.png') }}?v=2">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="800">
+    <meta property="og:image:height" content="800">
+    <meta property="og:image:alt" content="{{ $settings['nama_gereja'] }} Logo">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="{{ $settings['nama_gereja'] }} - PORTAL">
     <meta name="twitter:description" content="{{ $settings['tentang_gereja'] ?? 'Portal Jemaat GEMINDO Kawan Kasih' }}">
-    <meta name="twitter:image" content="{{ asset('images/logo-gemindo.png') }}">
+    <meta name="twitter:image" content="{{ asset('images/og-preview.png') }}?v=2">
     <link rel="icon" type="image/png" href="{{ asset('images/logo-gemindo.png') }}">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
     <link rel="apple-touch-icon" href="{{ asset('icons/icon-192x192.png') }}">
