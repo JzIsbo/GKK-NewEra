@@ -13,8 +13,8 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="GEMINDO KK">
-    <meta name="application-name" content="GEMINDO KK">
+    <meta name="apple-mobile-web-app-title" content="GEMINDO Kawan Kasih">
+    <meta name="application-name" content="GEMINDO Kawan Kasih">
     <meta name="theme-color" content="#2c1810">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -343,6 +343,62 @@
             margin-left: -4px;
         }
         .btn-pwa-float-close:hover { color: #fff; }
+
+        /* Standalone / PWA Mode Overrides (Hilangkan rekomendasi saat running di device) */
+        @media (display-mode: standalone), (display-mode: fullscreen), (display-mode: minimal-ui) {
+            #pwa-floating-bar,
+            #pwa-install-banner,
+            .app-install-element {
+                display: none !important;
+            }
+        }
+
+        /* Mobile App Entrance Splash */
+        #app-entrance-splash {
+            position: fixed; inset: 0; z-index: 999999;
+            background: linear-gradient(180deg, #1f100a 0%, #2c1810 50%, #1a0c07 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity .35s ease, visibility .35s ease;
+        }
+        #app-entrance-splash.splash-hidden {
+            opacity: 0; visibility: hidden; pointer-events: none;
+        }
+        .splash-logo-box {
+            width: 86px; height: 86px; border-radius: 22px;
+            background: rgba(255,255,255,.06);
+            border: 1.5px solid rgba(200,148,26,.3);
+            display: flex; align-items: center; justify-content: center;
+            padding: 12px; margin-bottom: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.45), 0 0 24px rgba(200,148,26,.2);
+            animation: pulse-splash 2s infinite ease-in-out;
+        }
+        @keyframes pulse-splash {
+            0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(0,0,0,.45), 0 0 24px rgba(200,148,26,.2); }
+            50% { transform: scale(1.04); box-shadow: 0 14px 36px rgba(0,0,0,.55), 0 0 32px rgba(200,148,26,.35); }
+        }
+        .splash-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 19px; font-weight: 800; color: #ffffff;
+            letter-spacing: -0.01em; margin-bottom: 4px; text-align: center;
+        }
+        .splash-sub {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 11px; font-weight: 700; color: #c8941a;
+            letter-spacing: 0.12em; text-transform: uppercase; text-align: center;
+        }
+        .splash-bar {
+            width: 110px; height: 3px; background: rgba(200,148,26,.2);
+            border-radius: 3px; margin-top: 22px; overflow: hidden; position: relative;
+        }
+        .splash-bar-inner {
+            position: absolute; top: 0; left: 0; height: 100%; width: 45%;
+            background: linear-gradient(90deg, #c8941a, #ffd978);
+            border-radius: 3px; animation: splash-load 1.1s infinite ease-in-out;
+        }
+        @keyframes splash-load {
+            0% { left: -45%; }
+            100% { left: 100%; }
+        }
 
         /* ═══════════════════════════════════════
            HERO — Full-screen church atmosphere
@@ -932,6 +988,18 @@
 </head>
 <body>
 
+<!-- Entrance Splash for Mobile / Standalone -->
+<div id="app-entrance-splash" aria-hidden="true">
+    <div class="splash-logo-box">
+        <img src="{{ asset('images/logo-gemindo.png') }}" alt="Logo GEMINDO" style="width: 100%; height: 100%; object-fit: contain;">
+    </div>
+    <div class="splash-title">GEMINDO Kawan Kasih</div>
+    <div class="splash-sub">PORTAL JEMAAT</div>
+    <div class="splash-bar">
+        <div class="splash-bar-inner"></div>
+    </div>
+</div>
+
 <!-- ══ NAVBAR ══ -->
 <header class="site-header" id="siteHeader">
     <div class="container">
@@ -944,7 +1012,7 @@
                 </div>
             </a>
             <div class="nav-actions-mobile">
-                <button type="button" class="btn-mobile-install" onclick="openInstallModal()" aria-label="Unduh Aplikasi">
+                <button type="button" class="btn-mobile-install app-install-element" onclick="openInstallModal()" aria-label="Unduh Aplikasi">
                     <span>📲 App</span>
                 </button>
                 <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
@@ -957,7 +1025,7 @@
                 <li class="nav-item"><a href="#pengumuman">Warta Jemaat</a></li>
                 <li class="nav-item"><a href="#kegiatan">Kegiatan</a></li>
                 <li class="nav-item"><a href="{{ route('persembahan.index') }}">Persembahan</a></li>
-                <li class="nav-item">
+                <li class="nav-item app-install-element">
                     <a href="javascript:void(0)" onclick="openInstallModal()" class="nav-install-link">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -1013,7 +1081,7 @@
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                 Persembahan Online
             </a>
-            <button type="button" onclick="openInstallModal()" class="btn btn-download-app">
+            <button type="button" onclick="openInstallModal()" class="btn btn-download-app app-install-element">
                 <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                 Unduh Aplikasi HP
             </button>
@@ -1210,7 +1278,7 @@
                     <li><a href="#jadwal">Jadwal Ibadah</a></li>
                     <li><a href="#pengumuman">Warta Jemaat</a></li>
                     <li><a href="{{ route('persembahan.index') }}">Persembahan Online</a></li>
-                    <li><a href="javascript:void(0)" onclick="openInstallModal()">📲 Pasang Aplikasi HP</a></li>
+                    <li class="app-install-element"><a href="javascript:void(0)" onclick="openInstallModal()">📲 Pasang Aplikasi HP</a></li>
                     @guest<li><a href="{{ route('daftar-jemaat') }}">Daftar Jemaat Baru</a></li>@endguest
                     <li><a href="{{ route('login') }}">Portal Masuk</a></li>
                 </ul>
@@ -1440,9 +1508,35 @@ window.addEventListener('beforeinstallprompt', function(e) {
 
 window.addEventListener('appinstalled', function() {
     console.log('[PWA Public] Application installed successfully!');
+    try {
+        localStorage.setItem('app_installed', '1');
+    } catch(e) {}
+    checkAndHideInstallPrompts();
     closeInstallModal();
     closeFloatingBar();
 });
+
+function checkAndHideInstallPrompts() {
+    try {
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                             window.matchMedia('(display-mode: fullscreen)').matches ||
+                             window.matchMedia('(display-mode: minimal-ui)').matches ||
+                             window.navigator.standalone === true ||
+                             document.referrer.includes('android-app://') ||
+                             window.location.search.includes('source=apk') ||
+                             window.location.search.includes('source=pwa') ||
+                             localStorage.getItem('apk_downloaded') === '1' ||
+                             localStorage.getItem('app_installed') === '1';
+
+        if (isStandalone) {
+            document.querySelectorAll('.app-install-element').forEach(function(el) {
+                el.style.setProperty('display', 'none', 'important');
+            });
+            const bar = document.getElementById('pwa-floating-bar');
+            if (bar) bar.style.setProperty('display', 'none', 'important');
+        }
+    } catch(e) {}
+}
 
 function openInstallModal() {
     var isAndroid = /Android/i.test(navigator.userAgent);
@@ -1459,6 +1553,8 @@ function openInstallModal() {
         deferredInstallPrompt.userChoice.then(function(choice) {
             if (choice.outcome === 'accepted') {
                 console.log('[PWA Public] User accepted install');
+                try { localStorage.setItem('app_installed', '1'); } catch(e) {}
+                checkAndHideInstallPrompts();
                 closeInstallModal();
                 closeFloatingBar();
             }
@@ -1536,6 +1632,8 @@ function triggerPwaPrompt() {
         deferredInstallPrompt.userChoice.then(function(choice) {
             if (choice.outcome === 'accepted') {
                 console.log('[PWA Public] User accepted install');
+                try { localStorage.setItem('app_installed', '1'); } catch(e) {}
+                checkAndHideInstallPrompts();
                 closeInstallModal();
                 closeFloatingBar();
             }
@@ -1547,6 +1645,9 @@ function triggerPwaPrompt() {
 }
 
 function downloadApk() {
+    try {
+        localStorage.setItem('apk_downloaded', '1');
+    } catch(e) {}
     var apkUrl = '/downloads/gemindo-kk.apk';
     var a = document.createElement('a');
     a.href = apkUrl;
@@ -1564,6 +1665,8 @@ function downloadApk() {
             'Setelah selesai, buka file <strong>GEMINDO-Kawan-Kasih.apk</strong> dari notifikasi unduhan, ' +
             'lalu ketuk <strong>"Instal"</strong>. Jika muncul peringatan, izinkan <em>"Instal aplikasi dari sumber tidak dikenal"</em> di Pengaturan.';
     }
+    closeFloatingBar();
+    setTimeout(checkAndHideInstallPrompts, 1200);
 }
 
 function showInstallGuideTip() {
@@ -1595,11 +1698,16 @@ function showInstallGuideTip() {
 function initFloatingBar() {
     try {
         const isDismissed = sessionStorage.getItem('pwa_float_dismissed');
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-        if (!isDismissed && !isStandalone) {
+        const isDownloaded = localStorage.getItem('apk_downloaded') === '1' || localStorage.getItem('app_installed') === '1';
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                             window.navigator.standalone === true ||
+                             document.referrer.includes('android-app://') ||
+                             window.location.search.includes('source=apk') ||
+                             window.location.search.includes('source=pwa');
+        if (!isDismissed && !isStandalone && !isDownloaded) {
             setTimeout(function() {
                 const bar = document.getElementById('pwa-floating-bar');
-                if (bar) bar.style.display = 'flex';
+                if (bar && !localStorage.getItem('apk_downloaded')) bar.style.display = 'flex';
             }, 1200);
         }
     } catch (e) {}
@@ -1612,6 +1720,18 @@ function closeFloatingBar() {
 }
 
 window.addEventListener('load', function() {
+    // Fade out splash screen smoothly
+    const splash = document.getElementById('app-entrance-splash');
+    if (splash) {
+        setTimeout(function() {
+            splash.classList.add('splash-hidden');
+            setTimeout(function() {
+                if (splash.parentNode) splash.parentNode.removeChild(splash);
+            }, 400);
+        }, 450);
+    }
+
+    checkAndHideInstallPrompts();
     initFloatingBar();
 });
 </script>

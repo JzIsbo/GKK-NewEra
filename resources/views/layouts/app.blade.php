@@ -14,8 +14,8 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="GEMINDO KK">
-    <meta name="application-name" content="GEMINDO KK">
+    <meta name="apple-mobile-web-app-title" content="GEMINDO Kawan Kasih">
+    <meta name="application-name" content="GEMINDO Kawan Kasih">
     <meta name="theme-color" content="#2c1810">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -945,6 +945,62 @@
             .mobile-bottom-nav { display: block; }
         }
 
+        /* Standalone / PWA Mode Overrides (Hilangkan rekomendasi saat running di device) */
+        @media (display-mode: standalone), (display-mode: fullscreen), (display-mode: minimal-ui) {
+            #pwa-install-banner,
+            #pwa-floating-bar,
+            .hide-in-app {
+                display: none !important;
+            }
+        }
+
+        /* Mobile App Entrance Splash */
+        #app-entrance-splash {
+            position: fixed; inset: 0; z-index: 999999;
+            background: linear-gradient(180deg, #1f100a 0%, #2c1810 50%, #1a0c07 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity .35s ease, visibility .35s ease;
+        }
+        #app-entrance-splash.splash-hidden {
+            opacity: 0; visibility: hidden; pointer-events: none;
+        }
+        .splash-logo-box {
+            width: 86px; height: 86px; border-radius: 22px;
+            background: rgba(255,255,255,.06);
+            border: 1.5px solid rgba(200,148,26,.3);
+            display: flex; align-items: center; justify-content: center;
+            padding: 12px; margin-bottom: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.45), 0 0 24px rgba(200,148,26,.2);
+            animation: pulse-splash 2s infinite ease-in-out;
+        }
+        @keyframes pulse-splash {
+            0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(0,0,0,.45), 0 0 24px rgba(200,148,26,.2); }
+            50% { transform: scale(1.04); box-shadow: 0 14px 36px rgba(0,0,0,.55), 0 0 32px rgba(200,148,26,.35); }
+        }
+        .splash-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 19px; font-weight: 800; color: #ffffff;
+            letter-spacing: -0.01em; margin-bottom: 4px; text-align: center;
+        }
+        .splash-sub {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 11px; font-weight: 700; color: #c8941a;
+            letter-spacing: 0.12em; text-transform: uppercase; text-align: center;
+        }
+        .splash-bar {
+            width: 110px; height: 3px; background: rgba(200,148,26,.2);
+            border-radius: 3px; margin-top: 22px; overflow: hidden; position: relative;
+        }
+        .splash-bar-inner {
+            position: absolute; top: 0; left: 0; height: 100%; width: 45%;
+            background: linear-gradient(90deg, #c8941a, #ffd978);
+            border-radius: 3px; animation: splash-load 1.1s infinite ease-in-out;
+        }
+        @keyframes splash-load {
+            0% { left: -45%; }
+            100% { left: 100%; }
+        }
+
         /* ====== UTILITIES ====== */
         .text-muted   { color: var(--text-muted); }
         .text-success { color: var(--success); }
@@ -1025,6 +1081,18 @@
     @yield('head')
 </head>
 <body>
+
+{{-- App Entrance Splash --}}
+<div id="app-entrance-splash">
+    <div class="splash-logo-box">
+        <img src="{{ asset('images/logo-gemindo.png') }}" style="width:100%; height:100%; object-fit:contain;" alt="Logo GEMINDO">
+    </div>
+    <div class="splash-title">GEMINDO Kawan Kasih</div>
+    <div class="splash-sub">Portal Jemaat</div>
+    <div class="splash-bar">
+        <div class="splash-bar-inner"></div>
+    </div>
+</div>
 
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
@@ -1316,6 +1384,28 @@ document.querySelectorAll('.sidebar .nav-link').forEach(function(link) {
 </div>
 
 <script>
+// ── App Entrance Splash Fade-Out ──
+function dismissSplash() {
+    const splash = document.getElementById('app-entrance-splash');
+    if (splash) splash.classList.add('splash-hidden');
+}
+window.addEventListener('load', function() {
+    setTimeout(dismissSplash, 120);
+});
+setTimeout(dismissSplash, 900); // safety fallback
+
+// ── Check if app is installed / running in standalone mode ──
+function isAppInstalledOrStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches
+        || window.matchMedia('(display-mode: fullscreen)').matches
+        || window.navigator.standalone === true
+        || document.referrer.includes('android-app://')
+        || window.location.search.includes('source=apk')
+        || window.location.search.includes('source=pwa')
+        || localStorage.getItem('app_installed') === '1'
+        || localStorage.getItem('apk_downloaded') === '1';
+}
+
 // ── PWA Service Worker Registration ──
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
@@ -1325,12 +1415,19 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// ── PWA Install Prompt ──
+// ── PWA Install Prompt (HILANGKAN jika sudah di-install / download di device) ──
 let _pwaPrompt = null;
 const _pwaBanner = document.getElementById('pwa-install-banner');
 
+if (isAppInstalledOrStandalone() && _pwaBanner) {
+    _pwaBanner.remove();
+}
+
 window.addEventListener('beforeinstallprompt', function(e) {
     e.preventDefault();
+    if (isAppInstalledOrStandalone()) {
+        return; // Jangan tampilkan rekomendasi unduh/pasang jika sudah di-install
+    }
     _pwaPrompt = e;
     const dismissed = sessionStorage.getItem('pwa-banner-dismissed');
     if (!dismissed && _pwaBanner) {
@@ -1343,6 +1440,7 @@ function pwaInstall() {
     _pwaPrompt.prompt();
     _pwaPrompt.userChoice.then(function(result) {
         if (result.outcome === 'accepted') {
+            localStorage.setItem('app_installed', '1');
             pwaHideBanner();
             console.log('[PWA] Installed!');
         }
@@ -1357,6 +1455,7 @@ function pwaHideBanner() {
 
 // Hide banner if already installed
 window.addEventListener('appinstalled', function() {
+    localStorage.setItem('app_installed', '1');
     pwaHideBanner();
     console.log('[PWA] App installed to home screen.');
 });

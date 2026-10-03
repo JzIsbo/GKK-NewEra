@@ -1,9 +1,9 @@
 {
     "id": "/",
     "name": "GEMINDO Kawan Kasih",
-    "short_name": "GEMINDO KK",
+    "short_name": "GEMINDO Kawan Kasih",
     "description": "Portal Jemaat GEREJA MASEHI INJILI INDONESIA Kawan Kasih — Persembahan, Ibadah, Laporan & Info Gereja",
-    "start_url": "/",
+    "start_url": "/?source=pwa",
     "scope": "/",
     "display": "standalone",
     "background_color": "#2c1810",
@@ -67,7 +67,7 @@
             "purpose": "any"
         },
         {
-            "src": "/icons/icon-512x512.png",
+            "src": "/icons/icon-maskable-512x512.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
