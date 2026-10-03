@@ -238,6 +238,109 @@
         }
 
         /* Tabs OS */
+        .apk-download-banner {
+            background: linear-gradient(135deg, rgba(200,148,26,.18), rgba(44,24,16,.6));
+            border: 1.5px solid rgba(200,148,26,.5);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,.35);
+        }
+        .apk-banner-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 14.5px;
+            color: #ffd978;
+            margin-bottom: 12px;
+        }
+        .apk-pulse-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 10px #22c55e;
+            animation: pulse-dot 1.5s infinite;
+            display: inline-block;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: .4; transform: scale(1.3); }
+        }
+        .apk-guidance-card {
+            background: rgba(0,0,0,.3);
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+        }
+        .apk-guide-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: #fca5a5;
+            letter-spacing: .04em;
+            margin-bottom: 10px;
+        }
+        .apk-step-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            font-size: 12.5px;
+            line-height: 1.55;
+            color: rgba(255,255,255,.9);
+        }
+        .apk-step-row:last-child { margin-bottom: 0; }
+        .apk-step-badge {
+            background: rgba(200,148,26,.3);
+            color: #ffd978;
+            font-weight: 800;
+            font-size: 11px;
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            margin-top: 1px;
+            border: 1px solid rgba(200,148,26,.5);
+        }
+        .apk-action-footer {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-apk-retry {
+            background: linear-gradient(135deg, #c8941a, #e8b84b);
+            color: #1a0e09;
+            font-weight: 700;
+            font-size: 12.5px;
+            padding: 9px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all .2s;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .btn-apk-retry:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(200,148,26,.4);
+        }
+        .btn-apk-dismiss {
+            background: rgba(255,255,255,.08);
+            color: #e0d0c0;
+            border: 1px solid rgba(255,255,255,.2);
+            font-weight: 600;
+            font-size: 12.5px;
+            padding: 9px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all .2s;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .btn-apk-dismiss:hover {
+            background: rgba(255,255,255,.15);
+            color: #fff;
+        }
+
         .modal-tabs {
             display: flex; gap: 8px; border-bottom: 1px solid rgba(255,255,255,.1);
             padding-bottom: 12px; margin-bottom: 18px;
@@ -971,7 +1074,7 @@
             .hero { min-height: 90vh; padding: 50px 0 140px; }
             .hero-title { font-size: clamp(22px, 7vw, 36px); }
             .hero-verse { font-size: 16px; }
-            .hero-buttons { flex-direction: column; gap: 12px; margin-bottom: 34px; }
+            .hero-buttons { flex-direction: column; gap: 12px; margin-bottom: 50px; }
             .hero-buttons .btn { width: 100%; }
             .hero-scroll { bottom: 12px; }
             .jadwal-card { padding: 20px 18px; }
@@ -1531,7 +1634,6 @@ function checkAndHideInstallPrompts() {
                              document.referrer.includes('android-app://') ||
                              window.location.search.includes('source=apk') ||
                              window.location.search.includes('source=pwa') ||
-                             localStorage.getItem('apk_downloaded') === '1' ||
                              localStorage.getItem('app_installed') === '1';
 
         if (isStandalone) {
@@ -1540,43 +1642,27 @@ function checkAndHideInstallPrompts() {
             });
             const bar = document.getElementById('pwa-floating-bar');
             if (bar) bar.style.setProperty('display', 'none', 'important');
+        } else if (localStorage.getItem('apk_downloaded') === '1') {
+            const bar = document.getElementById('pwa-floating-bar');
+            if (bar) bar.style.setProperty('display', 'none', 'important');
         }
     } catch(e) {}
 }
 
 function openInstallModal() {
     var isAndroid = /Android/i.test(navigator.userAgent);
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-    // Android: langsung download APK tanpa buka modal
-    if (isAndroid) {
-        downloadApk();
-        return;
-    }
-
-    // If native prompt is ready, trigger it directly!
-    if (deferredInstallPrompt) {
-        deferredInstallPrompt.prompt();
-        deferredInstallPrompt.userChoice.then(function(choice) {
-            if (choice.outcome === 'accepted') {
-                console.log('[PWA Public] User accepted install');
-                try { localStorage.setItem('app_installed', '1'); } catch(e) {}
-                checkAndHideInstallPrompts();
-                closeInstallModal();
-                closeFloatingBar();
-            }
-            deferredInstallPrompt = null;
-        });
-        return;
-    }
-
-    // Auto-detect OS: if iOS, automatically switch to iOS tab
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     switchInstallTab(isIOS ? 'ios' : 'android');
 
     const modal = document.getElementById('installModal');
     if (modal) {
         modal.classList.add('open');
         document.body.style.overflow = 'hidden';
+    }
+
+    if (isAndroid) {
+        downloadApk(false);
     }
 }
 
@@ -1624,15 +1710,6 @@ function switchInstallTab(os) {
 }
 
 function triggerPwaPrompt() {
-    var isAndroid = /Android/i.test(navigator.userAgent);
-    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-    if (isAndroid) {
-        // Android: langsung download APK
-        downloadApk();
-        return;
-    }
-
     if (deferredInstallPrompt) {
         deferredInstallPrompt.prompt();
         deferredInstallPrompt.userChoice.then(function(choice) {
@@ -1646,11 +1723,16 @@ function triggerPwaPrompt() {
             deferredInstallPrompt = null;
         });
     } else {
-        showInstallGuideTip();
+        var isAndroid = /Android/i.test(navigator.userAgent);
+        if (isAndroid) {
+            downloadApk(true);
+        } else {
+            showInstallGuideTip();
+        }
     }
 }
 
-function downloadApk() {
+function downloadApk(isRetry) {
     try {
         localStorage.setItem('apk_downloaded', '1');
     } catch(e) {}
@@ -1662,19 +1744,56 @@ function downloadApk() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    // Tampilkan pesan panduan instalasi APK
+
+    var modal = document.getElementById('installModal');
+    if (modal && !modal.classList.contains('open')) {
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    switchInstallTab('android');
+
+    // Tampilkan panduan instalasi APK lengkap
     var notice = document.getElementById('installStatusNotice');
     if (notice) {
-        notice.className = 'install-action-tip';
         notice.style.display = 'block';
-        notice.innerHTML = '✅ <strong>APK sedang diunduh!</strong><br>' +
-            '<strong>Panduan Instalasi:</strong><br>' +
-            '1. Jika sebelumnya sudah ada aplikasi GEMINDO di HP, <strong>hapus / uninstall versi lama</strong> terlebih dahulu.<br>' +
-            '2. Buka file <strong>GEMINDO-Kawan-Kasih.apk</strong> dari notifikasi unduhan.<br>' +
-            '3. Jika muncul Play Protect: ketuk <strong>"More details" (Rincian)</strong> &rarr; pilih <strong>"Install anyway" (Tetap instal)</strong>.';
+        notice.innerHTML = `
+            <div class="apk-download-banner">
+                <div class="apk-banner-header">
+                    <span class="apk-pulse-dot"></span>
+                    <span>` + (isRetry ? '🔄 Sedang Mengunduh Ulang APK...' : '📥 File APK Sedang Diunduh ke HP Anda') + `</span>
+                </div>
+                <div class="apk-guidance-card">
+                    <div class="apk-guide-title">⚠️ PENTING AGAR APLIKASI BERHASIL DIPASANG:</div>
+                    <div class="apk-step-row">
+                        <div class="apk-step-badge">1</div>
+                        <div class="apk-step-text">
+                            <strong>Hapus (Uninstall) Aplikasi GEMINDO Versi Lama Terlebih Dahulu:</strong><br>
+                            Jika sebelumnya pernah menginstal aplikasi GEMINDO di HP ini, <em>wajib uninstall / hapus terlebih dahulu</em> agar tidak muncul error <strong>"App not installed"</strong>.
+                        </div>
+                    </div>
+                    <div class="apk-step-row">
+                        <div class="apk-step-badge">2</div>
+                        <div class="apk-step-text">
+                            <strong>Jika Muncul Google Play Protect ("App blocked"):</strong><br>
+                            Ketuk tulisan <span class="step-highlight">"More details" (Rincian)</span> ➔ lalu pilih tombol <span class="step-highlight">"Install anyway" (Tetap instal)</span>. <em>(Jangan ketuk "Got it")</em>.
+                        </div>
+                    </div>
+                    <div class="apk-step-row">
+                        <div class="apk-step-badge">3</div>
+                        <div class="apk-step-text">
+                            <strong>Jika Muncul Peringatan Browser ("File might be harmful"):</strong><br>
+                            Pilih <span class="step-highlight">"Download anyway" (Tetap unduh)</span>, lalu buka file dari bilah notifikasi unduhan HP.
+                        </div>
+                    </div>
+                </div>
+                <div class="apk-action-footer">
+                    <button type="button" class="btn-apk-retry" onclick="downloadApk(true)">🔄 Unduh Ulang File APK</button>
+                    <button type="button" class="btn-apk-dismiss" onclick="closeInstallModal()">✓ Saya Paham, Tutup</button>
+                </div>
+            </div>
+        `;
     }
     closeFloatingBar();
-    setTimeout(checkAndHideInstallPrompts, 1200);
 }
 
 function showInstallGuideTip() {

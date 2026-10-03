@@ -67,6 +67,18 @@ Route::get('/downloads/gemindo-kk.apk', function () {
     ]);
 });
 
+Route::get('/.well-known/assetlinks.json', function () {
+    $path = public_path('.well-known/assetlinks.json');
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    return response()->file($path, [
+        'Content-Type' => 'application/json',
+        'Cache-Control' => 'public, max-age=86400',
+    ]);
+});
+
+
 /*
 |--------------------------------------------------------------------------
 | Auth Routes
