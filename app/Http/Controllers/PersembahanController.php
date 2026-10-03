@@ -43,12 +43,12 @@ class PersembahanController extends Controller
     {
         $request->validate([
             'jenis_persembahan_id' => ['required', 'exists:jenis_persembahans,id'],
-            'nominal'              => ['required', 'numeric', 'min:10000'],
+            'nominal'              => ['required', 'numeric', 'min:1000'],
             'nama_donatur'         => ['required_without:user_id', 'nullable', 'string', 'max:255'],
             'email_donatur'        => ['required_without:user_id', 'nullable', 'email'],
             'keterangan'           => ['nullable', 'string', 'max:500'],
         ], [
-            'nominal.min' => 'Nominal minimum persembahan adalah Rp 10.000',
+            'nominal.min' => 'Nominal minimum persembahan adalah Rp 1.000',
         ]);
 
         $persembahan = Persembahan::create([

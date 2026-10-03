@@ -511,14 +511,18 @@
     <div class="container">
         <!-- Logo Header -->
         <div class="header-logo">
-            <a href="{{ route('home') }}" class="logo-area">
+            <a href="{{ Auth::check() ? route('dashboard') : route('home') }}" class="logo-area">
                 <img src="{{ asset('images/logo-gemindo.png') }}" alt="Logo GEMINDO" class="header-logo-img">
                 <div class="logo-texts">
                     <div class="logo-title">GEMINDO Kawan Kasih</div>
                     <div class="logo-subtitle">Portal Jemaat</div>
                 </div>
             </a>
-            <a href="{{ route('home') }}" class="back-home">← Kembali ke Halaman Utama</a>
+            @if(Auth::check())
+                <a href="{{ route('dashboard') }}" class="back-home">← Kembali ke Dashboard</a>
+            @else
+                <a href="{{ route('home') }}" class="back-home">← Kembali ke Halaman Utama</a>
+            @endif
         </div>
 
         <!-- Split Layout -->
@@ -565,7 +569,7 @@
                             <!-- Nominal -->
                             <div class="form-group">
                                 <label class="form-label" for="nominal">Nominal Persembahan (Rp) <span>*</span></label>
-                                <input type="number" id="nominal" name="nominal" class="form-control" min="10000" placeholder="Minimal Rp 10.000" required>
+                                <input type="number" id="nominal" name="nominal" class="form-control" min="1000" placeholder="Minimal Rp 1.000" required>
                                 <div class="nominal-options">
                                     <button type="button" class="btn-nominal" onclick="setNominal(50000)">50.000</button>
                                     <button type="button" class="btn-nominal" onclick="setNominal(100000)">100.000</button>

@@ -341,6 +341,77 @@
             color: #fff;
         }
 
+        /* Device Choice Selector */
+        .device-choice-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .device-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(200, 148, 26, 0.25);
+            border-radius: 12px;
+            padding: 14px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.25s ease;
+            text-align: left;
+            position: relative;
+            color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .device-card:hover {
+            border-color: var(--gold);
+            background: rgba(200, 148, 26, 0.1);
+            transform: translateY(-2px);
+        }
+        .device-card.active {
+            border-color: #ffd978;
+            background: linear-gradient(135deg, rgba(200, 148, 26, 0.25), rgba(44, 24, 16, 0.6));
+            box-shadow: 0 4px 18px rgba(200, 148, 26, 0.35);
+        }
+        .device-card-icon {
+            font-size: 26px;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        .device-card-name {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
+            font-size: 14px;
+            color: #fff;
+            line-height: 1.2;
+        }
+        .device-card.active .device-card-name {
+            color: #ffd978;
+        }
+        .device-card-sub {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.65);
+            margin-top: 2px;
+        }
+        .device-check {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--gold);
+            color: #1a0e09;
+            font-size: 11px;
+            font-weight: 900;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .device-card.active .device-check {
+            display: flex;
+        }
+
         .modal-tabs {
             display: flex; gap: 8px; border-bottom: 1px solid rgba(255,255,255,.1);
             padding-bottom: 12px; margin-bottom: 18px;
@@ -1456,73 +1527,94 @@
             </div>
         </div>
 
-        <!-- 1-Click Install Notification (ALWAYS VISIBLE & ACTIONABLE) -->
-        <div id="directInstallBox" class="modal-direct-install-box" style="display:flex;">
-            <div>
-                <div style="font-weight:700;font-size:13.5px;color:#fff;">Pasang Langsung ke Layar HP</div>
-                <div style="font-size:12px;color:rgba(255,255,255,.75);margin-top:2px;">Aplikasi ringan &lt; 1MB, otomatis update warta & persembahan.</div>
-            </div>
-            <button type="button" class="btn-prompt-install" onclick="triggerPwaPrompt()">
-                <span>📲 Pasang Sekarang</span>
+        <!-- Pilihan Device: Android atau Apple iOS -->
+        <div style="margin-bottom:10px; font-size:12px; font-weight:800; color:#ffd978; text-transform:uppercase; letter-spacing:0.06em;">
+            Pilih Tipe Perangkat Anda:
+        </div>
+        <div class="device-choice-grid">
+            <button type="button" class="device-card active" id="tabBtnAndroid" onclick="selectDevice('android')">
+                <div class="device-card-icon">🤖</div>
+                <div class="device-card-info">
+                    <div class="device-card-name">Android</div>
+                    <div class="device-card-sub">Unduh File APK (.apk)</div>
+                </div>
+                <div class="device-check">✓</div>
+            </button>
+            <button type="button" class="device-card" id="tabBtnIos" onclick="selectDevice('ios')">
+                <div class="device-card-icon">🍎</div>
+                <div class="device-card-info">
+                    <div class="device-card-name">Apple iOS</div>
+                    <div class="device-card-sub">iPhone / iPad</div>
+                </div>
+                <div class="device-check">✓</div>
             </button>
         </div>
 
-        <!-- Status / Action Tip Area -->
-        <div id="installStatusNotice" style="display:none;"></div>
-
-        <!-- Tabs OS -->
-        <div class="modal-tabs">
-            <button type="button" class="modal-tab-btn active" id="tabBtnAndroid" onclick="switchInstallTab('android')">
-                <span>🤖 Android (Chrome)</span>
-            </button>
-            <button type="button" class="modal-tab-btn" id="tabBtnIos" onclick="switchInstallTab('ios')">
-                <span>🍎 iPhone (Safari)</span>
-            </button>
-        </div>
-
-        <!-- Android Guide -->
+        <!-- Android Section -->
         <div id="guideAndroid" class="guide-content">
+            <!-- Tombol Utama Download APK -->
+            <div style="margin-bottom: 14px;">
+                <button type="button" class="btn-prompt-install" style="width:100%; justify-content:center; padding:13px 18px; font-size:14px; box-shadow:0 4px 18px rgba(200,148,26,.4);" onclick="downloadApk(true)">
+                    <span style="font-size:17px;">📥</span>
+                    <span>Unduh File APK Android (912 KB)</span>
+                </button>
+            </div>
+
+            <!-- Dynamic Download Notice (Auto pops up when downloading) -->
+            <div id="installStatusNotice" style="display:none;"></div>
+
+            <!-- Panduan Langkah Instalasi Android -->
             <div class="guide-step-list">
                 <div class="guide-step-item">
-                    <div class="step-num">1</div>
+                    <div class="step-num" style="background:#ef4444; color:#fff;">1</div>
                     <div class="step-body">
-                        Buka link web ini di browser <strong>Google Chrome</strong> pada HP Android Anda.
+                        <strong>Wajib Hapus Versi Lama:</strong> Jika aplikasi GEMINDO versi terdahulu sudah ada di HP Anda, harap <strong>uninstall / hapus terlebih dahulu</strong> dari layar HP agar instalasi tidak berstatus <em>"App not installed"</em>.
                     </div>
                 </div>
                 <div class="guide-step-item">
                     <div class="step-num">2</div>
                     <div class="step-body">
-                        Ketuk ikon titik tiga <span class="step-highlight">⋮</span> di pojok kanan atas browser Chrome.
+                        <strong>Buka File Unduhan:</strong> Setelah selesai diunduh, buka file <strong>GEMINDO-Kawan-Kasih.apk</strong> dari bilah notifikasi atas atau folder Download HP Anda.
                     </div>
                 </div>
                 <div class="guide-step-item">
                     <div class="step-num">3</div>
                     <div class="step-body">
-                        Pilih menu <span class="step-highlight">Tambahkan ke Layar Utama</span> atau <span class="step-highlight">Pasang Aplikasi</span> (*Install app*).
+                        <strong>Jika Google Play Protect Muncul ("App blocked"):</strong> Ketuk tulisan <span class="step-highlight">"More details" (Rincian)</span> ➔ lalu ketuk tombol <span class="step-highlight">"Install anyway" (Tetap instal)</span>.
                     </div>
                 </div>
                 <div class="guide-step-item">
                     <div class="step-num">4</div>
                     <div class="step-body">
-                        Ketuk <strong>"Install"</strong> / <strong>"Tambah"</strong>. Ikon aplikasi GEMINDO KK siap digunakan langsung di layar HP!
+                        <strong>Konfirmasi Browser:</strong> Jika muncul pesan <em>"File might be harmful"</em> saat mengunduh, pilih <span class="step-highlight">"Download anyway" (Tetap unduh)</span>.
                     </div>
                 </div>
+            </div>
+
+            <!-- Alternative 1-click Chrome Install -->
+            <div style="margin-top:14px; padding:12px 14px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:10px; font-size:12px; color:rgba(255,255,255,.8); line-height:1.5;">
+                💡 <strong>Opsi Alternatif Tanpa Unduh APK:</strong> Pasang langsung dari browser Chrome: ketuk menu <span class="step-highlight">⋮</span> di pojok kanan atas Chrome ➔ pilih <span class="step-highlight">"Pasang Aplikasi"</span> atau <span class="step-highlight">"Tambahkan ke Layar Utama"</span>.
             </div>
         </div>
 
         <!-- iOS Guide -->
         <div id="guideIos" class="guide-content" style="display:none;">
+            <div style="margin-bottom: 14px; padding: 12px 14px; background: rgba(200,148,26,0.12); border: 1px solid rgba(200,148,26,0.3); border-radius: 10px; font-size: 12.5px; color: #ffe6a0; line-height: 1.5;">
+                ℹ️ <strong>Informasi Pengguna Apple iPhone & iPad:</strong><br>
+                Format file <code>.apk</code> dirancang khusus untuk Android. Pada perangkat iOS, Apple menyediakan fitur resmi <strong>Tambah ke Layar Utama (Safari)</strong> untuk memasang aplikasi ke layar utama secara instan, layar penuh, dan tanpa melalui App Store.
+            </div>
+
             <div class="guide-step-list">
                 <div class="guide-step-item">
                     <div class="step-num">1</div>
                     <div class="step-body">
-                        Buka link web ini di browser bawaan <strong>Safari</strong> pada iPhone atau iPad Anda.
+                        Buka web <strong>gkk-newera.vercel.app</strong> di browser bawaan <strong>Safari</strong> pada iPhone atau iPad Anda.
                     </div>
                 </div>
                 <div class="guide-step-item">
                     <div class="step-num">2</div>
                     <div class="step-body">
-                        Ketuk tombol <strong>Share / Bagikan</strong> di bilah bawah Safari <span class="step-highlight">ikon kotak panah ke atas [⎋]</span>.
+                        Ketuk tombol <strong>Share / Bagikan</strong> di bilah bawah browser Safari <span class="step-highlight">ikon kotak panah ke atas [⎋]</span>.
                     </div>
                 </div>
                 <div class="guide-step-item">
@@ -1534,7 +1626,7 @@
                 <div class="guide-step-item">
                     <div class="step-num">4</div>
                     <div class="step-body">
-                        Ketuk <strong>"Tambah"</strong> (*Add*) di pojok kanan atas layar. Selesai!
+                        Ketuk <strong>"Tambah"</strong> (*Add*) di pojok kanan atas layar. Ikon <strong>GEMINDO KK</strong> langsung aktif di layar utama iPhone Anda!
                     </div>
                 </div>
             </div>
@@ -1554,7 +1646,7 @@
     <img src="{{ asset('icons/icon-96x96.png') }}" alt="Logo" class="pwa-float-icon">
     <div class="pwa-float-texts">
         <div class="pwa-float-title">GEMINDO Kawan Kasih</div>
-        <div class="pwa-float-sub" id="floatBarSub">Download &amp; Pasang Aplikasi (2.7 MB)</div>
+        <div class="pwa-float-sub" id="floatBarSub">Download &amp; Pasang Aplikasi (&lt; 1 MB)</div>
     </div>
     <button type="button" class="btn-pwa-float" onclick="openInstallModal()">
         <span>⬇️ Pasang</span>
@@ -1687,6 +1779,13 @@ function handleModalBackdropClick(event) {
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeInstallModal();
 });
+
+function selectDevice(os) {
+    switchInstallTab(os);
+    if (os === 'android') {
+        downloadApk(true);
+    }
+}
 
 function switchInstallTab(os) {
     const tabAndroid = document.getElementById('tabBtnAndroid');
