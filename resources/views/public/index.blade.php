@@ -361,6 +361,7 @@
                 radial-gradient(ellipse 40% 30% at 20% 80%, rgba(107,26,46,.15) 0%, transparent 55%),
                 radial-gradient(ellipse 40% 30% at 80% 80%, rgba(107,26,46,.12) 0%, transparent 55%);
             animation: lightray 10s ease-in-out infinite alternate;
+            pointer-events: none;
         }
         @keyframes lightray {
             from { opacity: .7; }
@@ -373,6 +374,7 @@
                 linear-gradient(rgba(200,148,26,1) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(200,148,26,1) 1px, transparent 1px);
             background-size: 60px 60px;
+            pointer-events: none;
         }
         /* Left & right arch shapes */
         .hero-arch-l, .hero-arch-r {
@@ -722,11 +724,17 @@
             box-shadow: 0 24px 60px rgba(44,24,16,.3);
             border: 1px solid rgba(200,148,26,.2);
         }
+        .persembahan-cta > * {
+            position: relative;
+            z-index: 2;
+        }
         /* Inner gold glow */
         .persembahan-cta::before {
             content: ''; position: absolute; inset: 0;
             background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(200,148,26,.08) 0%, transparent 70%);
             animation: pulse-glow 4s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 1;
         }
         @keyframes pulse-glow { 0%,100%{opacity:.6} 50%{opacity:1} }
         /* Large watermark cross */
@@ -735,6 +743,8 @@
             right: -40px; top: 50%; transform: translateY(-50%);
             font-size: 320px; color: rgba(200,148,26,.04);
             font-family: 'Cinzel', serif; line-height: 1;
+            pointer-events: none;
+            z-index: 1;
         }
         .cta-ornament {
             display: flex; align-items: center; justify-content: center; gap: 14px;
@@ -1169,7 +1179,7 @@
             <p class="cta-desc">
                 Nyatakan ucapan syukur Anda dengan mendukung pelayanan gereja secara digital. Salurkan persembahan, perpuluhan, maupun donasi kasih melalui sistem pembayaran kami.
             </p>
-            <a href="{{ route('persembahan.index') }}" class="btn btn-gold" style="font-size:15px;padding:15px 36px;">
+            <a href="{{ route('persembahan.index') }}" class="btn btn-gold" style="font-size:15px;padding:15px 36px;position:relative;z-index:10;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;">
                 <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                 Beri Persembahan Digital
             </a>

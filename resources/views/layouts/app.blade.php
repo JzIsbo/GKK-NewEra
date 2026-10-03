@@ -156,35 +156,80 @@
         .nav-link:hover .nav-icon { opacity: 1; }
 
         .sidebar-footer {
-            padding: 14px 18px;
+            padding: 14px 16px;
             border-top: 1px solid rgba(200,148,26,.2);
             flex-shrink: 0;
-            background: rgba(0,0,0,.2);
-            padding-bottom: max(14px, env(safe-area-inset-bottom, 14px));
+            background: rgba(0,0,0,.25);
+            padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
         }
-        .user-info { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .user-info-card {
+            display: flex; align-items: center; gap: 11px;
+            padding: 10px 12px; margin-bottom: 10px;
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(200,148,26,.22);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,.15);
+        }
+        .user-avatar-wrap {
+            position: relative; flex-shrink: 0;
+        }
         .user-avatar {
-            width: 36px; height: 36px; border-radius: 50%;
+            width: 38px; height: 38px; border-radius: 50%;
             background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
             color: var(--primary-dark);
             display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 14px; flex-shrink: 0;
+            font-weight: 800; font-size: 15px; flex-shrink: 0;
             box-shadow: 0 2px 8px rgba(200,148,26,.4);
+            border: 1.5px solid rgba(255,255,255,.3);
         }
-        .user-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13.5px; font-weight: 700; color: #fff; line-height: 1.3; }
-        .user-role {
+        .user-avatar-img {
+            width: 38px; height: 38px; border-radius: 50%;
+            object-fit: cover; border: 1.5px solid var(--accent);
+            box-shadow: 0 2px 8px rgba(0,0,0,.3);
+        }
+        .user-status-dot {
+            position: absolute; bottom: -1px; right: -1px;
+            width: 9px; height: 9px; border-radius: 50%;
+            background: #10b981; border: 1.5px solid var(--primary-dark);
+        }
+        .user-details {
+            min-width: 0; flex: 1;
+        }
+        .user-name {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 10.5px; font-weight: 600; color: var(--accent-light); opacity: .85;
-            text-transform: uppercase; letter-spacing: .05em;
+            font-size: 13.5px; font-weight: 700; color: #fff;
+            line-height: 1.3; white-space: nowrap; overflow: hidden;
+            text-overflow: ellipsis; margin-bottom: 3px;
+        }
+        .user-role-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 10.5px; font-weight: 600; color: var(--accent-light);
+            background: rgba(200,148,26,.18);
+            border: 1px solid rgba(200,148,26,.35);
+            border-radius: 5px; padding: 2px 7px; line-height: 1.25;
+            letter-spacing: .01em; max-width: 100%;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .user-role-badge .role-icon {
+            color: var(--accent); flex-shrink: 0;
         }
         .btn-logout {
-            display: flex; align-items: center; gap: 8px; width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%;
             padding: 8px 12px;
-            background: rgba(139,26,26,.2); border: 1px solid rgba(139,26,26,.35);
-            color: #ffaaaa; border-radius: 7px; font-size: 12.5px; cursor: pointer;
+            background: rgba(220,38,38,.16); border: 1px solid rgba(220,38,38,.35);
+            color: #fca5a5; border-radius: 8px; font-size: 12.5px; cursor: pointer;
             transition: all .2s ease; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600;
         }
-        .btn-logout:hover { background: rgba(139,26,26,.4); color: #fff; }
+        .btn-logout:hover { background: rgba(220,38,38,.3); color: #fff; border-color: rgba(220,38,38,.6); }
+        .sidebar-close-btn {
+            display: none; background: rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,.15); color: rgba(255,255,255,.8);
+            width: 32px; height: 32px; border-radius: 8px; cursor: pointer;
+            align-items: center; justify-content: center; padding: 0;
+            transition: all .2s ease; flex-shrink: 0;
+        }
+        .sidebar-close-btn:hover { background: rgba(255,255,255,.2); color: #fff; }
 
         /* ====== TOP HEADER ====== */
         .top-header {
@@ -461,9 +506,16 @@
 
         @media (max-width: 768px) {
             html, body { overflow-x: hidden !important; max-width: 100vw !important; }
-            .sidebar { transform: translateX(-100%); }
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 500;
+                width: min(85vw, 320px);
+                box-shadow: 8px 0 36px rgba(0,0,0,.7);
+            }
             .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay { z-index: 450; }
             .sidebar-overlay.open { display: block; }
+            .sidebar-close-btn { display: flex; }
             .top-header { left: 0; padding: 0 14px; }
             
             /* Sediakan padding bawah yang luas agar konten TIDAK PERNAH tertutup bottom navigation bar */
@@ -870,19 +922,24 @@
         }
         .mob-nav-item {
             display: flex; flex-direction: column; align-items: center;
-            justify-content: center; gap: 2px;
-            padding: 5px 8px; border-radius: 8px;
-            text-decoration: none; color: rgba(255,255,255,.6);
-            font-size: 10px; font-family: 'Plus Jakarta Sans', sans-serif;
-            font-weight: 600; letter-spacing: .01em;
+            justify-content: center; gap: 3px;
+            padding: 6px 6px; border-radius: 9px;
+            text-decoration: none; color: rgba(255,255,255,.65);
+            font-size: 10.5px; font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 600; letter-spacing: -0.01em;
             transition: all .2s ease; flex: 1;
-            min-height: 48px;
+            min-height: 48px; border: 1px solid transparent;
         }
-        .mob-nav-item:hover, .mob-nav-item.active {
+        .mob-nav-item:hover {
+            color: #fff; background: rgba(255,255,255,.08);
+        }
+        .mob-nav-item.active {
             color: var(--accent-light);
-            background: rgba(200,148,26,.12);
+            background: rgba(200,148,26,.18);
+            border-color: rgba(200,148,26,.3);
         }
-        .mob-nav-item svg { width: 19px; height: 19px; flex-shrink: 0; }
+        .mob-nav-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+        .mob-nav-item.active svg { stroke-width: 2.2; filter: drop-shadow(0 0 8px rgba(200,148,26,.5)); }
         .mob-nav-item.mob-menu-btn { cursor: pointer; background: none; border: none; font-family: inherit; }
         @media (max-width: 768px) {
             .mobile-bottom-nav { display: block; }
@@ -974,13 +1031,18 @@
 <!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <a href="{{ route('dashboard') }}" class="sidebar-brand-inner" style="text-decoration:none;">
-            <img src="{{ asset('images/logo-gemindo.png') }}" alt="Logo GEMINDO" class="sidebar-brand-logo">
-            <div>
-                <div class="sidebar-brand-title">GEMINDO Kawan Kasih</div>
-                <div class="sidebar-brand-sub">Portal Jemaat</div>
-            </div>
-        </a>
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+            <a href="{{ route('dashboard') }}" class="sidebar-brand-inner" style="text-decoration:none; flex:1; min-width:0;">
+                <img src="{{ asset('images/logo-gemindo.png') }}" alt="Logo GEMINDO" class="sidebar-brand-logo">
+                <div style="min-width:0;">
+                    <div class="sidebar-brand-title">GEMINDO Kawan Kasih</div>
+                    <div class="sidebar-brand-sub">Portal Jemaat</div>
+                </div>
+            </a>
+            <button class="sidebar-close-btn" onclick="closeSidebar()" aria-label="Tutup Menu">
+                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
     </div>
 
     <!-- Daily verse -->
@@ -1097,11 +1159,39 @@
 
     <div class="sidebar-footer">
         @auth
-        <div class="user-info">
-            <div class="user-avatar">{{ strtoupper(substr(auth()->user()->nama_display, 0, 1)) }}</div>
-            <div>
-                <div class="user-name">{{ auth()->user()->nama_display }}</div>
-                <div class="user-role">{{ auth()->user()->getRoleNames()->first() ?? 'Jemaat' }}</div>
+        @php
+            $rawRole = auth()->user()->roles->first()->name ?? 'jemaat';
+            $roleMap = [
+                'super_admin'             => 'Super Admin',
+                'majelis'                 => 'Majelis Gereja',
+                'sekretaris_majelis'      => 'Sekretaris Majelis',
+                'bendahara_majelis'       => 'Bendahara Majelis',
+                'pengurus_kategorial_kpb' => 'Pengurus KPB',
+                'pengurus_kategorial_kpw' => 'Pengurus KPW',
+                'pengurus_kategorial_kpp' => 'Pengurus KPP',
+                'pengurus_kategorial_kpr' => 'Pengurus KPR',
+                'pengurus_kategorial_kpa' => 'Pengurus KPA',
+                'jemaat'                  => 'Jemaat',
+            ];
+            $displayRole = $roleMap[$rawRole] ?? ucwords(str_replace('_', ' ', $rawRole));
+        @endphp
+        <div class="user-info-card">
+            <div class="user-avatar-wrap">
+                @if(auth()->user()->foto)
+                    <img src="{{ asset('storage/' . auth()->user()->foto) }}" alt="{{ auth()->user()->nama_display }}" class="user-avatar-img">
+                @else
+                    <div class="user-avatar">{{ strtoupper(substr(auth()->user()->nama_display, 0, 1)) }}</div>
+                @endif
+                <span class="user-status-dot" title="Aktif"></span>
+            </div>
+            <div class="user-details">
+                <div class="user-name" title="{{ auth()->user()->nama_display }}">{{ auth()->user()->nama_display }}</div>
+                <div class="user-role-badge">
+                    <svg class="role-icon" width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    <span>{{ $displayRole }}</span>
+                </div>
             </div>
         </div>
         <form method="POST" action="{{ route('logout') }}">
