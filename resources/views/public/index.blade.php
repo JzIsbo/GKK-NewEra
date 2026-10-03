@@ -7,6 +7,9 @@
     <meta name="description" content="{{ $settings['tentang_gereja'] ?? 'Portal Jemaat GEMINDO Kawan Kasih' }}">
     <link rel="icon" type="image/png" href="{{ asset('images/logo-gemindo.png') }}">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('icons/icon-192x192.png') }}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ asset('icons/icon-152x152.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('icons/icon-192x192.png') }}">
     <link rel="apple-touch-icon" sizes="192x192" href="{{ asset('icons/icon-192x192.png') }}">
     <link rel="apple-touch-icon" sizes="512x512" href="{{ asset('icons/icon-512x512.png') }}">
     <link rel="manifest" href="{{ asset('manifest.json') }}">
@@ -237,110 +240,6 @@
             box-shadow: 0 4px 16px rgba(200,148,26,.6);
         }
 
-        /* Tabs OS */
-        .apk-download-banner {
-            background: linear-gradient(135deg, rgba(200,148,26,.18), rgba(44,24,16,.6));
-            border: 1.5px solid rgba(200,148,26,.5);
-            border-radius: 14px;
-            padding: 16px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 24px rgba(0,0,0,.35);
-        }
-        .apk-banner-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 800;
-            font-size: 14.5px;
-            color: #ffd978;
-            margin-bottom: 12px;
-        }
-        .apk-pulse-dot {
-            width: 10px; height: 10px;
-            border-radius: 50%;
-            background: #22c55e;
-            box-shadow: 0 0 10px #22c55e;
-            animation: pulse-dot 1.5s infinite;
-            display: inline-block;
-        }
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: .4; transform: scale(1.3); }
-        }
-        .apk-guidance-card {
-            background: rgba(0,0,0,.3);
-            border: 1px solid rgba(255,255,255,.08);
-            border-radius: 10px;
-            padding: 12px 14px;
-            margin-bottom: 14px;
-        }
-        .apk-guide-title {
-            font-size: 12px;
-            font-weight: 800;
-            color: #fca5a5;
-            letter-spacing: .04em;
-            margin-bottom: 10px;
-        }
-        .apk-step-row {
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-            margin-bottom: 10px;
-            font-size: 12.5px;
-            line-height: 1.55;
-            color: rgba(255,255,255,.9);
-        }
-        .apk-step-row:last-child { margin-bottom: 0; }
-        .apk-step-badge {
-            background: rgba(200,148,26,.3);
-            color: #ffd978;
-            font-weight: 800;
-            font-size: 11px;
-            width: 20px; height: 20px;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-            margin-top: 1px;
-            border: 1px solid rgba(200,148,26,.5);
-        }
-        .apk-action-footer {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .btn-apk-retry {
-            background: linear-gradient(135deg, #c8941a, #e8b84b);
-            color: #1a0e09;
-            font-weight: 700;
-            font-size: 12.5px;
-            padding: 9px 16px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            transition: all .2s;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-        .btn-apk-retry:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(200,148,26,.4);
-        }
-        .btn-apk-dismiss {
-            background: rgba(255,255,255,.08);
-            color: #e0d0c0;
-            border: 1px solid rgba(255,255,255,.2);
-            font-weight: 600;
-            font-size: 12.5px;
-            padding: 9px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all .2s;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-        .btn-apk-dismiss:hover {
-            background: rgba(255,255,255,.15);
-            color: #fff;
-        }
-
         /* Device Choice Selector */
         .device-choice-grid {
             display: grid;
@@ -352,7 +251,7 @@
             background: rgba(255, 255, 255, 0.05);
             border: 2px solid rgba(200, 148, 26, 0.25);
             border-radius: 12px;
-            padding: 14px 12px;
+            padding: 13px 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -412,24 +311,318 @@
             display: flex;
         }
 
-        .modal-tabs {
-            display: flex; gap: 8px; border-bottom: 1px solid rgba(255,255,255,.1);
-            padding-bottom: 12px; margin-bottom: 18px;
+        /* Dual Method Installation Cards */
+        .install-method-card {
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 14px;
+            transition: all .25s ease;
         }
-        .modal-tab-btn {
-            background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
-            color: rgba(255,255,255,.75); padding: 8px 16px; border-radius: 8px;
-            font-size: 13px; font-weight: 700; cursor: pointer;
-            transition: all .2s ease; display: inline-flex; align-items: center; gap: 6px;
+        .method-recommended {
+            background: linear-gradient(145deg, rgba(200, 148, 26, 0.16) 0%, rgba(44, 24, 16, 0.75) 100%);
+            border: 1.5px solid rgba(200, 148, 26, 0.6);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.35), 0 0 16px rgba(200,148,26,0.15);
+        }
+        .method-secondary {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .method-badge-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+        .badge-recommended {
+            background: linear-gradient(135deg, #c8941a, #e8b84b);
+            color: #1a0e09;
+            font-weight: 800;
+            font-size: 10.5px;
+            padding: 3px 9px;
+            border-radius: 6px;
+            letter-spacing: .03em;
+        }
+        .badge-shield {
+            background: rgba(34, 197, 94, 0.18);
+            color: #86efac;
+            border: 1px solid rgba(34, 197, 94, 0.45);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .badge-alt {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffd978;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+        .badge-size {
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        .method-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        .method-desc {
+            font-size: 12.5px;
+            color: rgba(255, 255, 255, 0.82);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        .method-desc strong {
+            color: #ffd978;
+        }
+        .btn-method-primary {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 18px;
+            border-radius: 9px;
+            font-weight: 800;
+            font-size: 13.5px;
+            background: linear-gradient(135deg, #f5e1a0 0%, #e8b84b 50%, #c8941a 100%);
+            color: #1a0e09;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(200, 148, 26, 0.45);
+            transition: all .2s;
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
-        .modal-tab-btn.active {
-            background: rgba(200,148,26,.2); border-color: var(--gold);
-            color: var(--gold-light); box-shadow: 0 0 10px rgba(200,148,26,.3);
+        .btn-method-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(200, 148, 26, 0.65);
+        }
+        .btn-method-secondary {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 11px 16px;
+            border-radius: 9px;
+            font-weight: 700;
+            font-size: 13px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            cursor: pointer;
+            transition: all .2s;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .btn-method-secondary:hover {
+            background: rgba(200, 148, 26, 0.2);
+            border-color: var(--gold);
+            color: #ffd978;
+        }
+
+        /* Chrome Manual Steps tip inside modal */
+        .pwa-manual-guide {
+            margin-top: 12px;
+            padding: 12px 14px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px dashed rgba(200, 148, 26, 0.5);
+            border-radius: 9px;
+            font-size: 12px;
+            color: #fce7b0;
+            line-height: 1.55;
+            animation: fadeIn .3s ease;
+        }
+        .guide-tip-header {
+            font-weight: 800;
+            color: #ffd978;
+            margin-bottom: 6px;
+        }
+        .guide-tip-steps {
+            margin: 0;
+            padding-left: 18px;
+        }
+        .guide-tip-steps li {
+            margin-bottom: 4px;
+        }
+
+        /* Download Active Notification */
+        .apk-download-active-banner {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.16), rgba(44, 24, 16, 0.7));
+            border: 1.5px solid rgba(34, 197, 94, 0.5);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 16px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+        }
+        .apk-banner-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 13.5px;
+            color: #86efac;
+            margin-bottom: 8px;
+        }
+        .apk-pulse-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 10px #22c55e;
+            animation: pulse-dot 1.5s infinite;
+            display: inline-block;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: .4; transform: scale(1.3); }
+        }
+        .btn-apk-retry {
+            background: linear-gradient(135deg, #c8941a, #e8b84b);
+            color: #1a0e09;
+            font-weight: 700;
+            font-size: 11.5px;
+            padding: 7px 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: all .2s;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .btn-apk-retry:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(200,148,26,.4);
+        }
+        .btn-apk-dismiss {
+            background: rgba(255,255,255,.08);
+            color: #e0d0c0;
+            border: 1px solid rgba(255,255,255,.2);
+            font-weight: 600;
+            font-size: 11.5px;
+            padding: 7px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all .2s;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .btn-apk-dismiss:hover {
+            background: rgba(255,255,255,.15);
+            color: #fff;
+        }
+
+        /* Security Assurance Box */
+        .security-assurance-box {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(200, 148, 26, 0.3);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-top: 14px;
+        }
+        .security-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 800;
+            font-size: 13px;
+            color: #86efac;
+            margin-bottom: 6px;
+        }
+        .security-text {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        .security-steps-title {
+            font-size: 12px;
+            color: #ffd978;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .security-faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .security-faq-item {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            font-size: 12px;
+            line-height: 1.55;
+            color: rgba(255, 255, 255, 0.88);
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 8px;
+            padding: 9px 11px;
+        }
+        .faq-step-num {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 11px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+        .faq-step-num.red { background: #ef4444; color: #fff; }
+        .faq-step-num.orange { background: #f59e0b; color: #1a0e09; }
+        .faq-step-num.blue { background: #3b82f6; color: #fff; }
+
+        /* Apple iOS Guided Box */
+        .ios-welcome-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+        }
+        .ios-badge-icon {
+            font-size: 32px;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        .ios-badge-text strong {
+            display: block;
+            font-size: 14px;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+        .ios-badge-text span {
+            font-size: 11.5px;
+            color: #86efac;
+        }
+        .ios-notice-box {
+            margin-bottom: 14px;
+            padding: 12px 14px;
+            background: rgba(200,148,26,0.12);
+            border: 1px solid rgba(200,148,26,0.3);
+            border-radius: 10px;
+            font-size: 12.5px;
+            color: #ffe6a0;
+            line-height: 1.55;
+        }
+        .ios-step {
+            background: #007aff !important;
+            color: #fff !important;
         }
 
         /* Step List */
-        .guide-step-list { display: flex; flex-direction: column; gap: 12px; }
+        .guide-step-list { display: flex; flex-direction: column; gap: 10px; }
         .guide-step-item {
             display: flex; align-items: flex-start; gap: 12px;
             background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
@@ -442,7 +635,7 @@
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0; margin-top: 1px;
         }
-        .step-body { font-size: 13px; line-height: 1.55; color: rgba(255,255,255,.85); }
+        .step-body { font-size: 12.5px; line-height: 1.55; color: rgba(255,255,255,.88); }
         .step-body strong { color: var(--gold-light); font-weight: 700; }
         .step-highlight {
             display: inline-block; background: rgba(200,148,26,.18);
@@ -1523,20 +1716,20 @@
             <img src="{{ asset('icons/icon-96x96.png') }}" alt="Logo GEMINDO KK" class="modal-app-icon">
             <div>
                 <h3 class="modal-title" id="modalInstallTitle">Pasang Aplikasi GEMINDO KK</h3>
-                <p class="modal-subtitle">Akses cepat di layar HP Anda tanpa Play Store</p>
+                <p class="modal-subtitle">Pilih tipe perangkat Anda untuk panduan &amp; instalasi resmi</p>
             </div>
         </div>
 
         <!-- Pilihan Device: Android atau Apple iOS -->
         <div style="margin-bottom:10px; font-size:12px; font-weight:800; color:#ffd978; text-transform:uppercase; letter-spacing:0.06em;">
-            Pilih Tipe Perangkat Anda:
+            Pilih Perangkat Anda:
         </div>
         <div class="device-choice-grid">
             <button type="button" class="device-card active" id="tabBtnAndroid" onclick="selectDevice('android')">
                 <div class="device-card-icon">🤖</div>
                 <div class="device-card-info">
                     <div class="device-card-name">Android</div>
-                    <div class="device-card-sub">Unduh File APK (.apk)</div>
+                    <div class="device-card-sub">Chrome / File APK</div>
                 </div>
                 <div class="device-check">✓</div>
             </button>
@@ -1544,7 +1737,7 @@
                 <div class="device-card-icon">🍎</div>
                 <div class="device-card-info">
                     <div class="device-card-name">Apple iOS</div>
-                    <div class="device-card-sub">iPhone / iPad</div>
+                    <div class="device-card-sub">iPhone / iPad (Safari)</div>
                 </div>
                 <div class="device-check">✓</div>
             </button>
@@ -1552,91 +1745,132 @@
 
         <!-- Android Section -->
         <div id="guideAndroid" class="guide-content">
-            <!-- Tombol Utama Download APK -->
-            <div style="margin-bottom: 14px;">
-                <button type="button" class="btn-prompt-install" style="width:100%; justify-content:center; padding:13px 18px; font-size:14px; box-shadow:0 4px 18px rgba(200,148,26,.4);" onclick="downloadApk(true)">
-                    <span style="font-size:17px;">📥</span>
-                    <span>Unduh File APK Android (912 KB)</span>
+            <!-- Dynamic Download Notice (Shows active progress if download is running) -->
+            <div id="installStatusNotice" style="display:none;"></div>
+
+            <!-- METODE 1: Rekomendasi Utama (1-Klik via Browser, Bebas Peringatan Bahaya) -->
+            <div class="install-method-card method-recommended">
+                <div class="method-badge-row">
+                    <span class="badge-recommended">⭐ DIREKOMENDASIKAN</span>
+                    <span class="badge-shield">🛡️ 100% Aman &amp; Bebas Peringatan</span>
+                </div>
+                <div class="method-title">1. Pasang Langsung via Browser (1-Klik)</div>
+                <div class="method-desc">
+                    Dipasang langsung oleh Google Chrome ke layar HP Anda. <strong>Bebas peringatan "File berbahaya"</strong> dan <strong>bebas pemblokiran Google Play Protect</strong>.
+                </div>
+                <button type="button" class="btn-method-primary" onclick="triggerPwaPrompt()">
+                    <span style="font-size:17px;">⚡</span>
+                    <span>Pasang Sekarang ke Layar HP</span>
+                </button>
+                <div id="pwaManualGuideTip" class="pwa-manual-guide" style="display:none;">
+                    <div class="guide-tip-header">💡 Cara Pasang Manual di Google Chrome:</div>
+                    <ol class="guide-tip-steps">
+                        <li>Ketuk menu <strong>titik tiga (⋮)</strong> di pojok kanan atas browser Chrome.</li>
+                        <li>Pilih menu <strong>"Instal aplikasi"</strong> atau <strong>"Tambahkan ke Layar utama"</strong>.</li>
+                        <li>Ketuk <strong>"Instal"</strong>. Selesai! Aplikasi langsung aktif di layar HP tanpa peringatan.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- METODE 2: File Installer APK Manual -->
+            <div class="install-method-card method-secondary">
+                <div class="method-badge-row">
+                    <span class="badge-alt">📦 OPSI MANUAL (.apk)</span>
+                    <span class="badge-size">Ukuran: 912 KB</span>
+                </div>
+                <div class="method-title">2. Unduh File Installer APK</div>
+                <div class="method-desc">
+                    Pilih opsi ini jika Anda ingin mengunduh dan menyimpan file installer <code>GEMINDO-Kawan-Kasih.apk</code> secara mandiri.
+                </div>
+                <button type="button" class="btn-method-secondary" onclick="downloadApk(true)">
+                    <span style="font-size:16px;">📥</span>
+                    <span>Unduh File GEMINDO-Kawan-Kasih.apk</span>
                 </button>
             </div>
 
-            <!-- Dynamic Download Notice (Auto pops up when downloading) -->
-            <div id="installStatusNotice" style="display:none;"></div>
+            <!-- Jaminan Keamanan & Solusi Peringatan Standar Android -->
+            <div class="security-assurance-box">
+                <div class="security-title">
+                    <span>🛡️</span>
+                    <span>Jaminan Keamanan Aplikasi GEMINDO:</span>
+                </div>
+                <div class="security-text">
+                    Aplikasi ini <strong>100% aman, bersih, dan bebas virus/malware</strong>. Dibuat resmi dari portal GEMINDO Kawan Kasih.
+                </div>
 
-            <!-- Panduan Langkah Instalasi Android -->
-            <div class="guide-step-list">
-                <div class="guide-step-item">
-                    <div class="step-num" style="background:#ef4444; color:#fff;">1</div>
-                    <div class="step-body">
-                        <strong>Wajib Hapus Versi Lama:</strong> Jika aplikasi GEMINDO versi terdahulu sudah ada di HP Anda, harap <strong>uninstall / hapus terlebih dahulu</strong> dari layar HP agar instalasi tidak berstatus <em>"App not installed"</em>.
+                <div class="security-steps-title">
+                    ℹ️ Panduan jika muncul peringatan standar Android (file di luar Play Store):
+                </div>
+                <div class="security-faq-list">
+                    <div class="security-faq-item">
+                        <div class="faq-step-num red">!</div>
+                        <div>
+                            <strong>Wajib Hapus Versi Lama:</strong> Jika aplikasi versi lama sudah ada di HP Anda, <em>uninstall / hapus terlebih dahulu</em> dari layar HP agar tidak muncul pesan error <em>"App not installed"</em>.
+                        </div>
+                    </div>
+                    <div class="security-faq-item">
+                        <div class="faq-step-num orange">1</div>
+                        <div>
+                            <strong>Peringatan Chrome ("File might be harmful"):</strong> Chrome otomatis memunculkan ini untuk semua file APK. Pilih dan ketuk <span class="step-highlight">"Download anyway" (Tetap unduh)</span>.
+                        </div>
+                    </div>
+                    <div class="security-faq-item">
+                        <div class="faq-step-num blue">2</div>
+                        <div>
+                            <strong>Peringatan Play Protect ("App blocked"):</strong> Saat membuka file APK, ketuk tulisan <span class="step-highlight">"More details" (Rincian lebih lanjut)</span> ➔ lalu ketuk tombol <span class="step-highlight">"Install anyway" (Tetap instal)</span>. <em>(Jangan ketuk tombol "Got it")</em>.
+                        </div>
                     </div>
                 </div>
-                <div class="guide-step-item">
-                    <div class="step-num">2</div>
-                    <div class="step-body">
-                        <strong>Buka File Unduhan:</strong> Setelah selesai diunduh, buka file <strong>GEMINDO-Kawan-Kasih.apk</strong> dari bilah notifikasi atas atau folder Download HP Anda.
-                    </div>
-                </div>
-                <div class="guide-step-item">
-                    <div class="step-num">3</div>
-                    <div class="step-body">
-                        <strong>Jika Google Play Protect Muncul ("App blocked"):</strong> Ketuk tulisan <span class="step-highlight">"More details" (Rincian)</span> ➔ lalu ketuk tombol <span class="step-highlight">"Install anyway" (Tetap instal)</span>.
-                    </div>
-                </div>
-                <div class="guide-step-item">
-                    <div class="step-num">4</div>
-                    <div class="step-body">
-                        <strong>Konfirmasi Browser:</strong> Jika muncul pesan <em>"File might be harmful"</em> saat mengunduh, pilih <span class="step-highlight">"Download anyway" (Tetap unduh)</span>.
-                    </div>
-                </div>
-            </div>
-
-            <!-- Alternative 1-click Chrome Install -->
-            <div style="margin-top:14px; padding:12px 14px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:10px; font-size:12px; color:rgba(255,255,255,.8); line-height:1.5;">
-                💡 <strong>Opsi Alternatif Tanpa Unduh APK:</strong> Pasang langsung dari browser Chrome: ketuk menu <span class="step-highlight">⋮</span> di pojok kanan atas Chrome ➔ pilih <span class="step-highlight">"Pasang Aplikasi"</span> atau <span class="step-highlight">"Tambahkan ke Layar Utama"</span>.
             </div>
         </div>
 
         <!-- iOS Guide -->
         <div id="guideIos" class="guide-content" style="display:none;">
-            <div style="margin-bottom: 14px; padding: 12px 14px; background: rgba(200,148,26,0.12); border: 1px solid rgba(200,148,26,0.3); border-radius: 10px; font-size: 12.5px; color: #ffe6a0; line-height: 1.5;">
-                ℹ️ <strong>Informasi Pengguna Apple iPhone & iPad:</strong><br>
-                Format file <code>.apk</code> dirancang khusus untuk Android. Pada perangkat iOS, Apple menyediakan fitur resmi <strong>Tambah ke Layar Utama (Safari)</strong> untuk memasang aplikasi ke layar utama secara instan, layar penuh, dan tanpa melalui App Store.
+            <div class="ios-welcome-badge">
+                <div class="ios-badge-icon">🍎</div>
+                <div class="ios-badge-text">
+                    <strong>Resmi Apple Safari (iOS / iPadOS)</strong>
+                    <span>100% Aman, Resmi &amp; Bebas Peringatan Pihak Ketiga</span>
+                </div>
+            </div>
+
+            <div class="ios-notice-box">
+                Perangkat Apple iPhone &amp; iPad tidak menggunakan file <code>.apk</code>. Apple menyediakan fitur resmi <strong>"Tambah ke Layar Utama" (Add to Home Screen)</strong> langsung melalui browser bawaan Safari ke layar HP Anda secara instan dan tanpa melalui App Store.
             </div>
 
             <div class="guide-step-list">
                 <div class="guide-step-item">
-                    <div class="step-num">1</div>
+                    <div class="step-num ios-step">1</div>
                     <div class="step-body">
-                        Buka web <strong>gkk-newera.vercel.app</strong> di browser bawaan <strong>Safari</strong> pada iPhone atau iPad Anda.
+                        Buka web <strong>gkk-newera.vercel.app</strong> menggunakan browser bawaan <strong>Safari</strong> pada iPhone atau iPad Anda.
                     </div>
                 </div>
                 <div class="guide-step-item">
-                    <div class="step-num">2</div>
+                    <div class="step-num ios-step">2</div>
                     <div class="step-body">
-                        Ketuk tombol <strong>Share / Bagikan</strong> di bilah bawah browser Safari <span class="step-highlight">ikon kotak panah ke atas [⎋]</span>.
+                        Di bilah menu bagian bawah browser Safari, ketuk tombol <strong>Share / Bagikan</strong> <span class="step-highlight">ikon kotak panah ke atas [⎋]</span>.
                     </div>
                 </div>
                 <div class="guide-step-item">
-                    <div class="step-num">3</div>
+                    <div class="step-num ios-step">3</div>
                     <div class="step-body">
-                        Gulir menu ke bawah lalu ketuk <span class="step-highlight">Tambah ke Layar Utama</span> (*Add to Home Screen ➕*).
+                        Gulir menu ke bawah lalu ketuk pilihan <span class="step-highlight">➕ Tambah ke Layar Utama</span> (*Add to Home Screen*).
                     </div>
                 </div>
                 <div class="guide-step-item">
-                    <div class="step-num">4</div>
+                    <div class="step-num ios-step">4</div>
                     <div class="step-body">
-                        Ketuk <strong>"Tambah"</strong> (*Add*) di pojok kanan atas layar. Ikon <strong>GEMINDO KK</strong> langsung aktif di layar utama iPhone Anda!
+                        Ketuk tombol <strong>"Tambah"</strong> (*Add*) di pojok kanan atas layar. Ikon <strong>GEMINDO KK</strong> langsung aktif di layar utama iPhone Anda dan dapat dibuka fullscreen!
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="pwa-benefit-box">
-            💡 <strong>Keunggulan Aplikasi Web (PWA):</strong><br>
-            • Hemat memori (ukuran sangat kecil & ringan)<br>
-            • Tampilan layar penuh persis aplikasi native Play Store<br>
-            • Selalu update otomatis dengan warta & persembahan terbaru gereja
+            💡 <strong>Keunggulan Aplikasi Portal Gereja:</strong><br>
+            • Hemat memori (ukuran sangat kecil &lt; 1 MB &amp; ringan)<br>
+            • Tampilan layar penuh persis aplikasi native Play Store / App Store<br>
+            • Selalu update otomatis dengan warta, jadwal ibadah, dan persembahan terbaru gereja
         </div>
     </div>
 </div>
@@ -1742,19 +1976,13 @@ function checkAndHideInstallPrompts() {
 }
 
 function openInstallModal() {
-    var isAndroid = /Android/i.test(navigator.userAgent);
     var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
     switchInstallTab(isIOS ? 'ios' : 'android');
 
     const modal = document.getElementById('installModal');
     if (modal) {
         modal.classList.add('open');
         document.body.style.overflow = 'hidden';
-    }
-
-    if (isAndroid) {
-        downloadApk(false);
     }
 }
 
@@ -1782,9 +2010,6 @@ document.addEventListener('keydown', function(e) {
 
 function selectDevice(os) {
     switchInstallTab(os);
-    if (os === 'android') {
-        downloadApk(true);
-    }
 }
 
 function switchInstallTab(os) {
@@ -1824,7 +2049,11 @@ function triggerPwaPrompt() {
     } else {
         var isAndroid = /Android/i.test(navigator.userAgent);
         if (isAndroid) {
-            downloadApk(true);
+            var guideTip = document.getElementById('pwaManualGuideTip');
+            if (guideTip) {
+                guideTip.style.display = 'block';
+                guideTip.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
         } else {
             showInstallGuideTip();
         }
@@ -1851,46 +2080,26 @@ function downloadApk(isRetry) {
     }
     switchInstallTab('android');
 
-    // Tampilkan panduan instalasi APK lengkap
+    // Tampilkan notifikasi aktif saat APK diunduh
     var notice = document.getElementById('installStatusNotice');
     if (notice) {
         notice.style.display = 'block';
         notice.innerHTML = `
-            <div class="apk-download-banner">
+            <div class="apk-download-active-banner">
                 <div class="apk-banner-header">
                     <span class="apk-pulse-dot"></span>
-                    <span>` + (isRetry ? '🔄 Sedang Mengunduh Ulang APK...' : '📥 File APK Sedang Diunduh ke HP Anda') + `</span>
+                    <span>` + (isRetry ? '🔄 Sedang Mengunduh Ulang File APK...' : '📥 File APK Sedang Diunduh ke HP Anda') + `</span>
                 </div>
-                <div class="apk-guidance-card">
-                    <div class="apk-guide-title">⚠️ PENTING AGAR APLIKASI BERHASIL DIPASANG:</div>
-                    <div class="apk-step-row">
-                        <div class="apk-step-badge">1</div>
-                        <div class="apk-step-text">
-                            <strong>Hapus (Uninstall) Aplikasi GEMINDO Versi Lama Terlebih Dahulu:</strong><br>
-                            Jika sebelumnya pernah menginstal aplikasi GEMINDO di HP ini, <em>wajib uninstall / hapus terlebih dahulu</em> agar tidak muncul error <strong>"App not installed"</strong>.
-                        </div>
-                    </div>
-                    <div class="apk-step-row">
-                        <div class="apk-step-badge">2</div>
-                        <div class="apk-step-text">
-                            <strong>Jika Muncul Google Play Protect ("App blocked"):</strong><br>
-                            Ketuk tulisan <span class="step-highlight">"More details" (Rincian)</span> ➔ lalu pilih tombol <span class="step-highlight">"Install anyway" (Tetap instal)</span>. <em>(Jangan ketuk "Got it")</em>.
-                        </div>
-                    </div>
-                    <div class="apk-step-row">
-                        <div class="apk-step-badge">3</div>
-                        <div class="apk-step-text">
-                            <strong>Jika Muncul Peringatan Browser ("File might be harmful"):</strong><br>
-                            Pilih <span class="step-highlight">"Download anyway" (Tetap unduh)</span>, lalu buka file dari bilah notifikasi unduhan HP.
-                        </div>
-                    </div>
-                </div>
-                <div class="apk-action-footer">
-                    <button type="button" class="btn-apk-retry" onclick="downloadApk(true)">🔄 Unduh Ulang File APK</button>
-                    <button type="button" class="btn-apk-dismiss" onclick="closeInstallModal()">✓ Saya Paham, Tutup</button>
+                <p style="margin: 0 0 10px; font-size: 12px; color: rgba(255,255,255,.9); line-height: 1.5;">
+                    Jika Google Chrome menampilkan <em>"File might be harmful"</em>, ketuk <strong>"Download anyway"</strong>. Setelah selesai diunduh, buka file dari bilah notifikasi atas HP Anda.
+                </p>
+                <div style="display:flex; gap:8px;">
+                    <button type="button" class="btn-apk-retry" onclick="downloadApk(true)">🔄 Unduh Ulang</button>
+                    <button type="button" class="btn-apk-dismiss" onclick="document.getElementById('installStatusNotice').style.display='none'">✓ Tutup</button>
                 </div>
             </div>
         `;
+        notice.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
     closeFloatingBar();
 }
