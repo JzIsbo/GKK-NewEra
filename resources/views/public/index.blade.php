@@ -406,7 +406,7 @@
         .hero {
             position: relative; min-height: 92vh;
             display: flex; align-items: center; justify-content: center;
-            text-align: center; padding: 80px 0 100px; overflow: hidden;
+            text-align: center; padding: 80px 0 120px; overflow: hidden;
             background: linear-gradient(170deg, var(--mahogany-dark) 0%, #3d1810 30%, #4a1a0a 60%, var(--mahogany-dark) 100%);
         }
         /* Radial light rays from above — like sunlight through stained glass */
@@ -541,7 +541,10 @@
             line-height: 1.8; font-weight: 400;
         }
 
-        .hero-buttons { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
+        .hero-buttons {
+            display: flex; align-items: center; justify-content: center;
+            gap: 16px; flex-wrap: wrap; margin-bottom: 28px;
+        }
         .btn {
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
             padding: 13px 28px; border-radius: 8px;
@@ -564,7 +567,7 @@
 
         /* Scroll indicator */
         .hero-scroll {
-            position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+            position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
             color: rgba(200,148,26,.65); font-size: 11px; letter-spacing: .12em;
             text-transform: uppercase; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700;
             display: flex; flex-direction: column; align-items: center; gap: 8px;
@@ -950,7 +953,8 @@
             .site-header { position: relative; }
             .footer-grid { grid-template-columns: 1fr; gap: 28px; }
             .persembahan-cta { padding: 40px 22px; }
-            .hero { min-height: 80vh; padding: 60px 0 80px; }
+            .hero { min-height: 88vh; padding: 60px 0 130px; }
+            .hero-scroll { bottom: 14px; }
             .hero-cross-large { width: 44px; height: 60px; margin-bottom: 24px; }
             .section { padding: 60px 0; }
             .container { padding: 0 18px; }
@@ -964,10 +968,12 @@
             .footer-bottom { flex-direction: column; align-items: flex-start; gap: 12px; }
         }
         @media (max-width: 480px) {
+            .hero { min-height: 90vh; padding: 50px 0 140px; }
             .hero-title { font-size: clamp(22px, 7vw, 36px); }
             .hero-verse { font-size: 16px; }
-            .hero-buttons { flex-direction: column; gap: 10px; }
+            .hero-buttons { flex-direction: column; gap: 12px; margin-bottom: 34px; }
             .hero-buttons .btn { width: 100%; }
+            .hero-scroll { bottom: 12px; }
             .jadwal-card { padding: 20px 18px; }
             .pengumuman-grid { grid-template-columns: 1fr; }
             .kegiatan-list { padding: 0 4px; }
@@ -982,7 +988,7 @@
         /* iPhone safe area */
         @supports (padding-top: env(safe-area-inset-top)) {
             .site-header { padding-top: env(safe-area-inset-top); }
-            .hero-scroll { bottom: calc(28px + env(safe-area-inset-bottom)); }
+            .hero-scroll { bottom: calc(14px + env(safe-area-inset-bottom)); }
         }
     </style>
 </head>
@@ -1720,15 +1726,15 @@ function closeFloatingBar() {
 }
 
 window.addEventListener('load', function() {
-    // Fade out splash screen smoothly
+    // Fade out splash screen smoothly after 2 seconds
     const splash = document.getElementById('app-entrance-splash');
     if (splash) {
         setTimeout(function() {
             splash.classList.add('splash-hidden');
             setTimeout(function() {
                 if (splash.parentNode) splash.parentNode.removeChild(splash);
-            }, 400);
-        }, 450);
+            }, 500);
+        }, 2000);
     }
 
     checkAndHideInstallPrompts();

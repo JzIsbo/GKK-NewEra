@@ -1384,15 +1384,20 @@ document.querySelectorAll('.sidebar .nav-link').forEach(function(link) {
 </div>
 
 <script>
-// ── App Entrance Splash Fade-Out ──
+// ── App Entrance Splash Fade-Out (2 Detik Entrance) ──
 function dismissSplash() {
     const splash = document.getElementById('app-entrance-splash');
-    if (splash) splash.classList.add('splash-hidden');
+    if (splash) {
+        splash.classList.add('splash-hidden');
+        setTimeout(function() {
+            if (splash.parentNode) splash.parentNode.removeChild(splash);
+        }, 500);
+    }
 }
 window.addEventListener('load', function() {
-    setTimeout(dismissSplash, 120);
+    setTimeout(dismissSplash, 2000);
 });
-setTimeout(dismissSplash, 900); // safety fallback
+setTimeout(dismissSplash, 3500); // safety fallback
 
 // ── Check if app is installed / running in standalone mode ──
 function isAppInstalledOrStandalone() {
