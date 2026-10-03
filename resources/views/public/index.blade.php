@@ -1668,8 +1668,10 @@ function downloadApk() {
         notice.className = 'install-action-tip';
         notice.style.display = 'block';
         notice.innerHTML = '✅ <strong>APK sedang diunduh!</strong><br>' +
-            'Setelah selesai, buka file <strong>GEMINDO-Kawan-Kasih.apk</strong> dari notifikasi unduhan, ' +
-            'lalu ketuk <strong>"Instal"</strong>. Jika muncul peringatan, izinkan <em>"Instal aplikasi dari sumber tidak dikenal"</em> di Pengaturan.';
+            '<strong>Panduan Instalasi:</strong><br>' +
+            '1. Jika sebelumnya sudah ada aplikasi GEMINDO di HP, <strong>hapus / uninstall versi lama</strong> terlebih dahulu.<br>' +
+            '2. Buka file <strong>GEMINDO-Kawan-Kasih.apk</strong> dari notifikasi unduhan.<br>' +
+            '3. Jika muncul Play Protect: ketuk <strong>"More details" (Rincian)</strong> &rarr; pilih <strong>"Install anyway" (Tetap instal)</strong>.';
     }
     closeFloatingBar();
     setTimeout(checkAndHideInstallPrompts, 1200);
